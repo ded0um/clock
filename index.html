@@ -20,7 +20,6 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
         
-        /* Zone cliquable pour le plein écran */
         #click-zone {
             position: absolute;
             top: 0;
@@ -54,7 +53,6 @@
             font-weight: 400;
         }
 
-        /* Bouton engrenage discret en bas à droite */
         #color-picker-container {
             position: absolute;
             bottom: 25px;
@@ -65,7 +63,7 @@
         }
         #color-picker-container:hover {
             opacity: 0.8;
-            transform: rotate(45deg); /* Petit effet de rotation classe au survol */
+            transform: rotate(45deg);
         }
         #color-label {
             font-size: 28px;
@@ -82,7 +80,6 @@
             cursor: pointer;
         }
 
-        /* Cache le bouton en mode plein écran */
         :fullscreen #color-picker-container {
             display: none;
         }
@@ -90,13 +87,11 @@
 </head>
 <body>
 
-    <!-- Zone principale plein écran -->
     <div id="click-zone">
         <div id="date"></div>
         <div id="clock">00:00<span class="seconds">:00</span></div>
     </div>
 
-    <!-- Sélecteur de couleur avec l'engrenage -->
     <div id="color-picker-container">
         <span id="color-label">⚙️</span>
         <input type="color" id="color-picker" value="#000000">
@@ -106,22 +101,35 @@
         const body = document.body;
         const colorPicker = document.getElementById('color-picker');
 
+        // Fonction pour empêcher la mise en veille de l'écran
+        let wakeLock = null;
+        async function requestWakeLock() {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+            } catch (err) {
+                console.log("Wake Lock non supporté ou refusé : " + err.message);
+            }
+        }
+
+        // Initialisation
+        requestWakeLock();
+        document.addEventListener('visibilitychange', () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                requestWakeLock();
+            }
+        });
+
         function updateClock() {
             const now = new Date();
-            
-            // Date
             const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
             document.getElementById('date').textContent = now.toLocaleDateString('fr-FR', options);
 
-            // Heure
             const h = String(now.getHours()).padStart(2, '0');
             const m = String(now.getMinutes()).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
-            
             document.getElementById('clock').innerHTML = h + ':' + m + '<span class="seconds">:' + s + '</span>';
         }
         
-        // Mode plein écran
         document.getElementById('click-zone').addEventListener('click', () => {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {});
@@ -130,17 +138,13 @@
             }
         });
 
-        // Changement de couleur
         colorPicker.addEventListener('input', (e) => {
             const bgColor = e.target.value;
             body.style.backgroundColor = bgColor;
-
-            // Adaptation de la couleur du texte et de l'engrenage selon le fond
             const r = parseInt(bgColor.substr(1,2), 16);
             const g = parseInt(bgColor.substr(3,2), 16);
             const b = parseInt(bgColor.substr(5,2), 16);
             const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-            
             body.style.color = brightness > 128 ? '#000000' : '#ffffff';
         });
 
