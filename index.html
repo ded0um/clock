@@ -2,8 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Horloge Plein Écran</title>
+    <title>Horloge</title>
     <style>
         body {
             margin: 0;
@@ -13,11 +12,11 @@
             align-items: center;
             background-color: black;
             color: white;
-            font-family: 'Courier New', Courier, monospace; /* Style digital */
+            font-family: monospace;
             overflow: hidden;
         }
         #clock {
-            font-size: 15vw; /* S'adapte automatiquement à la taille de l'écran */
+            font-size: 15vw;
             font-weight: bold;
         }
     </style>
@@ -29,16 +28,13 @@
     <script>
         function updateClock() {
             const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            
-            document.getElementById('clock').textContent = ${hours}:${minutes}:${seconds};
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = h + ':' + m + ':' + s;
         }
-        
-        // Met à jour l'horloge immédiatement, puis toutes les secondes
-        updateClock();
         setInterval(updateClock, 1000);
+        updateClock();
     </script>
 </body>
 </html>
