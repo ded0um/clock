@@ -8,6 +8,7 @@
             margin: 0;
             height: 100vh;
             display: flex;
+            flex-direction: column; /* Aligne la date au-dessus de l'heure */
             justify-content: center;
             align-items: center;
             background-color: black;
@@ -15,24 +16,48 @@
             font-family: monospace;
             overflow: hidden;
         }
+        /* Style pour la date */
+        #date {
+            font-size: 4vw; /* Plus petit que l'heure, mais bien lisible */
+            opacity: 0.7;   /* Légèrement plus discret que l'heure blanche */
+            margin-bottom: 2vh; /* Espace entre la date et l'heure */
+            text-transform: capitalize; /* Met la première lettre du jour en majuscule */
+        }
+        /* Style pour l'heure */
         #clock {
             font-size: 15vw;
             font-weight: bold;
+        }
+        /* Style pour les secondes */
+        .seconds {
+            font-size: 8vw;
+            opacity: 0.4;
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
 
-    <div id="clock">00:00:00</div>
+    <!-- On ajoute la zone pour la date juste ici -->
+    <div id="date"></div>
+    <div id="clock">00:00<span class="seconds">:00</span></div>
 
     <script>
         function updateClock() {
             const now = new Date();
+            
+            // 1. Mise à jour de la date au format français (ex: lundi 23 juin 2026)
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('date').textContent = now.toLocaleDateString('fr-FR', options);
+
+            // 2. Mise à jour de l'heure
             const h = String(now.getHours()).padStart(2, '0');
             const m = String(now.getMinutes()).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('clock').textContent = h + ':' + m + ':' + s;
+            
+            document.getElementById('clock').innerHTML = h + ':' + m + '<span class="seconds">:' + s + '</span>';
         }
+        
         setInterval(updateClock, 1000);
         updateClock();
     </script>
