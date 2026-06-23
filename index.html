@@ -2,55 +2,114 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Horloge</title>
     <style>
         body {
             margin: 0;
             height: 100vh;
             display: flex;
-            flex-direction: column; /* Aligne la date au-dessus de l'heure */
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             background-color: black;
             color: white;
-            font-family: monospace;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
+            user-select: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
-        /* Style pour la date */
+        
+        /* Zone cliquable pour le plein écran */
+        #click-zone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1;
+        }
+
         #date {
-            font-size: 4vw; /* Plus petit que l'heure, mais bien lisible */
-            opacity: 0.7;   /* Légèrement plus discret que l'heure blanche */
-            margin-bottom: 2vh; /* Espace entre la date et l'heure */
-            text-transform: capitalize; /* Met la première lettre du jour en majuscule */
+            font-size: 3.5vw;
+            opacity: 0.6;
+            margin-bottom: 1vh;
+            text-transform: capitalize;
+            letter-spacing: 1px;
         }
-        /* Style pour l'heure */
         #clock {
-            font-size: 15vw;
-            font-weight: bold;
+            font-size: 16vw;
+            font-weight: 700;
+            letter-spacing: -2px;
         }
-        /* Style pour les secondes */
         .seconds {
             font-size: 8vw;
-            opacity: 0.4;
-            margin-left: 10px;
+            opacity: 0.3;
+            margin-left: 15px;
+            font-weight: 400;
+        }
+
+        /* Bouton discret pour changer la couleur */
+        #color-picker-container {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10;
+            opacity: 0.3;
+            transition: opacity 0.2s;
+        }
+        #color-picker-container:hover {
+            opacity: 1;
+        }
+        #color-label {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        #color-picker {
+            opacity: 0;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+
+        /* Cache le bouton de couleur en mode plein écran pour un design 100% épuré */
+        :fullscreen #color-picker-container {
+            display: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- On ajoute la zone pour la date juste ici -->
-    <div id="date"></div>
-    <div id="clock">00:00<span class="seconds">:00</span></div>
+    <div id="click-zone">
+        <div id="date"></div>
+        <div id="clock">00:00<span class="seconds">:00</span></div>
+    </div>
+
+    <div id="color-picker-container">
+        <span id="color-label">🎨</span>
+        <input type="color" id="color-picker" value="#000000">
+    </div>
 
     <script>
+        const body = document.body;
+        const colorPicker = document.getElementById('color-picker');
+
         function updateClock() {
             const now = new Date();
             
-            // 1. Mise à jour de la date au format français (ex: lundi 23 juin 2026)
+            // Date
             const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
             document.getElementById('date').textContent = now.toLocaleDateString('fr-FR', options);
 
-            // 2. Mise à jour de l'heure
+            // Heure
             const h = String(now.getHours()).padStart(2, '0');
             const m = String(now.getMinutes()).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
@@ -58,6 +117,30 @@
             document.getElementById('clock').innerHTML = h + ':' + m + '<span class="seconds">:' + s + '</span>';
         }
         
+        // Mode plein écran en cliquant n'importe où sur le fond (sauf sur le bouton couleur)
+        document.getElementById('click-zone').addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {});
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        // Gestion du changement de couleur de fond
+        colorPicker.addEventListener('input', (e) => {
+            const bgColor = e.target.value;
+            body.style.backgroundColor = bgColor;
+
+            // Calcul de la luminosité pour adapter la couleur du texte (noir ou blanc)
+            const r = parseInt(bgColor.substr(1,2), 16);
+            const g = parseInt(bgColor.substr(3,2), 16);
+            const b = parseInt(bgColor.substr(5,2), 16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            
+            // Si le fond est clair, texte noir, sinon texte blanc
+            body.style.color = brightness > 128 ? '#000000' : '#ffffff';
+        });
+
         setInterval(updateClock, 1000);
         updateClock();
     </script>
