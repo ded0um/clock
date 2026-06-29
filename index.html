@@ -14,7 +14,7 @@
             align-items: center;
             background-color: black;
             color: white;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             overflow: hidden;
             user-select: none;
             transition: background-color 0.3s ease, color 0.3s ease;
@@ -54,7 +54,6 @@
             font-weight: 400;
         }
 
-        /* Conteneur des contrôles en bas à droite */
         #controls-container {
             position: absolute;
             bottom: 25px;
@@ -70,12 +69,11 @@
             opacity: 0.8;
         }
 
-        /* Zone affichant le texte de pluie en bas */
         #weather {
             font-size: 18px;
             opacity: 0.7;
             font-weight: 400;
-            display: none; /* Caché par défaut */
+            display: none;
             white-space: nowrap;
         }
         
@@ -86,12 +84,8 @@
             position: relative;
             transition: transform 0.3s ease;
         }
-        #umbrella-btn:hover {
-            transform: scale(1.2);
-        }
-        #gear-btn:hover {
-            transform: rotate(45deg);
-        }
+        #umbrella-btn:hover { transform: scale(1.2); }
+        #gear-btn:hover { transform: rotate(45deg); }
 
         #color-picker {
             opacity: 0;
@@ -103,7 +97,6 @@
             cursor: pointer;
         }
 
-        /* Cache tout le bloc en mode plein écran */
         :fullscreen #controls-container {
             display: none;
         }
@@ -116,15 +109,9 @@
         <div id="clock">00:00<span class="seconds">:00</span></div>
     </div>
 
-    <!-- Zone des contrôles en bas à droite -->
     <div id="controls-container">
-        <!-- Texte du risque de pluie (s'affiche ici maintenant) -->
         <div id="weather">Chargement...</div>
-
-        <!-- Nouveau bouton Parapluie -->
         <span id="umbrella-btn" class="control-btn" title="Afficher la météo">☂️</span>
-        
-        <!-- Bouton Engrenage Couleur -->
         <span id="gear-btn" class="control-btn">
             ⚙️
             <input type="color" id="color-picker" value="#000000">
@@ -137,52 +124,19 @@
         const weatherDiv = document.getElementById('weather');
         const umbrellaBtn = document.getElementById('umbrella-btn');
 
-        // Bloc Anti-veille (Wake Lock)
+        // Anti-veille
         let wakeLock = null;
         async function requestWakeLock() {
-            try {
-                wakeLock = await navigator.wakeLock.request('screen');
-            } catch (err) {
-                console.log("Wake Lock non supporté : " + err.message);
+            if ('wakeLock' in navigator) {
+                try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
             }
         }
-
         requestWakeLock();
         document.addEventListener('visibilitychange', () => {
-            if (wakeLock !== null && document.visibilityState === 'visible') {
-                requestWakeLock();
-            }
+            if (wakeLock !== null && document.visibilityState === 'visible') requestWakeLock();
         });
 
-        // Fonction Météo (Amiens)
-        async function updateWeather() {
-            const lat = 49.8942;
-            const lon = 2.2957;
-            const url = https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=precipitation_probability&forecast_days=1;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                const currentHour = new Date().getHours();
-                const rainProbability = data.hourly.precipitation_probability[currentHour];
-                weatherDiv.innerHTML = Pluie : ${rainProbability}%;
-            } catch (error) {
-                weatherDiv.textContent = "Météo indisponible";
-            }
-        }
-
-        // Clic sur le parapluie pour afficher/cacher le texte juste à côté
-        umbrellaBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Empêche le plein écran
-            if (weatherDiv.style.display === 'block') {
-                weatherDiv.style.display = 'none';
-            } else {
-                weatherDiv.style.display = 'block';
-                updateWeather(); 
-            }
-        });
-
-        // Gestion de l'horloge
+        // Horloge
         function updateClock() {
             const now = new Date();
             const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
@@ -192,13 +146,33 @@
             const m = String(now.getMinutes()).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
             document.getElementById('clock').innerHTML = h + ':' + m + '<span class="seconds">:' + s + '</span>';
-            
-            if (m === '00' && s === '00' && weatherDiv.style.display === 'block') {
-                updateWeather();
+        }
+
+        // Météo sécurisée
+        async function updateWeather() {
+            try {
+                const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=49.8942&longitude=2.2957&hourly=precipitation_probability&forecast_days=1');
+                const data = await response.json();
+                const currentHour = new Date().getHours();
+                const rainProbability = data.hourly.precipitation_probability[currentHour];
+                weatherDiv.innerHTML = Pluie : ${rainProbability}%;
+            } catch (error) {
+                weatherDiv.textContent = "Météo indisponible";
             }
         }
-        
-        // Mode plein écran (clic sur le fond)
+
+        // Bouton Parapluie
+        umbrellaBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (weatherDiv.style.display === 'block') {
+                weatherDiv.style.display = 'none';
+            } else {
+                weatherDiv.style.display = 'block';
+                updateWeather();
+            }
+        });
+
+        // Plein écran
         document.getElementById('click-zone').addEventListener('click', () => {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {});
@@ -207,7 +181,7 @@
             }
         });
 
-        // Changement de couleur
+        // Couleur de fond
         colorPicker.addEventListener('input', (e) => {
             const bgColor = e.target.value;
             body.style.backgroundColor = bgColor;
@@ -218,9 +192,9 @@
             body.style.color = brightness > 128 ? '#000000' : '#ffffff';
         });
 
+        // Lancement
         setInterval(updateClock, 1000);
         updateClock();
-        updateWeather(); 
         setInterval(updateWeather, 15 * 60 * 1000);
     </script>
 </body>
