@@ -71,12 +71,15 @@
             font-size: 28px;
             cursor: pointer;
             user-select: none;
-            position: relative; /* Indispensable pour bloquer le sélecteur dedans */
+            position: relative;
             display: inline-block;
             width: 35px;
             height: 35px;
             text-align: center;
             line-height: 35px;
+            /* Force l'icône à utiliser la couleur du texte et non l'effet emoji */
+            color: inherit; 
+            font-variant-numeric: tabular-nums;
         }
         #color-picker {
             opacity: 0;
@@ -133,7 +136,12 @@
             const g = parseInt(col.substr(3,2), 16);
             const b = parseInt(col.substr(5,2), 16);
             const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-            document.body.style.color = brightness > 128 ? '#000000' : '#ffffff';
+            
+            const finalColor = brightness > 128 ? '#000000' : '#ffffff';
+            
+            // Applique la couleur exacte au texte général ET au parapluie
+            document.body.style.color = finalColor;
+            document.getElementById('umbrella-btn').style.color = finalColor;
         });
 
         // 3. Météo
