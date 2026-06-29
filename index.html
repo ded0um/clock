@@ -41,6 +41,7 @@
             text-transform: capitalize;
             letter-spacing: 1px;
         }
+
         #clock {
             font-size: 16vw;
             font-weight: 700;
@@ -53,23 +54,45 @@
             font-weight: 400;
         }
 
-        #color-picker-container {
+        /* Conteneur des contrôles en bas à droite */
+        #controls-container {
             position: absolute;
             bottom: 25px;
             right: 25px;
             z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 20px;
             opacity: 0.3;
-            transition: opacity 0.2s, transform 0.3s ease;
+            transition: opacity 0.2s;
         }
-        #color-picker-container:hover {
+        #controls-container:hover {
             opacity: 0.8;
-            transform: rotate(45deg);
         }
-        #color-label {
+
+        /* Zone affichant le texte de pluie en bas */
+        #weather {
+            font-size: 18px;
+            opacity: 0.7;
+            font-weight: 400;
+            display: none; /* Caché par défaut */
+            white-space: nowrap;
+        }
+        
+        .control-btn {
             font-size: 28px;
             cursor: pointer;
             line-height: 1;
+            position: relative;
+            transition: transform 0.3s ease;
         }
+        #umbrella-btn:hover {
+            transform: scale(1.2);
+        }
+        #gear-btn:hover {
+            transform: rotate(45deg);
+        }
+
         #color-picker {
             opacity: 0;
             position: absolute;
@@ -80,7 +103,8 @@
             cursor: pointer;
         }
 
-        :fullscreen #color-picker-container {
+        /* Cache tout le bloc en mode plein écran */
+        :fullscreen #controls-container {
             display: none;
         }
     </style>
@@ -92,26 +116,37 @@
         <div id="clock">00:00<span class="seconds">:00</span></div>
     </div>
 
-    <div id="color-picker-container">
-        <span id="color-label">⚙️</span>
-        <input type="color" id="color-picker" value="#000000">
+    <!-- Zone des contrôles en bas à droite -->
+    <div id="controls-container">
+        <!-- Texte du risque de pluie (s'affiche ici maintenant) -->
+        <div id="weather">Chargement...</div>
+
+        <!-- Nouveau bouton Parapluie -->
+        <span id="umbrella-btn" class="control-btn" title="Afficher la météo">☂️</span>
+        
+        <!-- Bouton Engrenage Couleur -->
+        <span id="gear-btn" class="control-btn">
+            ⚙️
+            <input type="color" id="color-picker" value="#000000">
+        </span>
     </div>
 
     <script>
         const body = document.body;
         const colorPicker = document.getElementById('color-picker');
+        const weatherDiv = document.getElementById('weather');
+        const umbrellaBtn = document.getElementById('umbrella-btn');
 
-        // Fonction pour empêcher la mise en veille de l'écran
+        // Bloc Anti-veille (Wake Lock)
         let wakeLock = null;
         async function requestWakeLock() {
             try {
                 wakeLock = await navigator.wakeLock.request('screen');
             } catch (err) {
-                console.log("Wake Lock non supporté ou refusé : " + err.message);
+                console.log("Wake Lock non supporté : " + err.message);
             }
         }
 
-        // Initialisation
         requestWakeLock();
         document.addEventListener('visibilitychange', () => {
             if (wakeLock !== null && document.visibilityState === 'visible') {
@@ -119,6 +154,35 @@
             }
         });
 
+        // Fonction Météo (Amiens)
+        async function updateWeather() {
+            const lat = 49.8942;
+            const lon = 2.2957;
+            const url = https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=precipitation_probability&forecast_days=1;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const currentHour = new Date().getHours();
+                const rainProbability = data.hourly.precipitation_probability[currentHour];
+                weatherDiv.innerHTML = Pluie : ${rainProbability}%;
+            } catch (error) {
+                weatherDiv.textContent = "Météo indisponible";
+            }
+        }
+
+        // Clic sur le parapluie pour afficher/cacher le texte juste à côté
+        umbrellaBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Empêche le plein écran
+            if (weatherDiv.style.display === 'block') {
+                weatherDiv.style.display = 'none';
+            } else {
+                weatherDiv.style.display = 'block';
+                updateWeather(); 
+            }
+        });
+
+        // Gestion de l'horloge
         function updateClock() {
             const now = new Date();
             const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
@@ -128,8 +192,13 @@
             const m = String(now.getMinutes()).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
             document.getElementById('clock').innerHTML = h + ':' + m + '<span class="seconds">:' + s + '</span>';
+            
+            if (m === '00' && s === '00' && weatherDiv.style.display === 'block') {
+                updateWeather();
+            }
         }
         
+        // Mode plein écran (clic sur le fond)
         document.getElementById('click-zone').addEventListener('click', () => {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {});
@@ -138,6 +207,7 @@
             }
         });
 
+        // Changement de couleur
         colorPicker.addEventListener('input', (e) => {
             const bgColor = e.target.value;
             body.style.backgroundColor = bgColor;
@@ -150,6 +220,8 @@
 
         setInterval(updateClock, 1000);
         updateClock();
+        updateWeather(); 
+        setInterval(updateWeather, 15 * 60 * 1000);
     </script>
 </body>
 </html>
