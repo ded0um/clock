@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horloge</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            color: white;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            user-select: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        #click-zone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        #date {
+            font-size: 3.5vw;
+            opacity: 0.6;
+            margin-bottom: 1vh;
+            text-transform: capitalize;
+            letter-spacing: 1px;
+        }
+
+        #clock {
+            font-size: 16vw;
+            font-weight: 700;
+            letter-spacing: -2px;
+        }
+        .seconds {
+            font-size: 8vw;
+            opacity: 0.3;
+            margin-left: 15px;
+            font-weight: 400;
+        }
+
+        #controls-container {
+            position: absolute;
+            bottom: 25px;
+            right: 25px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            opacity: 0.3;
+            transition: opacity 0.2s;
+        }
+        #controls-container:hover {
+            opacity: 0.8;
+        }
+
+        #weather {
+            font-size: 18px;
+            opacity: 0.7;
+            font-weight: 400;
+            display: none;
+            white-space: nowrap;
+        }
+        
+        .control-btn {
+            font-size: 28px;
+            cursor: pointer;
+            line-height: 1;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        #umbrella-btn:hover { transform: scale(1.2); }
+        #gear-btn:hover { transform: rotate(45deg); }
+
+        #color-picker {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        :fullscreen #controls-container {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="click-zone">
+        <div id="date"></div>
+        <div id="clock">00:00<span class="seconds">:00</span></div>
+    </div>
+
+    <div id="controls-container">
+        <div id="weather">Chargement...</div>
+        <span id="umbrella-btn" class="control-btn" title="Afficher la météo">☂️</span>
+        <span id="gear-btn" class="control-btn">
+            ⚙️
+            <input type="color" id="color-picker" value="#000000">
+        </span>
+    </div>
+
+    <script>
+        // 1. Gestion de la couleur (Indépendante et prioritaire)
+        const colorPicker = document.getElementById('color-picker');
+        colorPicker.addEventListener('input', (e) => {
+            const bgColor = e.target.value;
+            document.body.style.backgroundColor = bgColor;
+            const r = parseInt(bgColor.substr(1,2), 16);
+            const g = parseInt(bgColor.substr(3,2), 16);
+            const b = parseInt(bgColor.substr(5,2), 16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            document.body.style.color = brightness > 128 ? '#000000' : '#ffffff';
+        });
+
+        // 2. Horloge (Indépendante)
+        function updateClock() {
+            const now = new Date();
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('date').textContent = now.toLocaleDateString('fr-FR', options);
+
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').innerHTML = h + ':' + m + '<span class="seconds">:' + s + '</span>';
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 3. Météo et Bouton Parapluie
+        const weatherDiv = document.getElementById('weather');
+        async function updateWeather() {
+            try {
+                const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=49.8942&longitude=2.2957&hourly=precipitation_probability&forecast_days=1');
+                if (!response.ok) return;
+                const data = await response.json();
+                const currentHour = new Date().getHours();
+                const rainProbability = data.hourly.precipitation_probability[currentHour];
+                weatherDiv.innerHTML = Pluie : ${rainProbability}%;
+            } catch (error) {
+                weatherDiv.textContent = "Météo indisponible";
+            }
+        }
+
+        document.getElementById('umbrella-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (weatherDiv.style.display === 'block') {
+                weatherDiv.style.display = 'none';
+            } else {
+                weatherDiv.style.display = 'block';
+                updateWeather();
+            }
+        });
+
+        // 4. Plein écran et Anti-veille
+        document.getElementById('click-zone').addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        let wakeLock = null;
+        async function requestWakeLock() {
+            if ('wakeLock' in navigator) {
+                try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
+            }
+        }
+        requestWakeLock();
+        document.addEventListener('visibilitychange', () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') requestWakeLock();
+        });
+    </script>
+</body>
+</html>
