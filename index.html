@@ -68,7 +68,7 @@
             white-space: nowrap;
         }
         .control-btn {
-            font-size: 28px;
+            font-size: 24px; /* Ajusté légèrement pour uniformiser la taille brute */
             cursor: pointer;
             user-select: none;
             position: relative;
@@ -77,9 +77,7 @@
             height: 35px;
             text-align: center;
             line-height: 35px;
-            /* Force l'icône à utiliser la couleur du texte et non l'effet emoji */
             color: inherit; 
-            font-variant-numeric: tabular-nums;
         }
         #color-picker {
             opacity: 0;
@@ -100,14 +98,13 @@
     <div id="click-zone">
         <div id="date">Chargement date...</div>
         <div id="clock">00:00<span class="seconds">:00</span></div>
-        KAP KAP KAP
     </div>
 
     <div id="controls-container">
         <div id="weather">Pluie: --%</div>
-        <span id="umbrella-btn" class="control-btn" title="Afficher la météo">☂️</span>
-        <span id="gear-btn" class="control-btn">
-            ⚙️
+        <span id="umbrella-btn" class="control-btn" title="Afficher la météo">&#9730;</span>
+        <span id="gear-btn" class="control-btn" title="Changer la couleur">
+            &#9881;
             <input type="color" id="color-picker" value="#000000">
         </span>
     </div>
@@ -140,9 +137,9 @@
             
             const finalColor = brightness > 128 ? '#000000' : '#ffffff';
             
-            // Applique la couleur exacte au texte général ET au parapluie
             document.body.style.color = finalColor;
             document.getElementById('umbrella-btn').style.color = finalColor;
+            document.getElementById('gear-btn').style.color = finalColor;
         });
 
         // 3. Météo
