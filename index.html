@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEST LIVE LED - Horloge & Liste</title>
+    <title>Horloge & Liste Premium</title>
     <style>
         body {
             margin: 0;
@@ -49,6 +49,7 @@
             overflow-y: auto;
             border-left: 1px solid rgba(255, 255, 255, 0.1);
             display: none;
+            transition: all 0.4s ease;
         }
 
         #date { font-size: 2.5vw; opacity: 0.6; margin-bottom: 1vh; text-transform: capitalize; }
@@ -65,25 +66,68 @@
         .todo-item.fade-out { opacity: 0; transform: translateX(30px); height: 0; margin: 0; overflow: hidden; }
         .todo-checkbox { width: 1.6vw; height: 1.6vw; cursor: pointer; }
 
-        /* Style de la LED - Ancrée par rapport à la zone Horloge désormais */
-        #notification-led {
+        /* Onglet latéral style Samsung */
+        #side-handle {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 90px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px 0 0 8px;
+            display: none; /* Affiché uniquement s'il y a des tâches */
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 30;
+            transition: background 0.2s, right 0.4s ease;
+        }
+        #side-handle:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        #side-handle::after {
+            content: "‹";
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        #side-handle.open::after {
+            content: "›";
+        }
+
+        /* Conteneur des LEDs en haut à droite */
+        #led-container {
             position: absolute;
             top: 25px;
             right: 25px;
+            display: flex;
+            gap: 15px;
+            z-index: 20;
+        }
+
+        /* Style des LEDs (30px x 30px) */
+        .led {
             width: 30px;
             height: 30px;
             border-radius: 50%;
             background-color: transparent;
             box-shadow: none;
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            z-index: 20;
-        }
-        #notification-led.active {
-            background-color: #ff3b30;
-            box-shadow: 0 0 10px #ff3b30, 0 0 20px #ff3b30;
         }
 
-        /* Contrôles ancrés en bas à droite de la zone horloge */
+        /* LED Rouge Active */
+        #notification-led.active {
+            background-color: #ff3b30;
+            box-shadow: 0 0 15px #ff3b30, 0 0 25px #ff3b30;
+        }
+
+        /* LED Jaune Active */
+        #task-led.active {
+            background-color: #ffcc00;
+            box-shadow: 0 0 15px #ffcc00, 0 0 25px #ffcc00;
+        }
+
+        /* Contrôles bas droite */
         #controls-container { 
             position: absolute; 
             bottom: 25px; 
@@ -119,14 +163,19 @@
 <body>
 
     <div id="main-container">
-        <!-- La LED est maintenant déplacée à l'intérieur de clock-zone -->
         <div id="clock-zone" onclick="toggleFullscreen()">
-            <div id="notification-led"></div>
+            
+            <div id="side-handle" onclick="toggleTodoListPanel(event)"></div>
+
+            <div id="led-container" onclick="event.stopPropagation()">
+                <div id="task-led" class="led" title="Tâches en attente"></div>
+                <div id="notification-led" class="led" title="Alerte Minuit"></div>
+            </div>
             
             <div id="date">Chargement...</div>
             <div id="clock">00:00</div>
             
-            <div id="controls-container">
+            <div id="controls-container" onclick="event.stopPropagation()">
                 <div id="weather"></div>
                 <span id="umbrella-btn" class="control-btn" title="Afficher la météo">&#9730;</span>
                 <span id="gear-btn" class="control-btn" title="Changer la couleur">
@@ -145,14 +194,14 @@
         let lastCheckedDayStr = "";
         let hiddenTasks = new Set();
         const weatherDiv = document.getElementById('weather');
-        const controlsContainer = document.getElementById('controls-container');
         
+        // Variables d'état pour la LED Rouge
         let ledDismissed = false;
+        let pageLaunched = false; 
+        let midnightCrossed = false;
 
-        // Empêche le clic sur les contrôles de déclencher le plein écran
-        controlsContainer.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
+        // État du volet latéral
+        let panelManuallyClosed = false;
 
         function updateClockAndTasks() {
             const now = new Date();
@@ -165,35 +214,45 @@
 
             const totalMinutes = hours * 60 + minutes;
             
-            // --- GESTION DE LA LED DE TEST (23h42) ---
-            const led = document.getElementById('notification-led');
-            const isTestRange = (totalMinutes >= (23 * 60 + 42) || totalMinutes < 6 * 60 + 30);
-
-            if (isTestRange) {
-                if (hours === 23 && minutes === 42 && ledDismissed) {
-                    ledDismissed = false;
-                }
-
-                if (!ledDismissed) {
-                    led.classList.add('active');
-                } else {
-                    led.classList.remove('active');
-                }
-            } else {
-                led.classList.remove('active');
-                ledDismissed = false; 
+            // --- GESTION DE LA LED ROUGE (FRANCHISSEMENT DE MINUIT) ---
+            const redLed = document.getElementById('notification-led');
+            
+            if (!pageLaunched) {
+                pageLaunched = true;
+                midnightCrossed = false;
             }
 
-            // Plage horaire de nuit active pour la To-Do List (19h00 - 06h30)
+            if (hours === 0 && minutes === 0) {
+                if (!midnightCrossed) {
+                    midnightCrossed = true;
+                    ledDismissed = false;
+                }
+            }
+
+            if (totalMinutes >= 6 * 60 + 30 && totalMinutes < 19 * 60) {
+                midnightCrossed = false;
+                ledDismissed = false;
+            }
+
+            if (midnightCrossed && !ledDismissed && totalMinutes < 6 * 60 + 30) {
+                redLed.classList.add('active');
+            } else {
+                redLed.classList.remove('active');
+            }
+
+            // Plage horaire active du shift (19h00 - 06h30)
             const isShiftActive = (totalMinutes >= 19 * 60) || (totalMinutes < 6 * 60 + 30);
             
             const todoListDiv = document.getElementById('todo-list');
             const clockZone = document.getElementById('clock-zone');
+            const sideHandle = document.getElementById('side-handle');
 
             if (!isShiftActive) {
                 todoListDiv.style.display = 'none';
                 clockZone.style.flex = "0 0 100%";
+                sideHandle.style.display = 'none';
                 hiddenTasks.clear();
+                document.getElementById('task-led').classList.remove('active');
                 return;
             }
 
@@ -204,6 +263,7 @@
             if (currentDayStr !== lastCheckedDayStr) {
                 hiddenTasks.clear();
                 lastCheckedDayStr = currentDayStr;
+                panelManuallyClosed = false; 
             }
 
             const dayOfWeek = referenceDate.getDay();
@@ -224,11 +284,23 @@
             if (isFirstFriday) tasks.push("B1 : Contrôle des BAES");
 
             const visibleTasks = tasks.filter(task => !hiddenTasks.has(task));
+            const taskLed = document.getElementById('task-led');
 
+            // --- GESTION DE LA LED JAUNE ET DU PANNEAU LATÉRAL ---
             if (visibleTasks.length > 0) {
-                todoListDiv.style.display = 'block';
-                clockZone.style.flex = "0 0 66.66%";
-                
+                taskLed.classList.add('active');
+                sideHandle.style.display = 'flex'; // On affiche l'onglet Samsung
+
+                if (!panelManuallyClosed) {
+                    todoListDiv.style.display = 'block';
+                    clockZone.style.flex = "0 0 66.66%";
+                    sideHandle.classList.add('open');
+                } else {
+                    todoListDiv.style.display = 'none';
+                    clockZone.style.flex = "0 0 100%";
+                    sideHandle.classList.remove('open');
+                }
+
                 const container = document.getElementById('todo-items-container');
                 const activeItems = container.querySelectorAll('.todo-item:not(.fade-out)');
                 if (activeItems.length !== visibleTasks.length) {
@@ -240,86 +312,27 @@
                     `).join('');
                 }
             } else {
+                taskLed.classList.remove('active');
+                sideHandle.style.display = 'none';
                 todoListDiv.style.display = 'none';
                 clockZone.style.flex = "0 0 100%";
             }
         }
 
-        // Touche Espace pour éteindre la LED
+        // Action sur l'onglet Samsung
+        function toggleTodoListPanel(e) {
+            if (e) e.stopPropagation(); // Évite de basculer le plein écran lors du clic sur l'onglet
+            
+            const todoListDiv = document.getElementById('todo-list');
+            if (todoListDiv.style.display === 'block') {
+                panelManuallyClosed = true;
+            } else {
+                panelManuallyClosed = false;
+            }
+            updateClockAndTasks();
+        }
+
+        // Raccourcis clavier (Espace = éteindre rouge / Entrée = masquer/ouvrir volet)
         window.addEventListener('keydown', function(e) {
             if (e.code === 'Space' || e.key === ' ') {
-                const led = document.getElementById('notification-led');
-                if (led.classList.contains('active')) {
-                    e.preventDefault();
-                    ledDismissed = true;
-                    led.classList.remove('active');
-                }
-            }
-        });
-
-        function checkTask(checkbox) {
-            const item = checkbox.closest('.todo-item');
-            hiddenTasks.add(item.getAttribute('data-task'));
-            item.classList.add('fade-out');
-            setTimeout(updateClockAndTasks, 400);
-        }
-
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
-            else document.exitFullscreen();
-        }
-
-        async function updateWeather() {
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=49.8942&longitude=2.2957&hourly=precipitation_probability&forecast_days=2');
-                const data = await res.json();
-                const currentHour = new Date().getHours();
-                let htmlContent = '';
-                for (let i = 0; i <= 12; i++) {
-                    const targetHour = (currentHour + i) % 24;
-                    const proba = data.hourly.precipitation_probability[currentHour + i];
-                    htmlContent += `<div class="weather-column"><span class="weather-hour">${targetHour}h</span><span class="weather-proba">${proba}%</span></div>`;
-                }
-                weatherDiv.innerHTML = htmlContent;
-            } catch (err) {
-                weatherDiv.textContent = 'Météo indisponible';
-            }
-        }
-
-        document.getElementById('umbrella-btn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (weatherDiv.style.display === 'flex') {
-                weatherDiv.style.display = 'none';
-            } else {
-                weatherDiv.style.display = 'flex';
-                updateWeather();
-            }
-        });
-
-        document.getElementById('color-picker').addEventListener('input', (e) => {
-            const col = e.target.value;
-            document.body.style.backgroundColor = col;
-            const brightness = (parseInt(col.substr(1,2),16)*299 + parseInt(col.substr(3,2),16)*587 + parseInt(col.substr(5,2),16)*114)/1000;
-            const finalColor = brightness > 128 ? '#000000' : '#ffffff';
-            document.body.style.color = finalColor;
-            document.getElementById('umbrella-btn').style.color = finalColor;
-            document.getElementById('gear-btn').style.color = finalColor;
-        });
-
-        // Anti-veille
-        let wakeLock = null;
-        async function requestWakeLock() {
-            if ('wakeLock' in navigator) {
-                try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
-            }
-        }
-        requestWakeLock();
-        document.addEventListener('visibilitychange', () => {
-            if (wakeLock !== null && document.visibilityState === 'visible') requestWakeLock();
-        });
-
-        setInterval(updateClockAndTasks, 1000);
-        updateClockAndTasks();
-    </script>
-</body>
-</html>
+                const led = document.getElementById('notification-
