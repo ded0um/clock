@@ -42,39 +42,24 @@
             font-size: 16vw;
             font-weight: 700;
         }
-        .seconds {
-            font-size: 8vw;
-            opacity: 0.3;
-            margin-left: 15px;
-        }
 
         /* Style de la Liste des Choses à Faire */
         #todo-list {
             margin-top: 3vh;
             background: rgba(255, 255, 255, 0.05);
-            padding: 15px 25px;
+            padding: 20px 30px;
             border-radius: 10px;
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             max-width: 80%;
-            display: none; /* Caché par défaut, géré par le script */
-        }
-        #todo-title {
-            font-size: 1.5vw;
-            font-weight: bold;
-            margin-bottom: 10px;
-            opacity: 0.9;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 5px;
+            display: none;
         }
         .todo-item {
             font-size: 1.8vw;
-            margin: 5px 0;
+            margin: 8px 0;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         #controls-container {
@@ -145,10 +130,9 @@
 
     <div id="click-zone">
         <div id="date">Chargement date...</div>
-        <div id="clock">00:00<span class="seconds">:00</span></div>
+        <div id="clock">00:00</div>
         
         <div id="todo-list">
-            <div id="todo-title">📋 Tâches de la ronde</div>
             <div id="todo-items-container"></div>
         </div>
     </div>
@@ -163,7 +147,7 @@
     </div>
 
     <script>
-        // 1. Gestion de l'horloge et de la To-Do List dynamique
+        // 1. Gestion de l'horloge (Heures et Minutes) et de la To-Do List
         function updateClockAndTasks() {
             const now = new Date();
             const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
@@ -174,8 +158,9 @@
 
             const h = String(hours).padStart(2, '0');
             const m = String(minutes).padStart(2, '0');
-            const s = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('clock').innerHTML = h + ':' + m + '<span class="seconds">:' + s + '</span>';
+            
+            // Affichage épuré : uniquement Heures:Minutes
+            document.getElementById('clock').innerHTML = h + ':' + m;
 
             // --- GESTION DE LA TO-DO LIST (Shift de 19h00 à 06h30) ---
             const totalMinutes = hours * 60 + minutes;
@@ -186,21 +171,17 @@
 
             if (!isShiftActive) {
                 todoListDiv.style.display = 'none';
-                return; // On arrête là si on n'est pas dans le créneau horaire
+                return;
             }
 
-            // Pour les calculs de date liés au shift de nuit :
-            // Si on est entre 00h00 et 06h30, la ronde a commencé la veille (ex: la ronde du lundi soir continue le mardi matin).
-            // On se base donc sur la date du début de la ronde.
             let referenceDate = new Date(now);
             if (hours < 12) {
                 referenceDate.setDate(referenceDate.getDate() - 1);
             }
 
-            const dayOfWeek = referenceDate.getDay(); // 1 = Lundi, 2 = Mardi, etc.
+            const dayOfWeek = referenceDate.getDay(); 
             const dateNum = referenceDate.getDate();
 
-            // Calculer si la date de référence correspond au 1er Lundi, 1er Mardi, etc. du mois
             const isFirstMonday = (dayOfWeek === 1 && dateNum <= 7);
             const isFirstTuesday = (dayOfWeek === 2 && dateNum <= 7);
             const isFirstWednesday = (dayOfWeek === 3 && dateNum <= 7);
@@ -219,19 +200,19 @@
                 tasks.push("Contrôle DM");
             }
 
-            // Règle 3 : Mardi qui suit le 1er lundi (= le 1er mardi du mois)
+            // Règle 3 : Mardi qui suit le 1er lundi
             if (isFirstTuesday) {
                 tasks.push("Compteurs paratonnerre");
                 tasks.push("Douches et Rince oeil");
                 tasks.push("BAES");
             }
 
-            // Règle 4 : Mercredi qui suit le 1er lundi (= le 1er mercredi du mois)
+            // Règle 4 : Mercredi qui suit le 1er lundi
             if (isFirstWednesday) {
                 tasks.push("Contrôle des calles et chandelles");
             }
 
-            // Règle 5 : Jeudi qui suit le 1er lundi (= le 1er jeudi du mois)
+            // Règle 5 : Jeudi qui suit le 1er lundi
             if (isFirstThursday) {
                 tasks.push("Éclairage entrepôt");
             }
@@ -241,7 +222,7 @@
                 todoListDiv.style.display = 'block';
                 container.innerHTML = tasks.map(task => `<div class="todo-item">⬜ ${task}</div>`).join('');
             } else {
-                todoListDiv.style.display = 'none'; // Pas de tâche spécifique ce soir-là
+                todoListDiv.style.display = 'none';
             }
         }
         setInterval(updateClockAndTasks, 1000);
@@ -298,6 +279,7 @@
             if (weatherDiv.style.display === 'flex') {
                 weatherDiv.style.display = 'none';
             } else {
+                weatherDiv.style.display === 'flex';
                 weatherDiv.style.display = 'flex';
                 updateWeather();
             }
