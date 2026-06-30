@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horloge & Liste</title>
+    <title>TEST LIVE LED - Horloge & Liste</title>
     <style>
         body {
             margin: 0;
@@ -63,7 +63,7 @@
         .todo-item.fade-out { opacity: 0; transform: translateX(30px); height: 0; margin: 0; overflow: hidden; }
         .todo-checkbox { width: 1.6vw; height: 1.6vw; cursor: pointer; }
 
-        /* Style de la LED de notification (discrète en haut à droite) */
+        /* Style de la LED de notification */
         #notification-led {
             position: absolute;
             top: 25px;
@@ -71,14 +71,14 @@
             width: 15px;
             height: 15px;
             border-radius: 50%;
-            background-color: transparent; /* Éteinte par défaut */
+            background-color: transparent;
             box-shadow: none;
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
             z-index: 20;
         }
         #notification-led.active {
-            background-color: #ff3b30; /* Rouge LED vif */
-            box-shadow: 0 0 10px #ff3b30, 0 0 20px #ff3b30; /* Effet de halo lumineux */
+            background-color: #ff3b30;
+            box-shadow: 0 0 10px #ff3b30, 0 0 20px #ff3b30;
         }
 
         /* Contrôles en bas à droite */
@@ -142,7 +142,6 @@
         let hiddenTasks = new Set();
         const weatherDiv = document.getElementById('weather');
         
-        // Variables pour la gestion de la LED de minuit
         let ledDismissed = false;
 
         function updateClockAndTasks() {
@@ -155,166 +154,26 @@
 
             const totalMinutes = hours * 60 + minutes;
             
-            // --- GESTION DE LA LED DE MINUIT ---
+            // --- GESTION DE LA LED DE TEST ---
             const led = document.getElementById('notification-led');
             
-            // Plage horaire entre Minuit pile (00h00) et la fin de garde (06h30)
-            const isMidnightRange = (totalMinutes >= 0 && totalMinutes < 6 * 60 + 30);
+            // La LED est active uniquement entre 23h30 et 06h30
+            const isTestRange = (totalMinutes >= (23 * 60 + 30) || totalMinutes < 6 * 60 + 30);
 
-            if (isMidnightRange) {
-                // Si on arrive à minuit pile, on réinitialise l'extinction manuelle pour la nouvelle nuit
-                if (hours === 23 && minutes === 25 && totalMinutes === 23 * 60 + 25 && ledDismissed) {
+            if (isTestRange) {
+                // Réinitialisation de la LED à 23h30 pile
+                if (hours === 23 && minutes === 30 && ledDismissed) {
                     ledDismissed = false;
                 }
 
-                // On allume la LED si elle n'a pas été éteinte manuellement avec Espace
+                // Si pas encore éteinte manuellement, elle s'allume
                 if (!ledDismissed) {
                     led.classList.add('active');
                 } else {
                     led.classList.remove('active');
                 }
             } else {
-                // En dehors de la plage (journée / début de shift), la LED reste éteinte et prête
+                // S'éteint automatiquement à 06h30 (ou reste éteinte en dehors de la plage)
                 led.classList.remove('active');
                 ledDismissed = false; 
             }
-
-            // Plage horaire de nuit active pour la To-Do List (19h00 - 06h30)
-            const isShiftActive = (totalMinutes >= 19 * 60) || (totalMinutes < 6 * 60 + 30);
-            
-            const todoListDiv = document.getElementById('todo-list');
-            const clockZone = document.getElementById('clock-zone');
-
-            if (!isShiftActive) {
-                todoListDiv.style.display = 'none';
-                clockZone.style.flex = "0 0 100%";
-                hiddenTasks.clear();
-                return;
-            }
-
-            let referenceDate = new Date(now);
-            if (hours < 12) referenceDate.setDate(referenceDate.getDate() - 1);
-            
-            const currentDayStr = referenceDate.toDateString();
-            if (currentDayStr !== lastCheckedDayStr) {
-                hiddenTasks.clear();
-                lastCheckedDayStr = currentDayStr;
-            }
-
-            const dayOfWeek = referenceDate.getDay();
-            const dateNum = referenceDate.getDate();
-            const isFirstMonday = (dayOfWeek === 1 && dateNum <= 7);
-            const isFirstTuesday = (dayOfWeek === 2 && dateNum <= 7);
-            const isFirstWednesday = (dayOfWeek === 3 && dateNum <= 7);
-            const isFirstThursday = (dayOfWeek === 4 && dateNum <= 7);
-            const isFirstFriday = (dayOfWeek === 5 && dateNum <= 7);
-
-            let tasks = [];
-            
-            if (dayOfWeek === 2) tasks.push("B1 : Contrôle des vannes de postes");
-            if (isFirstMonday) { tasks.push("B1 : Contrôle des IS"); tasks.push("B1 : Contrôle des DM"); }
-            if (isFirstTuesday) { tasks.push("B1 : Contrôle des compteurs paratonnerre"); tasks.push("B1 : Contrôle des douches et rince-œil"); tasks.push("B2 : Contrôle des compteurs paratonnerre"); }
-            if (isFirstWednesday) tasks.push("B1 : Contrôle des cales et chandelles");
-            if (isFirstThursday) tasks.push("B1 : Contrôle des éclairages entrepôt");
-            if (isFirstFriday) tasks.push("B1 : Contrôle des BAES");
-
-            const visibleTasks = tasks.filter(task => !hiddenTasks.has(task));
-
-            if (visibleTasks.length > 0) {
-                todoListDiv.style.display = 'block';
-                clockZone.style.flex = "0 0 66.66%";
-                
-                const container = document.getElementById('todo-items-container');
-                const activeItems = container.querySelectorAll('.todo-item:not(.fade-out)');
-                if (activeItems.length !== visibleTasks.length) {
-                    container.innerHTML = visibleTasks.map(task => `
-                        <div class="todo-item" data-task="${task}">
-                            <input type="checkbox" class="todo-checkbox" onchange="checkTask(this)">
-                            <span>${task}</span>
-                        </div>
-                    `).join('');
-                }
-            } else {
-                todoListDiv.style.display = 'none';
-                clockZone.style.flex = "0 0 100%";
-            }
-        }
-
-        // --- ÉCOUTEUR DU CLAVIER (Touche Espace pour éteindre la LED) ---
-        window.addEventListener('keydown', function(e) {
-            if (e.code === 'Space' || e.key === ' ') {
-                const led = document.getElementById('notification-led');
-                if (led.classList.contains('active')) {
-                    e.preventDefault(); // Évite que la page descende si la liste a un scroll
-                    ledDismissed = true;
-                    led.classList.remove('active');
-                }
-            }
-        });
-
-        function checkTask(checkbox) {
-            const item = checkbox.closest('.todo-item');
-            hiddenTasks.add(item.getAttribute('data-task'));
-            item.classList.add('fade-out');
-            setTimeout(updateClockAndTasks, 400);
-        }
-
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
-            else document.exitFullscreen();
-        }
-
-        async function updateWeather() {
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=49.8942&longitude=2.2957&hourly=precipitation_probability&forecast_days=2');
-                const data = await res.json();
-                const currentHour = new Date().getHours();
-                let htmlContent = '';
-                for (let i = 0; i <= 12; i++) {
-                    const targetHour = (currentHour + i) % 24;
-                    const proba = data.hourly.precipitation_probability[currentHour + i];
-                    htmlContent += `<div class="weather-column"><span class="weather-hour">${targetHour}h</span><span class="weather-proba">${proba}%</span></div>`;
-                }
-                weatherDiv.innerHTML = htmlContent;
-            } catch (err) {
-                weatherDiv.textContent = 'Météo indisponible';
-            }
-        }
-
-        document.getElementById('umbrella-btn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (weatherDiv.style.display === 'flex') {
-                weatherDiv.style.display = 'none';
-            } else {
-                weatherDiv.style.display = 'flex';
-                updateWeather();
-            }
-        });
-
-        document.getElementById('color-picker').addEventListener('input', (e) => {
-            const col = e.target.value;
-            document.body.style.backgroundColor = col;
-            const brightness = (parseInt(col.substr(1,2),16)*299 + parseInt(col.substr(3,2),16)*587 + parseInt(col.substr(5,2),16)*114)/1000;
-            const finalColor = brightness > 128 ? '#000000' : '#ffffff';
-            document.body.style.color = finalColor;
-            document.getElementById('umbrella-btn').style.color = finalColor;
-            document.getElementById('gear-btn').style.color = finalColor;
-        });
-
-        // Anti-veille
-        let wakeLock = null;
-        async function requestWakeLock() {
-            if ('wakeLock' in navigator) {
-                try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
-            }
-        }
-        requestWakeLock();
-        document.addEventListener('visibilitychange', () => {
-            if (wakeLock !== null && document.visibilityState === 'visible') requestWakeLock();
-        });
-
-        setInterval(updateClockAndTasks, 1000);
-        updateClockAndTasks();
-    </script>
-</body>
-</html>
