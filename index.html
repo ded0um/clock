@@ -61,14 +61,33 @@
         #controls-container:hover {
             opacity: 0.9;
         }
+        
+        /* Style du tableau météo pour les 13 prochaines heures */
         #weather {
-            font-size: 18px;
-            opacity: 0.7;
             display: none;
-            white-space: nowrap;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
         }
+        .weather-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 14px;
+        }
+        .weather-hour {
+            font-weight: bold;
+            opacity: 0.5;
+            margin-bottom: 2px;
+        }
+        .weather-proba {
+            opacity: 0.9;
+        }
+        
         .control-btn {
-            font-size: 24px; /* Ajusté légèrement pour uniformiser la taille brute */
+            font-size: 24px;
             cursor: pointer;
             user-select: none;
             position: relative;
@@ -101,7 +120,8 @@
     </div>
 
     <div id="controls-container">
-        <div id="weather">Pluie: --%</div>
+        <div id="weather"></div>
+        
         <span id="umbrella-btn" class="control-btn" title="Afficher la météo">&#9730;</span>
         <span id="gear-btn" class="control-btn" title="Changer la couleur">
             &#9881;
@@ -142,27 +162,42 @@
             document.getElementById('gear-btn').style.color = finalColor;
         });
 
-        // 3. Météo
+        // 3. Météo Prévisionnelle (Heure actuelle + 12 heures suivantes)
         const weatherDiv = document.getElementById('weather');
         async function updateWeather() {
             try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=49.8942&longitude=2.2957&hourly=precipitation_probability&forecast_days=1');
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=49.8942&longitude=2.2957&hourly=precipitation_probability&forecast_days=2');
                 const data = await res.json();
-                const hour = new Date().getHours();
-                const proba = data.hourly.precipitation_probability[hour];
-                weatherDiv.textContent = 'Pluie : ' + proba + '%';
+                
+                const currentHour = new Date().getHours();
+                let htmlContent = '';
+                
+                // Boucle pour générer l'heure actuelle (0) et les 12 heures suivantes (jusqu'à 12)
+                for (let i = 0; i <= 12; i++) {
+                    const targetHour = (currentHour + i) % 24;
+                    const proba = data.hourly.precipitation_probability[currentHour + i];
+                    
+                    htmlContent += `
+                        <div class="weather-column">
+                            <span class="weather-hour">${targetHour}h</span>
+                            <span class="weather-proba">${proba}%</span>
+                        </div>
+                    `;
+                }
+                
+                weatherDiv.innerHTML = htmlContent;
             } catch (err) {
                 weatherDiv.textContent = 'Météo indisponible';
             }
         }
 
-        // Clic sur le bouton parapluie
+        // Clic sur le bouton parapluie (Flex au lieu de Block pour aligner les colonnes)
         document.getElementById('umbrella-btn').addEventListener('click', function(e) {
             e.stopPropagation();
-            if (weatherDiv.style.display === 'block') {
+            if (weatherDiv.style.display === 'flex') {
                 weatherDiv.style.display = 'none';
             } else {
-                weatherDiv.style.display = 'block';
+                weatherDiv.style.display = 'flex';
                 updateWeather();
             }
         });
