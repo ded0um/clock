@@ -29,12 +29,14 @@
         #clock-zone {
             flex: 0 0 100%;
             width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             cursor: pointer;
             transition: flex 0.4s ease;
+            position: relative; /* Permet d'ancrer les boutons à l'intérieur */
         }
 
         /* Partie Liste (1/3) */
@@ -81,7 +83,7 @@
             box-shadow: 0 0 10px #ff3b30, 0 0 20px #ff3b30;
         }
 
-        /* Contrôles en bas à droite */
+        /* Contrôles ancrés en bas à droite de la zone horloge */
         #controls-container { 
             position: absolute; 
             bottom: 25px; 
@@ -110,6 +112,8 @@
 
         .control-btn { font-size: 24px; cursor: pointer; width: 35px; height: 35px; text-align: center; line-height: 35px; color: inherit; position: relative; display: inline-block; }
         #color-picker { opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; }
+        
+        /* Cache les boutons uniquement quand l'horloge passe en plein écran natif */
         :fullscreen #controls-container { display: none; }
     </style>
 </head>
@@ -121,20 +125,20 @@
         <div id="clock-zone" onclick="toggleFullscreen()">
             <div id="date">Chargement...</div>
             <div id="clock">00:00</div>
+            
+            <div id="controls-container" onclick="event.stopPropagation()">
+                <div id="weather"></div>
+                <span id="umbrella-btn" class="control-btn" title="Afficher la météo">&#9730;</span>
+                <span id="gear-btn" class="control-btn" title="Changer la couleur">
+                    &#9881;
+                    <input type="color" id="color-picker" value="#000000">
+                </span>
+            </div>
         </div>
 
         <div id="todo-list">
             <div id="todo-items-container"></div>
         </div>
-    </div>
-
-    <div id="controls-container">
-        <div id="weather"></div>
-        <span id="umbrella-btn" class="control-btn" title="Afficher la météo">&#9730;</span>
-        <span id="gear-btn" class="control-btn" title="Changer la couleur">
-            &#9881;
-            <input type="color" id="color-picker" value="#000000">
-        </span>
     </div>
 
     <script>
@@ -146,6 +150,7 @@
 
         function updateClockAndTasks() {
             const now = new Date();
+            
             document.getElementById('date').textContent = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
             
             const hours = now.getHours();
@@ -154,26 +159,87 @@
 
             const totalMinutes = hours * 60 + minutes;
             
-            // --- GESTION DE LA LED DE TEST ---
+            // --- GESTION DE LA LED DE TEST (23h35) ---
             const led = document.getElementById('notification-led');
             
-            // La LED est active uniquement entre 23h30 et 06h30
-            const isTestRange = (totalMinutes >= (23 * 60 + 30) || totalMinutes < 6 * 60 + 30);
+            // La LED s'active entre 23h35 et 06h30
+            const isTestRange = (totalMinutes >= (23 * 60 + 35) || totalMinutes < 6 * 60 + 30);
 
             if (isTestRange) {
-                // Réinitialisation de la LED à 23h30 pile
-                if (hours === 23 && minutes === 30 && ledDismissed) {
+                if (hours === 23 && minutes === 35 && ledDismissed) {
                     ledDismissed = false;
                 }
 
-                // Si pas encore éteinte manuellement, elle s'allume
                 if (!ledDismissed) {
                     led.classList.add('active');
                 } else {
                     led.classList.remove('active');
                 }
             } else {
-                // S'éteint automatiquement à 06h30 (ou reste éteinte en dehors de la plage)
                 led.classList.remove('active');
                 ledDismissed = false; 
             }
+
+            // Plage horaire de nuit active pour la To-Do List (19h00 - 06h30)
+            const isShiftActive = (totalMinutes >= 19 * 60) || (totalMinutes < 6 * 60 + 30);
+            
+            const todoListDiv = document.getElementById('todo-list');
+            const clockZone = document.getElementById('clock-zone');
+
+            if (!isShiftActive) {
+                todoListDiv.style.display = 'none';
+                clockZone.style.flex = "0 0 100%";
+                hiddenTasks.clear();
+                return;
+            }
+
+            let referenceDate = new Date(now);
+            if (hours < 12) referenceDate.setDate(referenceDate.getDate() - 1);
+            
+            const currentDayStr = referenceDate.toDateString();
+            if (currentDayStr !== lastCheckedDayStr) {
+                hiddenTasks.clear();
+                lastCheckedDayStr = currentDayStr;
+            }
+
+            const dayOfWeek = referenceDate.getDay();
+            const dateNum = referenceDate.getDate();
+            const isFirstMonday = (dayOfWeek === 1 && dateNum <= 7);
+            const isFirstTuesday = (dayOfWeek === 2 && dateNum <= 7);
+            const isFirstWednesday = (dayOfWeek === 3 && dateNum <= 7);
+            const isFirstThursday = (dayOfWeek === 4 && dateNum <= 7);
+            const isFirstFriday = (dayOfWeek === 5 && dateNum <= 7);
+
+            let tasks = [];
+            
+            if (dayOfWeek === 2) tasks.push("B1 : Contrôle des vannes de postes");
+            if (isFirstMonday) { tasks.push("B1 : Contrôle des IS"); tasks.push("B1 : Contrôle des DM"); }
+            if (isFirstTuesday) { tasks.push("B1 : Contrôle des compteurs paratonnerre"); tasks.push("B1 : Contrôle des douches et rince-œil"); tasks.push("B2 : Contrôle des compteurs paratonnerre"); }
+            if (isFirstWednesday) tasks.push("B1 : Contrôle des cales et chandelles");
+            if (isFirstThursday) tasks.push("B1 : Contrôle des éclairages entrepôt");
+            if (isFirstFriday) tasks.push("B1 : Contrôle des BAES");
+
+            const visibleTasks = tasks.filter(task => !hiddenTasks.has(task));
+
+            if (visibleTasks.length > 0) {
+                todoListDiv.style.display = 'block';
+                clockZone.style.flex = "0 0 66.66%";
+                
+                const container = document.getElementById('todo-items-container');
+                const activeItems = container.querySelectorAll('.todo-item:not(.fade-out)');
+                if (activeItems.length !== visibleTasks.length) {
+                    container.innerHTML = visibleTasks.map(task => `
+                        <div class="todo-item" data-task="${task}">
+                            <input type="checkbox" class="todo-checkbox" onchange="checkTask(this)">
+                            <span>${task}</span>
+                        </div>
+                    `).join('');
+                }
+            } else {
+                todoListDiv.style.display = 'none';
+                clockZone.style.flex = "0 0 100%";
+            }
+        }
+
+        // Touche Espace pour éteindre la LED
+        window.addEventListener('keydown
