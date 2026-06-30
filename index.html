@@ -17,7 +17,7 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Conteneur principal qui sépare l'écran en deux */
+        /* Conteneur principal */
         #main-container {
             display: flex;
             width: 100%;
@@ -25,45 +25,74 @@
             align-items: center;
         }
 
-        /* Partie Horloge (2/3) */
+        /* Partie Horloge : par défaut au centre (100%), passera à 66% en JS si la liste s'affiche */
         #clock-zone {
-            flex: 0 0 66.66%;
+            flex: 0 0 100%;
+            width: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            transition: flex 0.4s ease;
         }
 
         /* Partie Liste (1/3) */
         #todo-list {
             flex: 0 0 33.33%;
-            padding: 20px;
+            padding: 30px;
             background: rgba(255, 255, 255, 0.05);
             height: 100%;
+            box-sizing: border-box;
             overflow-y: auto;
             border-left: 1px solid rgba(255, 255, 255, 0.1);
-            display: none;
+            display: none; /* Géré par le JS */
         }
 
-        #date { font-size: 2vw; opacity: 0.6; margin-bottom: 1vh; text-transform: capitalize; }
-        #clock { font-size: 12vw; font-weight: 700; }
+        #date { font-size: 2.5vw; opacity: 0.6; margin-bottom: 1vh; text-transform: capitalize; }
+        #clock { font-size: 13vw; font-weight: 700; }
 
         .todo-item {
             font-size: 1.5vw;
-            margin: 15px 0;
+            margin: 20px 0;
             display: flex;
             align-items: center;
             gap: 15px;
             transition: all 0.4s ease;
         }
-        .todo-item.fade-out { opacity: 0; transform: translateX(20px); height: 0; overflow: hidden; }
-        .todo-checkbox { width: 1.5vw; height: 1.5vw; cursor: pointer; }
+        .todo-item.fade-out { opacity: 0; transform: translateX(30px); height: 0; margin: 0; overflow: hidden; }
+        .todo-checkbox { width: 1.6vw; height: 1.6vw; cursor: pointer; }
 
-        /* Contrôles */
-        #controls-container { position: absolute; bottom: 25px; right: 25px; z-index: 10; display: flex; align-items: center; gap: 20px; opacity: 0.5; }
-        .control-btn { font-size: 24px; cursor: pointer; width: 35px; height: 35px; text-align: center; }
-        #color-picker { opacity: 0; position: absolute; width: 35px; height: 35px; cursor: pointer; }
+        /* Contrôles en bas à droite */
+        #controls-container { 
+            position: absolute; 
+            bottom: 25px; 
+            right: 25px; 
+            z-index: 10; 
+            display: flex; 
+            align-items: center; 
+            gap: 20px; 
+            opacity: 0.5; 
+            transition: opacity 0.2s;
+        }
+        #controls-container:hover { opacity: 0.9; }
+
+        #weather {
+            display: none;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .weather-column { display: flex; flex-direction: column; align-items: center; font-size: 14px; }
+        .weather-hour { font-weight: bold; opacity: 0.5; margin-bottom: 2px; }
+        .weather-proba { opacity: 0.9; }
+
+        .control-btn { font-size: 24px; cursor: pointer; width: 35px; height: 35px; text-align: center; line-height: 35px; color: inherit; position: relative; display: inline-block; }
+        #color-picker { opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; }
+        :fullscreen #controls-container { display: none; }
     </style>
 </head>
 <body>
@@ -75,35 +104,45 @@
         </div>
 
         <div id="todo-list">
-            <h2 style="font-size: 1.8vw;">À faire :</h2>
             <div id="todo-items-container"></div>
         </div>
     </div>
 
     <div id="controls-container">
-        <span id="gear-btn" class="control-btn">&#9881;<input type="color" id="color-picker" value="#000000"></span>
+        <div id="weather"></div>
+        <span id="umbrella-btn" class="control-btn" title="Afficher la météo">&#9730;</span>
+        <span id="gear-btn" class="control-btn" title="Changer la couleur">
+            &#9881;
+            <input type="color" id="color-picker" value="#000000">
+        </span>
     </div>
 
     <script>
         let lastCheckedDayStr = "";
         let hiddenTasks = new Set();
+        const weatherDiv = document.getElementById('weather');
 
         function updateClockAndTasks() {
             const now = new Date();
-            document.getElementById('date').textContent = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+            document.getElementById('date').textContent = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
             document.getElementById('clock').innerHTML = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
 
-            const totalMinutes = now.getHours() * 60 + now.getMinutes();
+            const hours = now.getHours();
+            const totalMinutes = hours * 60 + now.getMinutes();
             const isShiftActive = (totalMinutes >= 19 * 60) || (totalMinutes < 6 * 60 + 30);
+            
             const todoListDiv = document.getElementById('todo-list');
+            const clockZone = document.getElementById('clock-zone');
 
+            // Si hors shift, on masque tout et on centre l'horloge
             if (!isShiftActive) {
                 todoListDiv.style.display = 'none';
+                clockZone.style.flex = "0 0 100%";
                 return;
             }
 
             let referenceDate = new Date(now);
-            if (now.getHours() < 12) referenceDate.setDate(referenceDate.getDate() - 1);
+            if (hours < 12) referenceDate.setDate(referenceDate.getDate() - 1);
             
             const currentDayStr = referenceDate.toDateString();
             if (currentDayStr !== lastCheckedDayStr) {
@@ -111,21 +150,33 @@
                 lastCheckedDayStr = currentDayStr;
             }
 
-            // Logique de tâches
+            // Calcul des jours pour les tâches
+            const dayOfWeek = referenceDate.getDay();
+            const dateNum = referenceDate.getDate();
+            const isFirstMonday = (dayOfWeek === 1 && dateNum <= 7);
+            const isFirstTuesday = (dayOfWeek === 2 && dateNum <= 7);
+            const isFirstWednesday = (dayOfWeek === 3 && dateNum <= 7);
+            const isFirstThursday = (dayOfWeek === 4 && dateNum <= 7);
+            const isFirstFriday = (dayOfWeek === 5 && dateNum <= 7);
+
             let tasks = [];
-            if (referenceDate.getDay() === 2) tasks.push("B1 : Contrôle des vannes de postes");
-            if (referenceDate.getDay() === 1 && referenceDate.getDate() <= 7) { tasks.push("B1 : Contrôle des IS"); tasks.push("B1 : Contrôle des DM"); }
-            if (referenceDate.getDay() === 2 && referenceDate.getDate() <= 7) { tasks.push("B1 : Contrôle des compteurs paratonnerre"); tasks.push("B1 : Contrôle des douches et rince-œil"); tasks.push("B2 : Contrôle des compteurs paratonnerre"); }
-            if (referenceDate.getDay() === 3 && referenceDate.getDate() <= 7) tasks.push("B1 : Contrôle des cales et chandelles");
-            if (referenceDate.getDay() === 4 && referenceDate.getDate() <= 7) tasks.push("B1 : Contrôle des éclairages entrepôt");
-            if (referenceDate.getDay() === 5 && referenceDate.getDate() <= 7) tasks.push("B1 : Contrôle des BAES");
+            if (dayOfWeek === 2) tasks.push("B1 : Contrôle des vannes de postes");
+            if (isFirstMonday) { tasks.push("B1 : Contrôle des IS"); tasks.push("B1 : Contrôle des DM"); }
+            if (isFirstTuesday) { tasks.push("B1 : Contrôle des compteurs paratonnerre"); tasks.push("B1 : Contrôle des douches et rince-œil"); tasks.push("B2 : Contrôle des compteurs paratonnerre"); }
+            if (isFirstWednesday) tasks.push("B1 : Contrôle des cales et chandelles");
+            if (isFirstThursday) tasks.push("B1 : Contrôle des éclairages entrepôt");
+            if (isFirstFriday) tasks.push("B1 : Contrôle des BAES");
 
             const visibleTasks = tasks.filter(task => !hiddenTasks.has(task));
 
+            // Ajustement dynamique des 2 colonnes ou recentrage
             if (visibleTasks.length > 0) {
                 todoListDiv.style.display = 'block';
+                clockZone.style.flex = "0 0 66.66%"; // Décale à gauche (2/3)
+                
                 const container = document.getElementById('todo-items-container');
-                if (container.children.length !== visibleTasks.length) {
+                const activeItems = container.querySelectorAll('.todo-item:not(.fade-out)');
+                if (activeItems.length !== visibleTasks.length) {
                     container.innerHTML = visibleTasks.map(task => `
                         <div class="todo-item" data-task="${task}">
                             <input type="checkbox" class="todo-checkbox" onchange="checkTask(this)">
@@ -135,6 +186,7 @@
                 }
             } else {
                 todoListDiv.style.display = 'none';
+                clockZone.style.flex = "0 0 100%"; // Revient au centre (100%)
             }
         }
 
@@ -146,16 +198,47 @@
         }
 
         function toggleFullscreen() {
-            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
             else document.exitFullscreen();
         }
 
-        // Couleur
+        // Météo open-meteo
+        async function updateWeather() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=49.8942&longitude=2.2957&hourly=precipitation_probability&forecast_days=2');
+                const data = await res.json();
+                const currentHour = new Date().getHours();
+                let htmlContent = '';
+                for (let i = 0; i <= 12; i++) {
+                    const targetHour = (currentHour + i) % 24;
+                    const proba = data.hourly.precipitation_probability[currentHour + i];
+                    htmlContent += `<div class="weather-column"><span class="weather-hour">${targetHour}h</span><span class="weather-proba">${proba}%</span></div>`;
+                }
+                weatherDiv.innerHTML = htmlContent;
+            } catch (err) {
+                weatherDiv.textContent = 'Météo indisponible';
+            }
+        }
+
+        document.getElementById('umbrella-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (weatherDiv.style.display === 'flex') {
+                weatherDiv.style.display = 'none';
+            } else {
+                weatherDiv.style.display = 'flex';
+                updateWeather();
+            }
+        });
+
+        // Couleur dynamique
         document.getElementById('color-picker').addEventListener('input', (e) => {
             const col = e.target.value;
             document.body.style.backgroundColor = col;
             const brightness = (parseInt(col.substr(1,2),16)*299 + parseInt(col.substr(3,2),16)*587 + parseInt(col.substr(5,2),16)*114)/1000;
-            document.body.style.color = brightness > 128 ? '#000000' : '#ffffff';
+            const finalColor = brightness > 128 ? '#000000' : '#ffffff';
+            document.body.style.color = finalColor;
+            document.getElementById('umbrella-btn').style.color = finalColor;
+            document.getElementById('gear-btn').style.color = finalColor;
         });
 
         setInterval(updateClockAndTasks, 1000);
