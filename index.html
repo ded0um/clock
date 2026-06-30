@@ -76,7 +76,7 @@
             height: 90px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 8px 0 0 8px;
-            display: none; /* Affiché uniquement s'il y a des tâches */
+            display: none;
             align-items: center;
             justify-content: center;
             cursor: pointer;
@@ -194,6 +194,7 @@
         let lastCheckedDayStr = "";
         let hiddenTasks = new Set();
         const weatherDiv = document.getElementById('weather');
+        const controlsContainer = document.getElementById('controls-container');
         
         // Variables d'état pour la LED Rouge
         let ledDismissed = false;
@@ -206,6 +207,7 @@
         function updateClockAndTasks() {
             const now = new Date();
             
+            // 1. MISE À JOUR SYSTÉMATIQUE DE L'HORLOGE
             document.getElementById('date').textContent = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
             
             const hours = now.getHours();
@@ -214,7 +216,7 @@
 
             const totalMinutes = hours * 60 + minutes;
             
-            // --- GESTION DE LA LED ROUGE (FRANCHISSEMENT DE MINUIT) ---
+            // 2. GESTION DE LA LED ROUGE (FRANCHISSEMENT DE MINUIT)
             const redLed = document.getElementById('notification-led');
             
             if (!pageLaunched) {
@@ -240,20 +242,22 @@
                 redLed.classList.remove('active');
             }
 
-            // Plage horaire active du shift (19h00 - 06h30)
+            // 3. VÉRIFICATION DU SHIFT POUR LES TÂCHES
             const isShiftActive = (totalMinutes >= 19 * 60) || (totalMinutes < 6 * 60 + 30);
             
             const todoListDiv = document.getElementById('todo-list');
             const clockZone = document.getElementById('clock-zone');
             const sideHandle = document.getElementById('side-handle');
+            const taskLed = document.getElementById('task-led');
 
+            // Si on est hors shift, on nettoie les éléments de la To-Do mais le script a déjà actualisé l'heure
             if (!isShiftActive) {
                 todoListDiv.style.display = 'none';
                 clockZone.style.flex = "0 0 100%";
                 sideHandle.style.display = 'none';
                 hiddenTasks.clear();
-                document.getElementById('task-led').classList.remove('active');
-                return;
+                taskLed.classList.remove('active');
+                return; 
             }
 
             let referenceDate = new Date(now);
@@ -284,12 +288,11 @@
             if (isFirstFriday) tasks.push("B1 : Contrôle des BAES");
 
             const visibleTasks = tasks.filter(task => !hiddenTasks.has(task));
-            const taskLed = document.getElementById('task-led');
 
-            // --- GESTION DE LA LED JAUNE ET DU PANNEAU LATÉRAL ---
+            // 4. GESTION DE LA LED JAUNE ET DU PANNEAU LATÉRAL
             if (visibleTasks.length > 0) {
                 taskLed.classList.add('active');
-                sideHandle.style.display = 'flex'; // On affiche l'onglet Samsung
+                sideHandle.style.display = 'flex';
 
                 if (!panelManuallyClosed) {
                     todoListDiv.style.display = 'block';
@@ -319,10 +322,8 @@
             }
         }
 
-        // Action sur l'onglet Samsung
         function toggleTodoListPanel(e) {
-            if (e) e.stopPropagation(); // Évite de basculer le plein écran lors du clic sur l'onglet
-            
+            if (e) e.stopPropagation();
             const todoListDiv = document.getElementById('todo-list');
             if (todoListDiv.style.display === 'block') {
                 panelManuallyClosed = true;
@@ -332,7 +333,83 @@
             updateClockAndTasks();
         }
 
-        // Raccourcis clavier (Espace = éteindre rouge / Entrée = masquer/ouvrir volet)
         window.addEventListener('keydown', function(e) {
             if (e.code === 'Space' || e.key === ' ') {
-                const led = document.getElementById('notification-
+                const led = document.getElementById('notification-led');
+                if (led.classList.contains('active')) {
+                    e.preventDefault();
+                    ledDismissed = true;
+                    led.classList.remove('active');
+                }
+            }
+            if (e.code === 'Enter' || e.key === 'Enter') {
+                e.preventDefault();
+                toggleTodoListPanel();
+            }
+        });
+
+        function checkTask(checkbox) {
+            const item = checkbox.closest('.todo-item');
+            hiddenTasks.add(item.getAttribute('data-task'));
+            item.classList.add('fade-out');
+            setTimeout(updateClockAndTasks, 400);
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+            else document.exitFullscreen();
+        }
+
+        async function updateWeather() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=49.8942&longitude=2.2957&hourly=precipitation_probability&forecast_days=2');
+                const data = await res.json();
+                const currentHour = new Date().getHours();
+                let htmlContent = '';
+                for (let i = 0; i <= 12; i++) {
+                    const targetHour = (currentHour + i) % 24;
+                    const proba = data.hourly.precipitation_probability[currentHour + i];
+                    htmlContent += `<div class="weather-column"><span class="weather-hour">${targetHour}h</span><span class="weather-proba">${proba}%</span></div>`;
+                }
+                weatherDiv.innerHTML = htmlContent;
+            } catch (err) {
+                weatherDiv.textContent = 'Météo indisponible';
+            }
+        }
+
+        document.getElementById('umbrella-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (weatherDiv.style.display === 'flex') {
+                weatherDiv.style.display = 'none';
+            } else {
+                weatherDiv.style.display = 'flex';
+                updateWeather();
+            }
+        });
+
+        document.getElementById('color-picker').addEventListener('input', (e) => {
+            const col = e.target.value;
+            document.body.style.backgroundColor = col;
+            const brightness = (parseInt(col.substr(1,2),16)*299 + parseInt(col.substr(3,2),16)*587 + parseInt(col.substr(5,2),16)*114)/1000;
+            const finalColor = brightness > 128 ? '#000000' : '#ffffff';
+            document.body.style.color = finalColor;
+            document.getElementById('umbrella-btn').style.color = finalColor;
+            document.getElementById('gear-btn').style.color = finalColor;
+        });
+
+        let wakeLock = null;
+        async function requestWakeLock() {
+            if ('wakeLock' in navigator) {
+                try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
+            }
+        }
+        requestWakeLock();
+        document.addEventListener('visibilitychange', () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') requestWakeLock();
+        });
+
+        setInterval(updateClockAndTasks, 1000);
+        updateClockAndTasks();
+    </script>
+</body>
+</html>
