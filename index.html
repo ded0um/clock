@@ -163,7 +163,7 @@
 
             if (isMidnightRange) {
                 // Si on arrive à minuit pile, on réinitialise l'extinction manuelle pour la nouvelle nuit
-                if (hours === 23 && minutes === 20 && totalMinutes === 0 && ledDismissed) {
+                if (hours === 23 && minutes === 25 && totalMinutes === 23 * 60 + 25 && ledDismissed) {
                     ledDismissed = false;
                 }
 
