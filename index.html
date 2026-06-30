@@ -46,8 +46,37 @@
             font-size: 8vw;
             opacity: 0.3;
             margin-left: 15px;
-            display:none;
         }
+
+        /* Style de la Liste des Choses à Faire */
+        #todo-list {
+            margin-top: 3vh;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 25px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 80%;
+            display: none; /* Caché par défaut, géré par le script */
+        }
+        #todo-title {
+            font-size: 1.5vw;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 5px;
+        }
+        .todo-item {
+            font-size: 1.8vw;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         #controls-container {
             position: absolute;
             bottom: 25px;
@@ -63,7 +92,6 @@
             opacity: 0.9;
         }
         
-        /* Style du tableau météo pour les 13 prochaines heures */
         #weather {
             display: none;
             gap: 12px;
@@ -118,11 +146,15 @@
     <div id="click-zone">
         <div id="date">Chargement date...</div>
         <div id="clock">00:00<span class="seconds">:00</span></div>
+        
+        <div id="todo-list">
+            <div id="todo-title">📋 Tâches de la ronde</div>
+            <div id="todo-items-container"></div>
+        </div>
     </div>
 
     <div id="controls-container">
         <div id="weather"></div>
-        
         <span id="umbrella-btn" class="control-btn" title="Afficher la météo">&#9730;</span>
         <span id="gear-btn" class="control-btn" title="Changer la couleur">
             &#9881;
@@ -131,19 +163,89 @@
     </div>
 
     <script>
-        // 1. Horloge
-        function updateClock() {
+        // 1. Gestion de l'horloge et de la To-Do List dynamique
+        function updateClockAndTasks() {
             const now = new Date();
             const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
             document.getElementById('date').textContent = now.toLocaleDateString('fr-FR', options);
 
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+
+            const h = String(hours).padStart(2, '0');
+            const m = String(minutes).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
             document.getElementById('clock').innerHTML = h + ':' + m + '<span class="seconds">:' + s + '</span>';
+
+            // --- GESTION DE LA TO-DO LIST (Shift de 19h00 à 06h30) ---
+            const totalMinutes = hours * 60 + minutes;
+            const isShiftActive = (totalMinutes >= 19 * 60) || (totalMinutes < 6 * 60 + 30);
+
+            const todoListDiv = document.getElementById('todo-list');
+            const container = document.getElementById('todo-items-container');
+
+            if (!isShiftActive) {
+                todoListDiv.style.display = 'none';
+                return; // On arrête là si on n'est pas dans le créneau horaire
+            }
+
+            // Pour les calculs de date liés au shift de nuit :
+            // Si on est entre 00h00 et 06h30, la ronde a commencé la veille (ex: la ronde du lundi soir continue le mardi matin).
+            // On se base donc sur la date du début de la ronde.
+            let referenceDate = new Date(now);
+            if (hours < 12) {
+                referenceDate.setDate(referenceDate.getDate() - 1);
+            }
+
+            const dayOfWeek = referenceDate.getDay(); // 1 = Lundi, 2 = Mardi, etc.
+            const dateNum = referenceDate.getDate();
+
+            // Calculer si la date de référence correspond au 1er Lundi, 1er Mardi, etc. du mois
+            const isFirstMonday = (dayOfWeek === 1 && dateNum <= 7);
+            const isFirstTuesday = (dayOfWeek === 2 && dateNum <= 7);
+            const isFirstWednesday = (dayOfWeek === 3 && dateNum <= 7);
+            const isFirstThursday = (dayOfWeek === 4 && dateNum <= 7);
+
+            let tasks = [];
+
+            // Règle 1 : TOUS les mardis soir
+            if (dayOfWeek === 2) {
+                tasks.push("Inspection des vannes de postes");
+            }
+
+            // Règle 2 : 1er lundi du mois
+            if (isFirstMonday) {
+                tasks.push("Contrôle Portes issues de secours");
+                tasks.push("Contrôle DM");
+            }
+
+            // Règle 3 : Mardi qui suit le 1er lundi (= le 1er mardi du mois)
+            if (isFirstTuesday) {
+                tasks.push("Compteurs paratonnerre");
+                tasks.push("Douches et Rince oeil");
+                tasks.push("BAES");
+            }
+
+            // Règle 4 : Mercredi qui suit le 1er lundi (= le 1er mercredi du mois)
+            if (isFirstWednesday) {
+                tasks.push("Contrôle des calles et chandelles");
+            }
+
+            // Règle 5 : Jeudi qui suit le 1er lundi (= le 1er jeudi du mois)
+            if (isFirstThursday) {
+                tasks.push("Éclairage entrepôt");
+            }
+
+            // Affichage des tâches trouvées
+            if (tasks.length > 0) {
+                todoListDiv.style.display = 'block';
+                container.innerHTML = tasks.map(task => `<div class="todo-item">⬜ ${task}</div>`).join('');
+            } else {
+                todoListDiv.style.display = 'none'; // Pas de tâche spécifique ce soir-là
+            }
         }
-        setInterval(updateClock, 1000);
-        updateClock();
+        setInterval(updateClockAndTasks, 1000);
+        updateClockAndTasks();
 
         // 2. Couleur de fond
         const picker = document.getElementById('color-picker');
@@ -163,7 +265,7 @@
             document.getElementById('gear-btn').style.color = finalColor;
         });
 
-        // 3. Météo Prévisionnelle (Heure actuelle + 12 heures suivantes)
+        // 3. Météo Prévisionnelle (13 heures)
         const weatherDiv = document.getElementById('weather');
         async function updateWeather() {
             try {
@@ -173,7 +275,6 @@
                 const currentHour = new Date().getHours();
                 let htmlContent = '';
                 
-                // Boucle pour générer l'heure actuelle (0) et les 12 heures suivantes (jusqu'à 12)
                 for (let i = 0; i <= 12; i++) {
                     const targetHour = (currentHour + i) % 24;
                     const proba = data.hourly.precipitation_probability[currentHour + i];
@@ -192,7 +293,6 @@
             }
         }
 
-        // Clic sur le bouton parapluie (Flex au lieu de Block pour aligner les colonnes)
         document.getElementById('umbrella-btn').addEventListener('click', function(e) {
             e.stopPropagation();
             if (weatherDiv.style.display === 'flex') {
