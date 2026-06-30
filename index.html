@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horloge & Liste</title>
+    <title>TEST - Horloge & Liste</title>
     <style>
         body {
             margin: 0;
@@ -129,12 +129,13 @@
 
             const hours = now.getHours();
             const totalMinutes = hours * 60 + now.getMinutes();
-            const isShiftActive = (totalMinutes >= 19 * 60) || (totalMinutes < 6 * 60 + 30);
+            
+            // MODE TEST : On force l'activation du shift pour pouvoir tester à n'importe quelle heure
+            const isShiftActive = true; 
             
             const todoListDiv = document.getElementById('todo-list');
             const clockZone = document.getElementById('clock-zone');
 
-            // Si hors shift, on masque tout et on centre l'horloge
             if (!isShiftActive) {
                 todoListDiv.style.display = 'none';
                 clockZone.style.flex = "0 0 100%";
@@ -150,22 +151,18 @@
                 lastCheckedDayStr = currentDayStr;
             }
 
-            // Calcul des jours pour les tâches
-            const dayOfWeek = referenceDate.getDay();
-            const dateNum = referenceDate.getDate();
-            const isFirstMonday = (dayOfWeek === 1 && dateNum <= 7);
-            const isFirstTuesday = (dayOfWeek === 2 && dateNum <= 7);
-            const isFirstWednesday = (dayOfWeek === 3 && dateNum <= 7);
-            const isFirstThursday = (dayOfWeek === 4 && dateNum <= 7);
-            const isFirstFriday = (dayOfWeek === 5 && dateNum <= 7);
-
-            let tasks = [];
-            if (dayOfWeek === 2) tasks.push("B1 : Contrôle des vannes de postes");
-            if (isFirstMonday) { tasks.push("B1 : Contrôle des IS"); tasks.push("B1 : Contrôle des DM"); }
-            if (isFirstTuesday) { tasks.push("B1 : Contrôle des compteurs paratonnerre"); tasks.push("B1 : Contrôle des douches et rince-œil"); tasks.push("B2 : Contrôle des compteurs paratonnerre"); }
-            if (isFirstWednesday) tasks.push("B1 : Contrôle des cales et chandelles");
-            if (isFirstThursday) tasks.push("B1 : Contrôle des éclairages entrepôt");
-            if (isFirstFriday) tasks.push("B1 : Contrôle des BAES");
+            // MODE TEST : On injecte TOUTES les tâches de façon forcée pour le test visuel
+            let tasks = [
+                "B1 : Contrôle des vannes de postes",
+                "B1 : Contrôle des IS",
+                "B1 : Contrôle des DM",
+                "B1 : Contrôle des compteurs paratonnerre",
+                "B1 : Contrôle des douches et rince-œil",
+                "B2 : Contrôle des compteurs paratonnerre",
+                "B1 : Contrôle des cales et chandelles",
+                "B1 : Contrôle des éclairages entrepôt",
+                "B1 : Contrôle des BAES"
+            ];
 
             const visibleTasks = tasks.filter(task => !hiddenTasks.has(task));
 
