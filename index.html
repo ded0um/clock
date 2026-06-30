@@ -63,6 +63,24 @@
         .todo-item.fade-out { opacity: 0; transform: translateX(30px); height: 0; margin: 0; overflow: hidden; }
         .todo-checkbox { width: 1.6vw; height: 1.6vw; cursor: pointer; }
 
+        /* Style de la LED de notification (discrète en haut à droite) */
+        #notification-led {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: transparent; /* Éteinte par défaut */
+            box-shadow: none;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            z-index: 20;
+        }
+        #notification-led.active {
+            background-color: #ff3b30; /* Rouge LED vif */
+            box-shadow: 0 0 10px #ff3b30, 0 0 20px #ff3b30; /* Effet de halo lumineux */
+        }
+
         /* Contrôles en bas à droite */
         #controls-container { 
             position: absolute; 
@@ -97,6 +115,8 @@
 </head>
 <body>
 
+    <div id="notification-led"></div>
+
     <div id="main-container">
         <div id="clock-zone" onclick="toggleFullscreen()">
             <div id="date">Chargement...</div>
@@ -121,16 +141,45 @@
         let lastCheckedDayStr = "";
         let hiddenTasks = new Set();
         const weatherDiv = document.getElementById('weather');
+        
+        // Variables pour la gestion de la LED de minuit
+        let ledDismissed = false;
 
         function updateClockAndTasks() {
             const now = new Date();
             document.getElementById('date').textContent = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-            document.getElementById('clock').innerHTML = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-
-            const hours = now.getHours();
-            const totalMinutes = hours * 60 + now.getMinutes();
             
-            // Plage horaire de nuit active (19h00 - 06h30)
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            document.getElementById('clock').innerHTML = String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
+
+            const totalMinutes = hours * 60 + minutes;
+            
+            // --- GESTION DE LA LED DE MINUIT ---
+            const led = document.getElementById('notification-led');
+            
+            // Plage horaire entre Minuit pile (00h00) et la fin de garde (06h30)
+            const isMidnightRange = (totalMinutes >= 0 && totalMinutes < 6 * 60 + 30);
+
+            if (isMidnightRange) {
+                // Si on arrive à minuit pile, on réinitialise l'extinction manuelle pour la nouvelle nuit
+                if (hours === 0 && minutes === 0 && totalMinutes === 0 && ledDismissed) {
+                    ledDismissed = false;
+                }
+
+                // On allume la LED si elle n'a pas été éteinte manuellement avec Espace
+                if (!ledDismissed) {
+                    led.classList.add('active');
+                } else {
+                    led.classList.remove('active');
+                }
+            } else {
+                // En dehors de la plage (journée / début de shift), la LED reste éteinte et prête
+                led.classList.remove('active');
+                ledDismissed = false; 
+            }
+
+            // Plage horaire de nuit active pour la To-Do List (19h00 - 06h30)
             const isShiftActive = (totalMinutes >= 19 * 60) || (totalMinutes < 6 * 60 + 30);
             
             const todoListDiv = document.getElementById('todo-list');
@@ -148,7 +197,7 @@
             
             const currentDayStr = referenceDate.toDateString();
             if (currentDayStr !== lastCheckedDayStr) {
-                hiddenTasks.clear(); // Nouveau shift, on vide la mémoire des éléments cochés
+                hiddenTasks.clear();
                 lastCheckedDayStr = currentDayStr;
             }
 
@@ -162,10 +211,7 @@
 
             let tasks = [];
             
-            // Tous les mardis soir
             if (dayOfWeek === 2) tasks.push("B1 : Contrôle des vannes de postes");
-            
-            // Calendrier mensuel automatique
             if (isFirstMonday) { tasks.push("B1 : Contrôle des IS"); tasks.push("B1 : Contrôle des DM"); }
             if (isFirstTuesday) { tasks.push("B1 : Contrôle des compteurs paratonnerre"); tasks.push("B1 : Contrôle des douches et rince-œil"); tasks.push("B2 : Contrôle des compteurs paratonnerre"); }
             if (isFirstWednesday) tasks.push("B1 : Contrôle des cales et chandelles");
@@ -193,6 +239,18 @@
                 clockZone.style.flex = "0 0 100%";
             }
         }
+
+        // --- ÉCOUTEUR DU CLAVIER (Touche Espace pour éteindre la LED) ---
+        window.addEventListener('keydown', function(e) {
+            if (e.code === 'Space' || e.key === ' ') {
+                const led = document.getElementById('notification-led');
+                if (led.classList.contains('active')) {
+                    e.preventDefault(); // Évite que la page descende si la liste a un scroll
+                    ledDismissed = true;
+                    led.classList.remove('active');
+                }
+            }
+        });
 
         function checkTask(checkbox) {
             const item = checkbox.closest('.todo-item');
@@ -241,6 +299,18 @@
             document.body.style.color = finalColor;
             document.getElementById('umbrella-btn').style.color = finalColor;
             document.getElementById('gear-btn').style.color = finalColor;
+        });
+
+        // Anti-veille
+        let wakeLock = null;
+        async function requestWakeLock() {
+            if ('wakeLock' in navigator) {
+                try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
+            }
+        }
+        requestWakeLock();
+        document.addEventListener('visibilitychange', () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') requestWakeLock();
         });
 
         setInterval(updateClockAndTasks, 1000);
