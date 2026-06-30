@@ -65,7 +65,7 @@
         .todo-item.fade-out { opacity: 0; transform: translateX(30px); height: 0; margin: 0; overflow: hidden; }
         .todo-checkbox { width: 1.6vw; height: 1.6vw; cursor: pointer; }
 
-        /* Style de la LED de notification */
+        /* Style de la LED - Ancrée par rapport à la zone Horloge désormais */
         #notification-led {
             position: absolute;
             top: 25px;
@@ -118,10 +118,11 @@
 </head>
 <body>
 
-    <div id="notification-led"></div>
-
     <div id="main-container">
+        <!-- La LED est maintenant déplacée à l'intérieur de clock-zone -->
         <div id="clock-zone" onclick="toggleFullscreen()">
+            <div id="notification-led"></div>
+            
             <div id="date">Chargement...</div>
             <div id="clock">00:00</div>
             
@@ -164,12 +165,12 @@
 
             const totalMinutes = hours * 60 + minutes;
             
-            // --- GESTION DE LA LED DE TEST (23h35) ---
+            // --- GESTION DE LA LED DE TEST (23h42) ---
             const led = document.getElementById('notification-led');
-            const isTestRange = (totalMinutes >= (23 * 60 + 35) || totalMinutes < 6 * 60 + 30);
+            const isTestRange = (totalMinutes >= (23 * 60 + 42) || totalMinutes < 6 * 60 + 30);
 
             if (isTestRange) {
-                if (hours === 23 && minutes === 35 && ledDismissed) {
+                if (hours === 23 && minutes === 42 && ledDismissed) {
                     ledDismissed = false;
                 }
 
