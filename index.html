@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horloge & Liste Premium</title>
+    <title>Dedoum</title>
     <style>
         body {
             margin: 0;
@@ -207,10 +207,8 @@
     <div id="main-container">
         <div id="clock-zone" onclick="toggleFullscreen()">
             
-            <!-- Onglet latéral style Samsung -->
             <div id="side-handle" onclick="toggleTodoListPanel(event)"></div>
 
-            <!-- Zone des LEDs -->
             <div id="led-container" onclick="event.stopPropagation()">
                 <div id="task-led" class="led" title="Tâches en attente"></div>
                 <div id="notification-led" class="led" title="Alerte Minuit"></div>
@@ -273,7 +271,13 @@
             
             const hours = now.getHours();
             const minutes = now.getMinutes();
-            document.getElementById('clock').innerHTML = String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
+            const timeStr = String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
+            
+            // Met à jour la grande horloge sur la page
+            document.getElementById('clock').innerHTML = timeStr;
+            
+            // Met à jour dynamiquement le titre de l'onglet au format demandé
+            document.title = timeStr + " | Dedoum";
 
             const totalMinutes = hours * 60 + minutes;
             
@@ -303,217 +307,4 @@
                 redLed.classList.remove('active');
             }
 
-            // --- VÉRIFICATION DU SHIFT POUR LES TÂCHES ---
-            const isShiftActive = (totalMinutes >= 19 * 60) || (totalMinutes < 6 * 60 + 30);
-            
-            const todoListDiv = document.getElementById('todo-list');
-            const clockZone = document.getElementById('clock-zone');
-            const sideHandle = document.getElementById('side-handle');
-            const taskLed = document.getElementById('task-led');
-
-            if (!isShiftActive) {
-                todoListDiv.style.display = 'none';
-                clockZone.style.flex = "0 0 100%";
-                sideHandle.style.display = 'none';
-                clearHiddenTasks(); 
-                taskLed.classList.remove('active');
-                return; 
-            }
-
-            let referenceDate = new Date(now);
-            if (hours < 12) referenceDate.setDate(referenceDate.getDate() - 1);
-            
-            const currentDayStr = referenceDate.toDateString();
-            if (currentDayStr !== lastCheckedDayStr) {
-                clearHiddenTasks(); 
-                lastCheckedDayStr = currentDayStr;
-                panelManuallyClosed = false; 
-            }
-
-            const dayOfWeek = referenceDate.getDay();
-            const dateNum = referenceDate.getDate();
-
-            const firstMondayDate = getFirstMondayDate(referenceDate.getFullYear(), referenceDate.getMonth());
-            
-            const isFirstMonday = (dayOfWeek === 1 && dateNum === firstMondayDate);
-            const isFirstTuesday = (dayOfWeek === 2 && dateNum === (firstMondayDate + 1));
-            const isFirstWednesday = (dayOfWeek === 3 && dateNum === (firstMondayDate + 2));
-            const isFirstThursday = (dayOfWeek === 4 && dateNum === (firstMondayDate + 3));
-            const isFirstFriday = (dayOfWeek === 5 && dateNum === (firstMondayDate + 4));
-
-            let tasks = [];
-            
-            if (dayOfWeek === 2) tasks.push("B1 : Contrôle des vannes de postes");
-            
-            if (isFirstMonday) { tasks.push("B1 : Contrôle des IS"); tasks.push("B1 : Contrôle des DM"); }
-            if (isFirstTuesday) { tasks.push("B1 : Contrôle des compteurs paratonnerre"); tasks.push("B1 : Contrôle des douches et rince-œil"); tasks.push("B2 : Contrôle des compteurs paratonnerre"); }
-            if (isFirstWednesday) tasks.push("B1 : Contrôle des cales et chandelles");
-            if (isFirstThursday) tasks.push("B1 : Contrôle des éclairages entrepôt");
-            if (isFirstFriday) tasks.push("B1 : Contrôle des BAES");
-
-            const visibleTasks = tasks.filter(task => !hiddenTasks.has(task));
-
-            // --- GESTION DE LA LED JAUNE ET DU PANNEAU LATÉRAL ---
-            if (visibleTasks.length > 0) {
-                taskLed.classList.add('active');
-                sideHandle.style.display = 'flex';
-
-                if (!panelManuallyClosed) {
-                    todoListDiv.style.display = 'block';
-                    clockZone.style.flex = "0 0 66.66%";
-                    sideHandle.classList.add('open');
-                } else {
-                    todoListDiv.style.display = 'none';
-                    clockZone.style.flex = "0 0 100%";
-                    sideHandle.classList.remove('open');
-                }
-
-                const container = document.getElementById('todo-items-container');
-                const activeItems = container.querySelectorAll('.todo-item:not(.fade-out)');
-                if (activeItems.length !== visibleTasks.length) {
-                    container.innerHTML = visibleTasks.map(task => `
-                        <div class="todo-item" data-task="${task}">
-                            <input type="checkbox" class="todo-checkbox" onchange="checkTask(this)">
-                            <span>${task}</span>
-                        </div>
-                    `).join('');
-                }
-            } else {
-                taskLed.classList.remove('active');
-                sideHandle.style.display = 'none';
-                todoListDiv.style.display = 'none';
-                clockZone.style.flex = "0 0 100%";
-            }
-        }
-
-        function toggleTodoListPanel(e) {
-            if (e) e.stopPropagation();
-            const todoListDiv = document.getElementById('todo-list');
-            if (todoListDiv.style.display === 'block') {
-                panelManuallyClosed = true;
-            } else {
-                panelManuallyClosed = false;
-            }
-            updateClockAndTasks();
-        }
-
-        window.addEventListener('keydown', function(e) {
-            if (e.code === 'Space' || e.key === ' ') {
-                const led = document.getElementById('notification-led');
-                if (led.classList.contains('active')) {
-                    e.preventDefault();
-                    ledDismissed = true;
-                    led.classList.remove('active');
-                }
-            }
-            if (e.code === 'Enter' || e.key === 'Enter') {
-                e.preventDefault();
-                toggleTodoListPanel();
-            }
-        });
-
-        function checkTask(checkbox) {
-            const item = checkbox.closest('.todo-item');
-            hiddenTasks.add(item.getAttribute('data-task'));
-            saveHiddenTasks(); 
-            item.classList.add('fade-out');
-            setTimeout(updateClockAndTasks, 400);
-        }
-
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
-            else document.exitFullscreen();
-        }
-
-        function getProbaEmoji(proba, hour) {
-            const isNight = (hour >= 22 || hour < 6); 
-            
-            if (proba <= 10) {
-                return isNight ? "🌙" : "☀️";   
-            }
-            if (proba <= 30) {
-                return isNight ? "☁️🌙" : "⛅"; 
-            }
-            if (proba <= 50) {
-                return "🌦️";                   
-            }
-            if (proba <= 75) {
-                return "🌧️";                   
-            }
-            return "⛈️";                       
-        }
-
-        async function updateWeather() {
-            try {
-                // Ajout des paramètres apparent_temperature (ressentie) et wind_speed_10m (vent) à la requête
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=49.8942&longitude=2.2957&hourly=precipitation_probability,temperature_2m,apparent_temperature,wind_speed_10m&forecast_days=2');
-                const data = await res.json();
-                const currentHour = new Date().getHours();
-                let htmlContent = '';
-                
-                for (let i = 0; i <= 12; i++) {
-                    const index = currentHour + i;
-                    const targetHour = (currentHour + i) % 24;
-                    
-                    const proba = data.hourly.precipitation_probability[index];
-                    const temp = Math.round(data.hourly.temperature_2m[index]);
-                    const apparentTemp = Math.round(data.hourly.apparent_temperature[index]);
-                    const windSpeed = Math.round(data.hourly.wind_speed_10m[index]);
-                    
-                    const emoji = getProbaEmoji(proba, targetHour);
-                    const isCurrent = (i === 0) ? 'current-hour' : '';
-                    
-                    htmlContent += `
-                        <div class="weather-column ${isCurrent}" title="${proba}% de chance de pluie">
-                            <span class="weather-hour">${targetHour}h</span>
-                            <span class="weather-proba">${emoji}</span>
-                            <span class="weather-temp">${temp}° / <span style="opacity:0.7">${apparentTemp}°</span></span>
-                            <span class="weather-wind">💨 ${windSpeed} km/h</span>
-                        </div>`;
-                }
-                weatherDiv.innerHTML = htmlContent;
-            } catch (err) {
-                weatherDiv.textContent = 'Météo indisponible';
-            }
-        }
-
-        document.getElementById('umbrella-btn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (weatherDiv.style.display === 'flex') {
-                weatherDiv.style.display = 'none';
-            } else {
-                weatherDiv.style.display = 'flex';
-                updateWeather();
-            }
-        });
-
-        document.getElementById('color-picker').addEventListener('input', (e) => {
-            const col = e.target.value;
-            document.body.style.backgroundColor = col;
-            const brightness = (parseInt(col.substr(1,2),16)*299 + parseInt(col.substr(3,2),16)*587 + parseInt(col.substr(5,2),16)*114)/1000;
-            const finalColor = brightness > 128 ? '#000000' : '#ffffff';
-            document.body.style.color = finalColor;
-            document.getElementById('umbrella-btn').style.color = finalColor;
-            document.getElementById('gear-btn').style.color = finalColor;
-        });
-
-        let wakeLock = null;
-        async function requestWakeLock() {
-            if ('wakeLock' in navigator) {
-                try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
-            }
-        }
-        requestWakeLock();
-        document.addEventListener('visibilitychange', () => {
-            if (wakeLock !== null && document.visibilityState === 'visible') requestWakeLock();
-        });
-
-        setInterval(() => {
-            if (weatherDiv.style.display === 'flex') updateWeather();
-        }, 15 * 60 * 1000);
-
-        setInterval(updateClockAndTasks, 1000);
-        updateClockAndTasks();
-    </script>
-</body>
-</html>
+            // --- VÉRIFICATION DU SHIFT
