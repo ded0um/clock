@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horloge</title>
+    <title>Horloge & Liste Premium</title>
     <style>
         body {
             margin: 0;
@@ -143,32 +143,52 @@
 
         #weather {
             display: none;
-            gap: 12px;
+            gap: 8px;
             background: rgba(255, 255, 255, 0.05);
-            padding: 8px 15px;
-            border-radius: 8px;
+            padding: 10px;
+            border-radius: 12px;
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            align-items: center;
         }
-        .weather-column { display: flex; flex-direction: column; align-items: center; font-size: 14px; }
-        .weather-hour { font-weight: bold; opacity: 0.5; margin-bottom: 2px; }
-        .weather-proba { opacity: 0.9; }
+        .weather-column { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            font-size: 14px; 
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .weather-hour { font-weight: bold; opacity: 0.5; margin-bottom: 4px; }
+        .weather-proba { font-size: 18px; }
+
+        /* Style spécial pour mettre en valeur l'heure en cours */
+        .weather-column.current-hour {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid #ffcc00;
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.2);
+        }
+        .weather-column.current-hour .weather-hour {
+            opacity: 1;
+            color: #ffcc00;
+        }
 
         .control-btn { font-size: 24px; cursor: pointer; width: 35px; height: 35px; text-align: center; line-height: 35px; color: inherit; position: relative; display: inline-block; }
         #color-picker { opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; }
         
         :fullscreen #controls-container { display: none; }
 
-        /* Ajustement spécial pour mobiles (évite le masquage par la barre de navigation Chrome/Samsung) */
+        /* Ajustement pour mobiles */
         @media (max-width: 1024px) {
             #controls-container {
-                bottom: 60px; /* Remonte le bloc pour esquiver la barre du navigateur */
+                bottom: 60px; 
                 right: 20px;
-                opacity: 0.8; /* Légèrement plus visible sur mobile car pas de survol de souris possible */
+                opacity: 0.8; 
             }
             #weather {
-                max-width: 70vw;
-                overflow-x: auto; /* Permet de faire défiler la météo si l'écran est trop étroit */
+                max-width: 75vw;
+                overflow-x: auto; 
             }
         }
     </style>
@@ -392,16 +412,33 @@
             else document.exitFullscreen();
         }
 
+        // Nouvelle fonction pour convertir la probabilité (0-100) en Emoji parlant
+        function getProbaEmoji(proba) {
+            if (proba <= 30) return "☀️";       // Risque très faible / Sec
+            if (proba <= 50) return "🌦️";       // Risque modéré / Risque d'averse
+            return "🌧️";                       // Risque élevé / Il va pleuvoir
+        }
+
         async function updateWeather() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=49.8942&longitude=2.2957&hourly=precipitation_probability&forecast_days=2');
                 const data = await res.json();
                 const currentHour = new Date().getHours();
                 let htmlContent = '';
+                
                 for (let i = 0; i <= 12; i++) {
                     const targetHour = (currentHour + i) % 24;
                     const proba = data.hourly.precipitation_probability[currentHour + i];
-                    htmlContent += `<div class="weather-column"><span class="weather-hour">${targetHour}h</span><span class="weather-proba">${proba}%</span></div>`;
+                    const emoji = getProbaEmoji(proba);
+                    
+                    // Ajout de la classe "current-hour" sur la toute première colonne (l'heure actuelle)
+                    const isCurrent = (i === 0) ? 'current-hour' : '';
+                    
+                    htmlContent += `
+                        <div class="weather-column ${isCurrent}" title="${proba}% de chance de pluie">
+                            <span class="weather-hour">${targetHour}h</span>
+                            <span class="weather-proba">${emoji}</span>
+                        </div>`;
                 }
                 weatherDiv.innerHTML = htmlContent;
             } catch (err) {
@@ -439,6 +476,11 @@
         document.addEventListener('visibilitychange', () => {
             if (wakeLock !== null && document.visibilityState === 'visible') requestWakeLock();
         });
+
+        // En plus de la montre, on rafraîchit discrètement la météo toutes les 15 minutes si le panneau est resté ouvert
+        setInterval(() => {
+            if (weatherDiv.style.display === 'flex') updateWeather();
+        }, 15 * 60 * 1000);
 
         setInterval(updateClockAndTasks, 1000);
         updateClockAndTasks();
