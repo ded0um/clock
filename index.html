@@ -158,6 +158,19 @@
         #color-picker { opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; }
         
         :fullscreen #controls-container { display: none; }
+
+        /* Ajustement spécial pour mobiles (évite le masquage par la barre de navigation Chrome/Samsung) */
+        @media (max-width: 1024px) {
+            #controls-container {
+                bottom: 60px; /* Remonte le bloc pour esquiver la barre du navigateur */
+                right: 20px;
+                opacity: 0.8; /* Légèrement plus visible sur mobile car pas de survol de souris possible */
+            }
+            #weather {
+                max-width: 70vw;
+                overflow-x: auto; /* Permet de faire défiler la météo si l'écran est trop étroit */
+            }
+        }
     </style>
 </head>
 <body>
@@ -212,7 +225,6 @@
             localStorage.removeItem('hiddenTasks');
         }
 
-        // Nouvelle fonction pour calculer le jour exact du premier lundi du mois de référence
         function getFirstMondayDate(year, month) {
             let d = new Date(year, month, 1);
             while (d.getDay() !== 1) {
@@ -288,7 +300,6 @@
             const dayOfWeek = referenceDate.getDay();
             const dateNum = referenceDate.getDate();
 
-            // Logique de calendrier ultra-précise basée sur le premier Lundi du mois
             const firstMondayDate = getFirstMondayDate(referenceDate.getFullYear(), referenceDate.getMonth());
             
             const isFirstMonday = (dayOfWeek === 1 && dateNum === firstMondayDate);
@@ -299,10 +310,8 @@
 
             let tasks = [];
             
-            // Tâches hebdomadaires (Tous les mardis)
             if (dayOfWeek === 2) tasks.push("B1 : Contrôle des vannes de postes");
             
-            // Tâches mensuelles indexées rigoureusement sur la semaine du premier lundi
             if (isFirstMonday) { tasks.push("B1 : Contrôle des IS"); tasks.push("B1 : Contrôle des DM"); }
             if (isFirstTuesday) { tasks.push("B1 : Contrôle des compteurs paratonnerre"); tasks.push("B1 : Contrôle des douches et rince-œil"); tasks.push("B2 : Contrôle des compteurs paratonnerre"); }
             if (isFirstWednesday) tasks.push("B1 : Contrôle des cales et chandelles");
