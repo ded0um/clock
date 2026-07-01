@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horloge</title>
+    <title>Horloge & Liste Premium</title>
     <style>
         body {
             margin: 0;
@@ -192,22 +192,38 @@
 
     <script>
         let lastCheckedDayStr = "";
-        let hiddenTasks = new Set();
+        
+        let hiddenTasks = new Set(JSON.parse(localStorage.getItem('hiddenTasks')) || []);
+        
         const weatherDiv = document.getElementById('weather');
         const controlsContainer = document.getElementById('controls-container');
         
-        // Variables d'état pour la LED Rouge
         let ledDismissed = false;
         let pageLaunched = false; 
         let midnightCrossed = false;
-
-        // État du volet latéral
         let panelManuallyClosed = false;
+
+        function saveHiddenTasks() {
+            localStorage.setItem('hiddenTasks', JSON.stringify(Array.from(hiddenTasks)));
+        }
+
+        function clearHiddenTasks() {
+            hiddenTasks.clear();
+            localStorage.removeItem('hiddenTasks');
+        }
+
+        // Nouvelle fonction pour calculer le jour exact du premier lundi du mois de référence
+        function getFirstMondayDate(year, month) {
+            let d = new Date(year, month, 1);
+            while (d.getDay() !== 1) {
+                d.setDate(d.getDate() + 1);
+            }
+            return d.getDate();
+        }
 
         function updateClockAndTasks() {
             const now = new Date();
             
-            // 1. MISE À JOUR SYSTÉMATIQUE DE L'HORLOGE
             document.getElementById('date').textContent = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
             
             const hours = now.getHours();
@@ -216,7 +232,7 @@
 
             const totalMinutes = hours * 60 + minutes;
             
-            // 2. GESTION DE LA LED ROUGE (FRANCHISSEMENT DE MINUIT)
+            // --- GESTION DE LA LED ROUGE (FRANCHISSEMENT DE MINUIT) ---
             const redLed = document.getElementById('notification-led');
             
             if (!pageLaunched) {
@@ -242,7 +258,7 @@
                 redLed.classList.remove('active');
             }
 
-            // 3. VÉRIFICATION DU SHIFT POUR LES TÂCHES
+            // --- VÉRIFICATION DU SHIFT POUR LES TÂCHES ---
             const isShiftActive = (totalMinutes >= 19 * 60) || (totalMinutes < 6 * 60 + 30);
             
             const todoListDiv = document.getElementById('todo-list');
@@ -250,12 +266,11 @@
             const sideHandle = document.getElementById('side-handle');
             const taskLed = document.getElementById('task-led');
 
-            // Si on est hors shift, on nettoie les éléments de la To-Do mais le script a déjà actualisé l'heure
             if (!isShiftActive) {
                 todoListDiv.style.display = 'none';
                 clockZone.style.flex = "0 0 100%";
                 sideHandle.style.display = 'none';
-                hiddenTasks.clear();
+                clearHiddenTasks(); 
                 taskLed.classList.remove('active');
                 return; 
             }
@@ -265,22 +280,29 @@
             
             const currentDayStr = referenceDate.toDateString();
             if (currentDayStr !== lastCheckedDayStr) {
-                hiddenTasks.clear();
+                clearHiddenTasks(); 
                 lastCheckedDayStr = currentDayStr;
                 panelManuallyClosed = false; 
             }
 
             const dayOfWeek = referenceDate.getDay();
             const dateNum = referenceDate.getDate();
-            const isFirstMonday = (dayOfWeek === 1 && dateNum <= 7);
-            const isFirstTuesday = (dayOfWeek === 2 && dateNum <= 7);
-            const isFirstWednesday = (dayOfWeek === 3 && dateNum <= 7);
-            const isFirstThursday = (dayOfWeek === 4 && dateNum <= 7);
-            const isFirstFriday = (dayOfWeek === 5 && dateNum <= 7);
+
+            // Logique de calendrier ultra-précise basée sur le premier Lundi du mois
+            const firstMondayDate = getFirstMondayDate(referenceDate.getFullYear(), referenceDate.getMonth());
+            
+            const isFirstMonday = (dayOfWeek === 1 && dateNum === firstMondayDate);
+            const isFirstTuesday = (dayOfWeek === 2 && dateNum === (firstMondayDate + 1));
+            const isFirstWednesday = (dayOfWeek === 3 && dateNum === (firstMondayDate + 2));
+            const isFirstThursday = (dayOfWeek === 4 && dateNum === (firstMondayDate + 3));
+            const isFirstFriday = (dayOfWeek === 5 && dateNum === (firstMondayDate + 4));
 
             let tasks = [];
             
+            // Tâches hebdomadaires (Tous les mardis)
             if (dayOfWeek === 2) tasks.push("B1 : Contrôle des vannes de postes");
+            
+            // Tâches mensuelles indexées rigoureusement sur la semaine du premier lundi
             if (isFirstMonday) { tasks.push("B1 : Contrôle des IS"); tasks.push("B1 : Contrôle des DM"); }
             if (isFirstTuesday) { tasks.push("B1 : Contrôle des compteurs paratonnerre"); tasks.push("B1 : Contrôle des douches et rince-œil"); tasks.push("B2 : Contrôle des compteurs paratonnerre"); }
             if (isFirstWednesday) tasks.push("B1 : Contrôle des cales et chandelles");
@@ -289,7 +311,7 @@
 
             const visibleTasks = tasks.filter(task => !hiddenTasks.has(task));
 
-            // 4. GESTION DE LA LED JAUNE ET DU PANNEAU LATÉRAL
+            // --- GESTION DE LA LED JAUNE ET DU PANNEAU LATÉRAL ---
             if (visibleTasks.length > 0) {
                 taskLed.classList.add('active');
                 sideHandle.style.display = 'flex';
@@ -351,6 +373,7 @@
         function checkTask(checkbox) {
             const item = checkbox.closest('.todo-item');
             hiddenTasks.add(item.getAttribute('data-task'));
+            saveHiddenTasks(); 
             item.classList.add('fade-out');
             setTimeout(updateClockAndTasks, 400);
         }
