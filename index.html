@@ -126,6 +126,67 @@
             border-bottom: 1px dashed #444;
             padding-bottom: 3px;
         }
+
+        /* --- STYLES DE LA BOITE MODALE PERSONNALISÉE --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-box {
+            background-color: #1e1e1e;
+            border: 2px solid #ff9900;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 550px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .modal-header {
+            background-color: #2a2a2a;
+            padding: 12px 15px;
+            border-bottom: 1px solid #333;
+            font-weight: bold;
+            color: #ff9900;
+            font-size: 1.1rem;
+        }
+        .modal-body {
+            padding: 15px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #ffffff;
+        }
+        .modal-footer {
+            padding: 10px 15px;
+            border-top: 1px solid #333;
+            display: flex;
+            justify-content: flex-end;
+            background-color: #2a2a2a;
+        }
+        .btn-modal-close {
+            background-color: #ff9900;
+            color: #121212;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-modal-close:hover {
+            background-color: #cc7a00;
+        }
     </style>
 </head>
 <body>
@@ -364,6 +425,18 @@
         <button class="btn-submit" onclick="genererRapport()">Générer le résumé de Ronde</button>
     </div>
 
+    <!-- STRUCTURE DE LA MODALE PERSONNALISÉE (MASQUÉE PAR DÉFAUT) -->
+    <div id="customModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <!-- TITRE DE LA MODALE ENTIÈREMENT PERSONNALISABLE ICI -->
+            <div class="modal-header" id="modalTitle">Résumé de Ronde</div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer">
+                <button class="btn-modal-close" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Horloge sans secondes + Onglet dynamique
         function updateClock() {
@@ -377,6 +450,17 @@
         }
         setInterval(updateClock, 1000);
         updateClock();
+
+        // Fonctions pour gérer la modale personnalisée
+        function showModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').textContent = content;
+            document.getElementById('customModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').classList.add('hidden');
+        }
 
         // Pliage/Dépliage des sections
         function toggleSection(header) {
@@ -531,11 +615,11 @@
                 blocsTxt.push(sectionTxt.trimEnd());
             }
 
-            // Affichage final
+            // Affichage final via la nouvelle modale personnalisée
             if(blocsTxt.length === 0) {
-                alert("Rien à signaler (Tout est RAS).");
+                showModal("Résultat de la ronde", "Rien à signaler (Tout est RAS).");
             } else {
-                alert(blocsTxt.join('\n\n'));
+                showModal("Résultat de la ronde", blocsTxt.join('\n\n'));
             }
         }
     </script>
