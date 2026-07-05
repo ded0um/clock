@@ -37,7 +37,7 @@
         .header-center {
             display: flex;
             align-items: center;
-            gap: 40px; /* Espace entre le parapluie, le bloc-notes et l'engrenage */
+            gap: 50px; /* Bel espace entre le parapluie et le rapport */
         }
 
         .icon-btn {
@@ -71,7 +71,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding-bottom: 50px; /* Remonte légèrement l'horloge vers le centre */
+            padding-bottom: 50px;
         }
 
         .date-display {
@@ -106,7 +106,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Style d'allumage identique à ta capture */
         .led-yellow.blink {
             background-color: var(--yellow-led);
             box-shadow: 0 0 25px var(--yellow-led), inset 0 -2px 6px rgba(0,0,0,0.4);
@@ -257,28 +256,28 @@
 </head>
 <body>
 
-    <!-- BARRE SUPÉRIEURE AVEC LE BOUTON RAPPORT AU MILIEU -->
+    <!-- BARRE SUPÉRIEURE ÉPURÉE SANS ENGRENAGE -->
     <header>
-        <div></div> <!-- Espaceur gauche -->
+        <div></div> 
         
         <div class="header-center">
-            <button class="icon-btn" title="Sprinkler">☔</button>
+            <!-- Le parapluie appelle à nouveau ta fonction de météo initiale -->
+            <button class="icon-btn" onclick="toggleWeather()" title="Météo">☔</button>
             <!-- Bouton d'ouverture/fermeture du volet des rapports -->
             <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports">📝</button>
-            <button class="icon-btn" title="Paramètres">⚙️</button>
         </div>
         
-        <div></div> <!-- Espaceur droit -->
+        <div></div> 
     </header>
 
-    <!-- LED JAUNE PLACÉE EN HAUT À DROITE -->
+    <!-- LED JAUNE EN HAUT À DROITE -->
     <div class="led-container">
         <div id="led-jaune" class="led-yellow" title="Cliquez pour valider les contrôles terrain"></div>
     </div>
 
     <!-- ZONE CENTRALE (DATE & HEURE) -->
     <main>
-        <div class="date-display" id="date-label">Mercredi 1 Juillet 2026</div>
+        <div class="date-display" id="date-label">Dimanche 5 Juillet 2026</div>
         <div id="clock">00:00</div>
     </main>
 
@@ -469,7 +468,16 @@
     </div>
 
     <script>
-        // --- GESTION HORLOGE & DATE EN FRANÇAIS ---
+        // --- BASE DE TA FONCTION MÉTÉO (À adapter si tu as un script externe) ---
+        function toggleWeather() {
+            if (typeof afficherMeteo === "function") {
+                afficherMeteo();
+            } else {
+                console.log("Fonction météo déclenchée via le bouton parapluie.");
+            }
+        }
+
+        // --- GESTION HORLOGE & DATE ---
         let controlesJaunesFaits = false;
 
         function updateClock() {
@@ -477,19 +485,15 @@
             const hours = now.getHours();
             const minutes = now.getMinutes();
             
-            // Format heure
             const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
             document.getElementById('clock').textContent = timeString;
             document.title = `${timeString} | Dedoum`;
 
-            // Format Date (Ex: Mercredi 1 Juillet 2026)
             const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
             let dateString = now.toLocaleDateString('fr-FR', options);
-            // Mettre la première lettre en majuscule
             dateString = dateString.charAt(0).toUpperCase() + dateString.slice(1);
             document.getElementById('date-label').textContent = dateString;
 
-            // Reset à minuit
             if (hours === 0 && minutes === 0 && now.getSeconds() === 0) {
                 controlesJaunesFaits = false;
             }
@@ -497,7 +501,7 @@
             gestionLedJaune(now);
         }
 
-        // LED JAUNE : S'allume selon tes plannings de contrôles terrain (Mardi, 1er lundi, etc.)
+        // LED JAUNE : Contrôles terrain
         function gestionLedJaune(dateObj) {
             const ledJaune = document.getElementById('led-jaune');
             
@@ -533,7 +537,7 @@
             }
         }
 
-        // Clic direct sur la LED jaune pour l'éteindre une fois la ronde finie
+        // Clic sur la LED jaune pour l'éteindre
         document.getElementById('led-jaune').addEventListener('click', function() {
             if (this.classList.contains('blink')) {
                 controlesJaunesFaits = true;
@@ -544,7 +548,7 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // --- ANTI-VEILLE (WAKE LOCK) ---
+        // --- WAKE LOCK ---
         let wakeLock = null;
         async function requestWakeLock() {
             try {
@@ -556,7 +560,7 @@
         document.addEventListener('click', () => { if(!wakeLock) requestWakeLock(); });
         document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestWakeLock(); });
 
-        // --- OUVERTURE / FERMETURE DU PANNEAU ---
+        // --- GESTION VOLET DROIT ---
         const panel = document.getElementById('questionnairePanel');
         const toggleBtn = document.getElementById('togglePanelBtn');
 
@@ -565,7 +569,6 @@
             toggleBtn.classList.toggle('active');
         });
 
-        // Fermer le volet si on clique sur l'écran noir en dehors du menu
         document.querySelector('main').addEventListener('click', () => {
             if (panel.classList.contains('open')) {
                 panel.classList.remove('open');
@@ -586,7 +589,7 @@
             else element.classList.add('hidden');
         }
 
-        // --- INJECTION DES COMPOSANTS (SPRINKLER) ---
+        // --- INJECTION ---
         const intrusionList = document.getElementById('intrusion_list');
         const vannesList = document.getElementById('vannes_list');
         const feuPosteList = document.getElementById('feu_poste_list');
@@ -603,7 +606,7 @@
         injecterPostes(vannesList, "Défaut vanne poste");
         injecterPostes(feuPosteList, "Feu poste de controle");
 
-        // --- GÉNÉRATION DU TEXTE DU RAPPORT ---
+        // --- DUPLICATE TEXT LOGIC ---
         function genererRapport() {
             let blocsTxt = [];
             function getChecked(id) { return Array.from(document.querySelectorAll(`#${id} input:checked`)).map(el => el.value); }
