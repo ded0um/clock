@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>00:00 | Dedoum</title>
+    <title>21:10 | Dedoum</title>
     <style>
         :root {
-            --primary-color: #00ff00; /* Vert lime */
-            --bg-color: #121212;
-            --panel-bg: #1e1e1e;
-            --header-bg: #2a2a2a;
-            --border-color: #333;
+            --bg-color: #000000;
+            --panel-bg: #111111;
+            --border-color: #222222;
+            --text-color: #ffffff;
+            --yellow-led: #ffcc00;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
-            color: #ffffff;
+            color: var(--text-color);
             margin: 0;
             padding: 0;
             height: 100vh;
@@ -25,171 +25,159 @@
             overflow: hidden;
         }
 
-        /* --- BARRE SUPÉRIEURE --- */
+        /* --- BARRE SUPÉRIEURE ÉPURÉE --- */
         header {
-            background-color: var(--header-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 10px 20px;
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 10;
         }
 
-        .header-icons {
+        .header-center {
             display: flex;
-            gap: 20px;
             align-items: center;
+            gap: 40px; /* Espace entre le parapluie, le bloc-notes et l'engrenage */
         }
 
         .icon-btn {
             background: none;
             border: none;
-            color: #fff;
-            font-size: 1.5rem;
+            color: #ffffff;
+            font-size: 1.6rem;
             cursor: pointer;
             padding: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s, color 0.2s;
+            transition: opacity 0.2s, transform 0.2s;
+            opacity: 0.8;
         }
 
-        .icon-btn:hover { color: var(--primary-color); transform: scale(1.1); }
-        .icon-btn.active { color: var(--primary-color); }
+        .icon-btn:hover { 
+            opacity: 1; 
+            transform: scale(1.1); 
+        }
+        
+        .icon-btn.active { 
+            color: var(--yellow-led);
+            opacity: 1;
+        }
 
-        /* --- ZONE CENTRALE --- */
+        /* --- ZONE CENTRALE (HORLOGE SEULE) --- */
         main {
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-            gap: 20px;
+            padding-bottom: 50px; /* Remonte légèrement l'horloge vers le centre */
         }
 
-        .clock-display-container {
-            display: flex;
-            align-items: center;
-            gap: 40px;
+        .date-display {
+            font-size: 1.4rem;
+            color: #888888;
+            margin-bottom: 10px;
         }
 
         #clock {
-            font-size: 7rem;
+            font-size: 8.5rem;
             font-weight: bold;
-            color: var(--primary-color);
-            text-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            color: var(--text-color);
             user-select: none;
+            letter-spacing: -2px;
         }
 
-        .led-column {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .led-wrapper {
+        /* --- LED JAUNE EN HAUT À DROITE --- */
+        .led-container {
+            position: absolute;
+            top: 20px;
+            right: 40px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
         }
 
-        /* Taille stricte 30px x 30px */
-        .led {
-            width: 30px;
-            height: 30px;
+        .led-yellow {
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background-color: #252525;
-            box-shadow: inset 0 3px 5px rgba(0,0,0,0.6);
+            background-color: #1a1a1a;
             transition: all 0.3s ease;
         }
 
-        .led-red.blink {
-            background-color: #ff3b30;
-            box-shadow: 0 0 20px #ff3b30, inset 0 -3px 6px rgba(0,0,0,0.4);
-            animation: blink-animation 0.8s infinite alternate;
-        }
-
+        /* Style d'allumage identique à ta capture */
         .led-yellow.blink {
-            background-color: #ffcc00;
-            box-shadow: 0 0 20px #ffcc00, inset 0 -3px 6px rgba(0,0,0,0.4);
-            animation: blink-animation 0.8s infinite alternate;
-        }
-
-        .led-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #777;
+            background-color: var(--yellow-led);
+            box-shadow: 0 0 25px var(--yellow-led), inset 0 -2px 6px rgba(0,0,0,0.4);
+            animation: blink-animation 0.9s infinite alternate;
+            cursor: pointer;
         }
 
         @keyframes blink-animation {
-            from { opacity: 0.3; }
+            from { opacity: 0.4; }
             to { opacity: 1; }
-        }
-
-        /* Bouton de validation des tâches physiques au centre */
-        .btn-action-centre {
-            background-color: #2a2a2a;
-            color: #ffcc00;
-            border: 1px solid #ffcc00;
-            padding: 10px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-        }
-        .btn-action-centre:hover {
-            background-color: #ffcc00;
-            color: #121212;
-            box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
         }
 
         /* --- VOLET DROIT (QUESTIONNAIRE RAPPORT) --- */
         .side-panel {
             position: fixed;
-            top: 53px;
+            top: 0;
             right: -450px;
             width: 100%;
             max-width: 420px;
-            height: calc(100vh - 53px);
+            height: 100vh;
             background-color: var(--panel-bg);
             border-left: 1px solid var(--border-color);
-            box-shadow: -5px 0 25px rgba(0,0,0,0.5);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.7);
             transition: right 0.4s cubic-bezier(0.05, 0.74, 0.2, 1);
             display: flex;
             flex-direction: column;
-            z-index: 5;
+            z-index: 15;
         }
 
         .side-panel.open { right: 0; }
-        .panel-content { flex: 1; overflow-y: auto; padding: 20px; }
+        
+        .panel-content { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 25px; 
+        }
+
+        .panel-content h2 {
+            font-size: 1.2rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            color: #888;
+        }
 
         .section {
-            background-color: #252525;
+            background-color: #161616;
             border-radius: 6px;
             margin-bottom: 12px;
             overflow: hidden;
-            border: 1px solid #3a3a3a;
+            border: 1px solid #222;
         }
+        
         .section-header {
-            background-color: #2d2d2d;
+            background-color: #1f1f1f;
             padding: 12px 15px;
             cursor: pointer;
             font-weight: bold;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 0.9rem;
         }
-        .section-content { display: none; padding: 15px; background-color: #1e1e1e; }
+        
+        .section-content { display: none; padding: 15px; background-color: #111111; }
         .section-content.active { display: block; }
         
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; }
-        .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #aaa; }
+        .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; }
         
         .grid-checkbox {
             display: grid;
@@ -197,10 +185,10 @@
             gap: 8px;
         }
         .grid-checkbox label {
-            background-color: #252525;
+            background-color: #161616;
             padding: 6px;
             border-radius: 4px;
-            border: 1px solid #3a3a3a;
+            border: 1px solid #222;
             cursor: pointer;
             font-size: 0.8rem;
             display: flex;
@@ -212,32 +200,34 @@
             width: 100%;
             padding: 8px;
             border-radius: 4px;
-            border: 1px solid #444;
-            background-color: #2b2b2b;
+            border: 1px solid #333;
+            background-color: #1c1c1c;
             color: #fff;
             box-sizing: border-box;
         }
 
-        h3 { margin-top: 0; color: var(--primary-color); font-size: 1rem; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        h4 { margin: 12px 0 5px 0; color: var(--primary-color); font-size: 0.9rem; }
+        h3 { margin-top: 0; color: var(--yellow-led); font-size: 0.95rem; border-bottom: 1px solid #222; padding-bottom: 5px; }
+        h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppercase; }
 
         .btn-submit {
-            background-color: var(--primary-color);
-            color: #121212;
+            background-color: #ffffff;
+            color: #000000;
             border: none;
             padding: 12px;
             width: 100%;
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 15px;
+            transition: opacity 0.2s;
         }
+        .btn-submit:hover { opacity: 0.9; }
 
         .report-result-box {
             margin-top: 20px;
-            background-color: #121212;
-            border: 1px dashed var(--primary-color);
+            background-color: #000;
+            border: 1px dashed #333;
             padding: 12px;
             border-radius: 6px;
         }
@@ -246,62 +236,56 @@
             font-family: monospace;
             font-size: 0.85rem;
             margin-bottom: 12px;
-            max-height: 150px;
+            max-height: 180px;
             overflow-y: auto;
+            color: #ccc;
         }
         .btn-copy {
-            background-color: #34c759;
+            background-color: #222;
             color: #fff;
-            border: none;
+            border: 1px solid #333;
             padding: 8px;
             width: 100%;
             border-radius: 4px;
             font-weight: bold;
             cursor: pointer;
         }
+        .btn-copy:hover { background-color: #2a2a2a; }
 
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- BARRE SUPÉRIEURE -->
+    <!-- BARRE SUPÉRIEURE AVEC LE BOUTON RAPPORT AU MILIEU -->
     <header>
-        <div class="header-icons">
+        <div></div> <!-- Espaceur gauche -->
+        
+        <div class="header-center">
             <button class="icon-btn" title="Sprinkler">☔</button>
-        </div>
-        
-        <button class="icon-btn" id="togglePanelBtn" title="Ouvrir le Questionnaire" style="font-size: 1.8rem;">📝</button>
-        
-        <div class="header-icons">
+            <!-- Bouton d'ouverture/fermeture du volet des rapports -->
+            <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports">📝</button>
             <button class="icon-btn" title="Paramètres">⚙️</button>
         </div>
+        
+        <div></div> <!-- Espaceur droit -->
     </header>
 
-    <!-- ZONE CENTRALE -->
+    <!-- LED JAUNE PLACÉE EN HAUT À DROITE -->
+    <div class="led-container">
+        <div id="led-jaune" class="led-yellow" title="Cliquez pour valider les contrôles terrain"></div>
+    </div>
+
+    <!-- ZONE CENTRALE (DATE & HEURE) -->
     <main>
-        <div class="clock-display-container">
-            <div id="clock">00:00</div>
-
-            <div class="led-column">
-                <div class="led-wrapper">
-                    <div id="led-rouge" class="led led-red"></div>
-                    <div class="led-label">Alerte</div>
-                </div>
-                <div class="led-wrapper">
-                    <div id="led-jaune" class="led led-yellow"></div>
-                    <div class="led-label">Contrôles</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bouton pour valider la ronde physique et éteindre la LED Jaune -->
-        <button id="btnValiderControles" class="btn-action-centre">Acmé / Contrôles Effectués</button>
+        <div class="date-display" id="date-label">Mercredi 1 Juillet 2026</div>
+        <div id="clock">00:00</div>
     </main>
 
     <!-- VOLET DE DROITE (RAPPORTS) -->
     <div class="side-panel" id="questionnairePanel">
         <div class="panel-content">
+            <h2>ÉTAT DES REPORTS</h2>
             
             <!-- REPORT SSI -->
             <div class="section">
@@ -342,7 +326,7 @@
                         </div>
                     </div>
 
-                    <hr style="border-color: #333; margin: 15px 0;">
+                    <hr style="border-color: #222; margin: 15px 0;">
 
                     <h3>REPORT SSI BAT2</h3>
                     <div class="form-group">
@@ -456,7 +440,7 @@
                         <br><input type="text" id="siemens_b1_libre" placeholder="Saisir manuellement" style="margin-top:8px;">
                     </div>
 
-                    <hr style="border-color: #333; margin: 15px 0;">
+                    <hr style="border-color: #222; margin: 15px 0;">
 
                     <h3>REPORT SIEMENS BAT2</h3>
                     <div class="form-group">
@@ -478,65 +462,42 @@
             <!-- BOÎTE DE COPIE -->
             <div id="reportOutputBox" class="report-result-box hidden">
                 <div class="report-text" id="reportOutputText"></div>
-                <button class="btn-copy" onclick="copierRapport()">📋 Copier dans le presse-papier</button>
+                <button class="btn-copy" onclick="copierRapport()">📋 Copier le résumé</button>
             </div>
 
         </div>
     </div>
 
     <script>
-        // --- LOGIQUE HORLOGE & LEDS ---
+        // --- GESTION HORLOGE & DATE EN FRANÇAIS ---
         let controlesJaunesFaits = false;
-        let forceEteindreRouge = false;
 
         function updateClock() {
             const now = new Date();
             const hours = now.getHours();
             const minutes = now.getMinutes();
             
+            // Format heure
             const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
             document.getElementById('clock').textContent = timeString;
             document.title = `${timeString} | Dedoum`;
 
-            // Reset quotidien automatique à minuit pile
+            // Format Date (Ex: Mercredi 1 Juillet 2026)
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            let dateString = now.toLocaleDateString('fr-FR', options);
+            // Mettre la première lettre en majuscule
+            dateString = dateString.charAt(0).toUpperCase() + dateString.slice(1);
+            document.getElementById('date-label').textContent = dateString;
+
+            // Reset à minuit
             if (hours === 0 && minutes === 0 && now.getSeconds() === 0) {
-                forceEteindreRouge = false;
                 controlesJaunesFaits = false;
             }
 
-            gestionLedRouge(hours, minutes);
             gestionLedJaune(now);
         }
 
-        // LED ROUGE : Minuit -> 06:30 (Arrêt manuel par Espace)
-        function gestionLedRouge(hours, minutes) {
-            const ledRouge = document.getElementById('led-rouge');
-            const currentTimeInMinutes = (hours * 60) + minutes;
-            const limitTimeInMinutes = (6 * 60) + 30;
-
-            if (!forceEteindreRouge && currentTimeInMinutes >= 0 && currentTimeInMinutes < limitTimeInMinutes) {
-                ledRouge.classList.add('blink');
-            } else {
-                ledRouge.classList.remove('blink');
-            }
-        }
-
-        // Touche Espace pour couper la LED Rouge
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                const target = e.target.tagName.toLowerCase();
-                if (target === 'input' || target === 'textarea') return; // Ne coupe pas si on écrit
-                
-                e.preventDefault(); 
-                const ledRouge = document.getElementById('led-rouge');
-                if (ledRouge.classList.contains('blink')) {
-                    forceEteindreRouge = true;
-                    ledRouge.classList.remove('blink');
-                }
-            }
-        });
-
-        // LED JAUNE : Plannings spécifiques des rondes physiques
+        // LED JAUNE : S'allume selon tes plannings de contrôles terrain (Mardi, 1er lundi, etc.)
         function gestionLedJaune(dateObj) {
             const ledJaune = document.getElementById('led-jaune');
             
@@ -545,14 +506,13 @@
                 return;
             }
 
-            const dayOfWeek = dateObj.getDay(); // 0=Dim, 1=Lun, 2=Mar...
+            const dayOfWeek = dateObj.getDay(); 
             const dayOfMonth = dateObj.getDate();
 
             let estMardi = (dayOfWeek === 2);
             let estPremierLundi = (dayOfWeek === 1 && dayOfMonth <= 7);
             let estSemaineApresPremierLundi = false;
 
-            // Date du 1er lundi du mois en cours
             let tempDate = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1);
             while (tempDate.getDay() !== 1) {
                 tempDate.setDate(tempDate.getDate() + 1);
@@ -573,10 +533,12 @@
             }
         }
 
-        // Action sur le bouton central pour éteindre la LED Jaune
-        document.getElementById('btnValiderControles').addEventListener('click', () => {
-            controlesJaunesFaits = true;
-            document.getElementById('led-jaune').classList.remove('blink');
+        // Clic direct sur la LED jaune pour l'éteindre une fois la ronde finie
+        document.getElementById('led-jaune').addEventListener('click', function() {
+            if (this.classList.contains('blink')) {
+                controlesJaunesFaits = true;
+                this.classList.remove('blink');
+            }
         });
 
         setInterval(updateClock, 1000);
@@ -589,20 +551,26 @@
                 if ('wakeLock' in navigator) {
                     wakeLock = await navigator.wakeLock.request('screen');
                 }
-            } catch (err) {
-                console.log(`Wake lock restreint: ${err.message}`);
-            }
+            } catch (err) {}
         }
         document.addEventListener('click', () => { if(!wakeLock) requestWakeLock(); });
         document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestWakeLock(); });
 
-        // --- INTERFACE VOLET DROIT ---
+        // --- OUVERTURE / FERMETURE DU PANNEAU ---
         const panel = document.getElementById('questionnairePanel');
         const toggleBtn = document.getElementById('togglePanelBtn');
 
         toggleBtn.addEventListener('click', () => {
             panel.classList.toggle('open');
             toggleBtn.classList.toggle('active');
+        });
+
+        // Fermer le volet si on clique sur l'écran noir en dehors du menu
+        document.querySelector('main').addEventListener('click', () => {
+            if (panel.classList.contains('open')) {
+                panel.classList.remove('open');
+                toggleBtn.classList.remove('active');
+            }
         });
 
         function toggleSection(header) {
@@ -618,7 +586,7 @@
             else element.classList.add('hidden');
         }
 
-        // --- INJECTION DES COMPOSANTS ---
+        // --- INJECTION DES COMPOSANTS (SPRINKLER) ---
         const intrusionList = document.getElementById('intrusion_list');
         const vannesList = document.getElementById('vannes_list');
         const feuPosteList = document.getElementById('feu_poste_list');
@@ -697,14 +665,8 @@
             const textToCopy = document.getElementById('reportOutputText').textContent;
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const btn = document.querySelector('.btn-copy');
-                btn.textContent = "✅ Copié avec succès !";
-                btn.style.backgroundColor = "#00ff00";
-                btn.style.color = "#121212";
-                setTimeout(() => {
-                    btn.textContent = "📋 Copier dans le presse-papier";
-                    btn.style.backgroundColor = "#34c759";
-                    btn.style.color = "#fff";
-                }, 2000);
+                btn.textContent = "✅ Copié !";
+                setTimeout(() => { btn.textContent = "📋 Copier le résumé"; }, 2000);
             });
         }
     </script>
