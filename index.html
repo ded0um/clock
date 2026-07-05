@@ -23,61 +23,24 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
 
-        /* --- BARRE SUPÉRIEURE ÉPURÉE --- */
-        header {
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .header-center {
-            display: flex;
-            align-items: center;
-            gap: 50px; /* Bel espace entre le parapluie et le rapport */
-        }
-
-        .icon-btn {
-            background: none;
-            border: none;
-            color: #ffffff;
-            font-size: 1.6rem;
-            cursor: pointer;
-            padding: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.2s, transform 0.2s;
-            opacity: 0.8;
-        }
-
-        .icon-btn:hover { 
-            opacity: 1; 
-            transform: scale(1.1); 
-        }
-        
-        .icon-btn.active { 
-            color: var(--yellow-led);
-            opacity: 1;
-        }
-
-        /* --- ZONE CENTRALE (HORLOGE SEULE) --- */
+        /* --- ZONE CENTRALE COMPLETEMENT EPUREE --- */
         main {
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding-bottom: 50px;
+            padding-bottom: 30px;
         }
 
         .date-display {
             font-size: 1.4rem;
             color: #888888;
             margin-bottom: 10px;
+            user-select: none;
         }
 
         #clock {
@@ -88,7 +51,42 @@
             letter-spacing: -2px;
         }
 
-        /* --- LED JAUNE EN HAUT À DROITE --- */
+        /* --- ANCRAGE DES BOUTONS EN BAS À DROITE DE L'ÉCRAN HORLOGE --- */
+        .controls-bottom-right {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s, transform 0.2s;
+            opacity: 0.4; /* Légèrement moins blanc / discret la nuit */
+        }
+
+        /* Éclairage à 100% au passage de la souris */
+        .icon-btn:hover { 
+            opacity: 1; 
+            transform: scale(1.1); 
+        }
+        
+        .icon-btn.active { 
+            color: var(--yellow-led);
+            opacity: 1;
+        }
+
+        /* --- LED JAUNE EN HAUT À DROITE (FIDELE À TA CAPTURE) --- */
         .led-container {
             position: absolute;
             top: 20px;
@@ -96,6 +94,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            z-index: 10;
         }
 
         .led-yellow {
@@ -256,20 +255,6 @@
 </head>
 <body>
 
-    <!-- BARRE SUPÉRIEURE ÉPURÉE SANS ENGRENAGE -->
-    <header>
-        <div></div> 
-        
-        <div class="header-center">
-            <!-- Le parapluie appelle à nouveau ta fonction de météo initiale -->
-            <button class="icon-btn" onclick="toggleWeather()" title="Météo">☔</button>
-            <!-- Bouton d'ouverture/fermeture du volet des rapports -->
-            <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports">📝</button>
-        </div>
-        
-        <div></div> 
-    </header>
-
     <!-- LED JAUNE EN HAUT À DROITE -->
     <div class="led-container">
         <div id="led-jaune" class="led-yellow" title="Cliquez pour valider les contrôles terrain"></div>
@@ -280,6 +265,12 @@
         <div class="date-display" id="date-label">Dimanche 5 Juillet 2026</div>
         <div id="clock">00:00</div>
     </main>
+
+    <!-- LES BOUTONS POSITIONNÉS EN BAS À DROITE -->
+    <div class="controls-bottom-right">
+        <button class="icon-btn" onclick="toggleWeather()" title="Météo">☔</button>
+        <button class="icon-btn" id="togglePanelBtn" title="Prise de service / Rapports">📝</button>
+    </div>
 
     <!-- VOLET DE DROITE (RAPPORTS) -->
     <div class="side-panel" id="questionnairePanel">
@@ -468,7 +459,7 @@
     </div>
 
     <script>
-        // --- BASE DE TA FONCTION MÉTÉO (À adapter si tu as un script externe) ---
+        // --- BASE DE TA FONCTION MÉTÉO ---
         function toggleWeather() {
             if (typeof afficherMeteo === "function") {
                 afficherMeteo();
@@ -501,7 +492,7 @@
             gestionLedJaune(now);
         }
 
-        // LED JAUNE : Contrôles terrain
+        // LED JAUNE : Plannings de contrôles
         function gestionLedJaune(dateObj) {
             const ledJaune = document.getElementById('led-jaune');
             
@@ -537,7 +528,7 @@
             }
         }
 
-        // Clic sur la LED jaune pour l'éteindre
+        // Clic direct sur la LED jaune pour l'éteindre
         document.getElementById('led-jaune').addEventListener('click', function() {
             if (this.classList.contains('blink')) {
                 controlesJaunesFaits = true;
@@ -569,6 +560,7 @@
             toggleBtn.classList.toggle('active');
         });
 
+        // Fermeture si clic sur le fond noir
         document.querySelector('main').addEventListener('click', () => {
             if (panel.classList.contains('open')) {
                 panel.classList.remove('open');
@@ -606,7 +598,7 @@
         injecterPostes(vannesList, "Défaut vanne poste");
         injecterPostes(feuPosteList, "Feu poste de controle");
 
-        // --- DUPLICATE TEXT LOGIC ---
+        // --- LOGIQUE DU RAPPORT ---
         function genererRapport() {
             let blocsTxt = [];
             function getChecked(id) { return Array.from(document.querySelectorAll(`#${id} input:checked`)).map(el => el.value); }
