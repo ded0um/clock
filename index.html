@@ -2,85 +2,70 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dedoum | Console</title>
     <style>
-        :root { --bg-color: #000; --panel-bg: #111; --text-color: #fff; --border-color: #333; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        main { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        #clock { font-size: 8rem; font-weight: bold; letter-spacing: -4px; }
-        .date-label { color: #666; font-size: 1.2rem; }
-        
-        .controls-bottom-right { position: absolute; bottom: 30px; right: 30px; display: flex; gap: 20px; z-index: 10; }
-        .icon-btn { background: none; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; opacity: 0.4; transition: 0.2s; }
-        .icon-btn:hover { opacity: 1; transform: scale(1.1); }
-        
-        .side-panel { position: fixed; top: 0; right: -450px; width: 420px; height: 100vh; background: var(--panel-bg); border-left: 1px solid var(--border-color); transition: 0.4s; z-index: 15; padding: 25px; overflow-y: auto; }
+        :root { --bg-color: #000; --panel-bg: #111; --text-color: #fff; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #clock { font-size: 8rem; font-weight: bold; }
+        #weather-display { font-size: 1.5rem; color: #aaa; margin-top: 10px; }
+        .controls { position: absolute; bottom: 30px; right: 30px; }
+        .icon-btn { background: none; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; opacity: 0.5; }
+        .side-panel { position: fixed; top: 0; right: -450px; width: 420px; height: 100vh; background: #111; border-left: 1px solid #333; transition: 0.4s; padding: 25px; }
         .side-panel.open { right: 0; }
-        
-        .section { background: #161616; padding: 15px; margin-bottom: 15px; border-radius: 6px; border: 1px solid var(--border-color); }
-        .btn-submit { background: #fff; color: #000; width: 100%; padding: 12px; border: none; cursor: pointer; font-weight: bold; border-radius: 4px; }
-        input, select, textarea { background: #222; color: #fff; border: 1px solid #444; padding: 8px; margin-top: 5px; width: 100%; box-sizing: border-box; }
+        input, select, textarea { width: 100%; background: #222; color: #fff; border: 1px solid #444; padding: 8px; margin-top: 5px; box-sizing: border-box;}
+        .btn-submit { background: #fff; color: #000; width: 100%; padding: 10px; border: none; cursor: pointer; margin-top: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <main>
-        <div class="date-label" id="date-label"></div>
+    <main style="text-align:center;">
         <div id="clock">00:00</div>
+        <!-- Ici s'affichera la météo -->
+        <div id="weather-display">Chargement météo...</div>
     </main>
 
-    <div class="controls-bottom-right">
-        <!-- Appel direct à la fonction météo -->
-        <button class="icon-btn" onclick="ouvrirMeteo()" title="Météo">☔</button>
-        <button class="icon-btn" id="togglePanelBtn" title="Prise de service">📝</button>
+    <div class="controls">
+        <button class="icon-btn" id="togglePanelBtn">📝</button>
     </div>
 
     <div class="side-panel" id="questionnairePanel">
         <h2>Prise de service</h2>
-        <div class="section">
-            <label>Effectif présent :</label>
-            <input type="number" id="effectif" placeholder="Nombre d'agents">
-        </div>
-        <div class="section">
-            <label>État SSI (BAT1/BAT2) :</label>
-            <select id="ssi"><option>RAS</option><option>Défaut(s) présent(s)</option></select>
-        </div>
-        <div class="section">
-            <label>Commentaires / Consignes :</label>
-            <textarea id="commentaires"></textarea>
-        </div>
+        <input type="number" id="effectif" placeholder="Effectif présent">
+        <select id="ssi"><option>SSI : RAS</option><option>SSI : Défaut(s)</option></select>
+        <textarea id="commentaires" placeholder="Commentaires..."></textarea>
         <button class="btn-submit" onclick="genererRapport()">Générer le rapport</button>
-        <div id="output" style="margin-top:20px; font-family:monospace; font-size: 0.9rem; border-top: 1px solid #333; padding-top:10px;"></div>
+        <div id="output" style="margin-top:20px; font-size:0.9rem;"></div>
     </div>
 
     <script>
-        // MÉTÉO - Ouverture dans un nouvel onglet pour garantir le fonctionnement
-        function ouvrirMeteo() {
-            window.open('https://www.meteoblue.com/fr/meteo/semaine/amiens_france_2995963', '_blank');
+        // 1. HORLOGE
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }, 1000);
+
+        // 2. MÉTÉO (Automatique sans ouvrir de page)
+        async function fetchWeather() {
+            try {
+                // Coordonnées Amiens
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=49.89&longitude=2.30&current=temperature_2m,weather_code');
+                const data = await res.json();
+                const temp = data.current.temperature_2m;
+                document.getElementById('weather-display').innerText = `Amiens : ${temp}°C`;
+            } catch (e) {
+                document.getElementById('weather-display').innerText = "Météo indisponible";
+            }
         }
+        fetchWeather();
 
-        // PANNEAU
-        document.getElementById('togglePanelBtn').addEventListener('click', function() {
-            document.getElementById('questionnairePanel').classList.toggle('open');
-        });
+        // 3. PANNEAU
+        document.getElementById('togglePanelBtn').onclick = () => document.getElementById('questionnairePanel').classList.toggle('open');
 
-        // RAPPORT
         function genererRapport() {
             const e = document.getElementById('effectif').value;
             const s = document.getElementById('ssi').value;
             const c = document.getElementById('commentaires').value;
-            document.getElementById('output').innerText = `Rapport ${new Date().toLocaleDateString()}:\n- ${e} agent(s)\n- SSI: ${s}\n- Note: ${c}`;
+            document.getElementById('output').innerText = `Rapport : ${e} agents | ${s} | ${c}`;
         }
-
-        // HORLOGE
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            document.getElementById('date-label').innerText = now.toLocaleDateString('fr-FR', {weekday: 'long', day: 'numeric', month: 'long'});
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
     </script>
 </body>
 </html>
