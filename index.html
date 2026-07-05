@@ -245,7 +245,7 @@
                     
                     <div class="form-group">
                         <label><strong>NOMBRE TOTAL DE POINTS HORS SERVICE=</strong></label>
-                        <input type="number" id="pts_hs" placeholder="Saisir le nombre manuellement">
+                        <input type="number" id="pts_hs" placeholder="Saisir le nombre (Masqué si égal à 0)">
                     </div>
 
                     <div class="form-group">
@@ -413,7 +413,7 @@
         injecterPostes(vannesList, "Défaut vanne poste");
         injecterPostes(feuPosteList, "Feu poste de controle");
 
-        // Analyse complète et formatage strict selon modèle demandé (Exclusion des RAS)
+        // Analyse complète et formatage strict
         function genererRapport() {
             let blocsTxt = [];
 
@@ -461,7 +461,10 @@
             if (spr === "NON RAS") {
                 let sectionTxt = `REPORT SPRINKLER\n`;
                 const voyants = getChecked('sprinkler_voyants');
-                const ptsHs = document.getElementById('pts_hs').value || '0';
+                
+                // Récupération de la valeur brute du champ input
+                const ptsHsRaw = document.getElementById('pts_hs').value.trim();
+                const ptsHs = ptsHsRaw === "" ? 0 : parseInt(ptsHsRaw, 10);
                 
                 let alarmesSprinkler = [];
                 alarmesSprinkler.push(...getChecked('alarmes_diverses'));
@@ -473,7 +476,11 @@
                     sectionTxt += `- Voyants allumés :\n`;
                     voyants.forEach(v => sectionTxt += ` --- ${v}\n`);
                 }
-                sectionTxt += `- Nombre total de points hors service=${ptsHs} (sans libellé)\n`;
+                
+                // Affiché UNIQUEMENT si strictement supérieur à 0
+                if (ptsHs > 0) {
+                    sectionTxt += `- Nombre total de points hors service=${ptsHs} (sans libellé)\n`;
+                }
                 
                 if(alarmesSprinkler.length) {
                     sectionTxt += `- Alarmes :\n`;
@@ -526,7 +533,7 @@
                 blocsTxt.push(sectionTxt.trimEnd());
             }
 
-            // Si absolument tout est RAS
+            // Affichage final
             if(blocsTxt.length === 0) {
                 alert("Rien à signaler (Tout est RAS).");
             } else {
