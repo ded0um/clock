@@ -120,9 +120,11 @@
             font-size: 1.1rem;
         }
         h4 {
-            margin: 10px 0 5px 0;
-            color: #aaa;
-            font-size: 0.95rem;
+            margin: 15px 0 5px 0;
+            color: #00ffcc;
+            font-size: 1rem;
+            border-bottom: 1px dashed #444;
+            padding-bottom: 3px;
         }
     </style>
 </head>
@@ -210,23 +212,26 @@
             </div>
         </div>
 
-        <!-- REPORT SPRINKLER -->
+        <!-- REPORT SPRINKLER (Intègre toutes les sous-questions si NON RAS) -->
         <div class="section">
             <div class="section-header" onclick="toggleSection(this)">
-                <span>REPORT SPRINKLER & ALARMES</span>
+                <span>REPORT SPRINKLER</span>
                 <span>▼</span>
             </div>
             <div class="section-content">
                 <h3>REPORT SPRINKLER</h3>
                 <div class="form-group">
                     <div class="radio-group">
-                        <label><input type="radio" name="sprinkler" value="RAS" checked onchange="toggleDetails('sprinkler_details', this.value)"> RAS</label>
-                        <label><input type="radio" name="sprinkler" value="NON RAS" onchange="toggleDetails('sprinkler_details', this.value)"> NON RAS</label>
+                        <label><input type="radio" name="sprinkler" value="RAS" checked onchange="toggleDetails('sprinkler_global_details', this.value)"> RAS</label>
+                        <label><input type="radio" name="sprinkler" value="NON RAS" onchange="toggleDetails('sprinkler_global_details', this.value)"> NON RAS</label>
                     </div>
                 </div>
-                <div id="sprinkler_details" class="hidden">
+                
+                <!-- Tout le bloc suivant se masque/s'affiche selon le choix ci-dessus -->
+                <div id="sprinkler_global_details" class="hidden">
+                    
                     <div class="form-group">
-                        <label><strong>VOYANTS ALLUMÉS ?</strong></label>
+                        <h4>VOYANTS ALLUMÉS ?</h4>
                         <div class="checkbox-group" id="sprinkler_voyants">
                             <label><input type="checkbox" value="Feu"> Feu</label>
                             <label><input type="checkbox" value="Zone locale"> Zone locale</label>
@@ -238,69 +243,60 @@
                             <label><input type="checkbox" value="Essai"> Essai</label>
                         </div>
                     </div>
+                    
                     <div class="form-group">
                         <label><strong>NOMBRE TOTAL DE POINTS HORS SERVICE=</strong></label>
-                        <input type="number" id="pts_hs" placeholder="Saisir manuellement">
+                        <input type="number" id="pts_hs" placeholder="Saisir le nombre manuellement">
                     </div>
-                </div>
 
-                <hr style="border-color: #333; margin: 20px 0;">
-
-                <h3>ALARMES DIVERSES ?</h3>
-                <div class="form-group">
-                    <div class="checkbox-group" id="alarmes_diverses">
-                        <label><input type="checkbox" value="Controleur passage d'eau local sprinkler"> Controleur passage d'eau local sprinkler</label>
-                        <label><input type="checkbox" value="Défaut général source B1"> Défaut général source B1</label>
-                        <label><input type="checkbox" value="Défaut général source B2"> Défaut général source B2</label>
-                        <label><input type="checkbox" value="Défaut manque d'air poste n13 bat1"> Défaut manque d'air poste n13 bat1</label>
-                        <label><input type="checkbox" value="Défaut niveau réserve source B1"> Défaut niveau réserve source B1</label>
-                        <label><input type="checkbox" value="Défaut niveau réserve source B2"> Défaut niveau réserve source B2</label>
-                        <label><input type="checkbox" value="Défaut synthèse armoire de répartition"> Défaut synthèse armoire de répartition</label>
-                        <label><input type="checkbox" value="Défaut synthèse pompe jockey"> Défaut synthèse pompe jockey</label>
-                        <label><input type="checkbox" value="Défaut température local sprinkler"> Défaut température local sprinkler</label>
-                        <label><input type="checkbox" value="Défaut température s/station n7 bat1"> Défaut température s/station n7 bat1</label>
-                        <label><input type="checkbox" value="Défaut vanne bi-pass réserve B1/B2"> Défaut vanne bi-pass réserve B1/B2</label>
-                        <label><input type="checkbox" value="Défaut vanne réserve source B1"> Défaut vanne réserve source B1</label>
-                        <label><input type="checkbox" value="Défaut vannes aspi ou refoul source B1"> Défaut vannes aspi ou refoul source B1</label>
-                        <label><input type="checkbox" value="Défaut vannes aspi ou refoul source B2"> Défaut vannes aspi ou refoul source B2</label>
-                        <label><input type="checkbox" value="Intrusion local sprinkler"> Intrusion local sprinkler</label>
-                        <label><input type="checkbox" value="Marche pompe source B1"> Marche pompe source B1</label>
-                        <label><input type="checkbox" value="Marche pompe source B2"> Marche pompe source B2</label>
-                        <label><input type="checkbox" value="Non démarrage source B1"> Non démarrage source B1</label>
-                        <label><input type="checkbox" value="Non démarrage source B2"> Non démarrage source B2</label>
-                        <label><input type="checkbox" value="Passage d'eau RIA s/station n1 bat1"> Passage d'eau RIA s/station n1 bat1</label>
-                        <label><input type="checkbox" value="Passage d'eau ria s/station n6 bat1"> Passage d'eau ria s/station n6 bat1</label>
-                        <label><input type="checkbox" value="Passage d'eau ria s/station n4 bat2"> Passage d'eau ria s/station n4 bat2</label>
-                        <label><input type="checkbox" value="Position clé essais aérothermes"> Position clé essais aérothermes</label>
-                        <label><input type="checkbox" value="Position clé non auto source B1"> Position clé non auto source B1</label>
-                        <label><input type="checkbox" value="Position clé non auto source B2"> Position clé non auto source B2</label>
-                        <label><input type="checkbox" value="Risque d'échecs source B1"> Risque d'échecs source B1</label>
-                        <label><input type="checkbox" value="Risque d'échecs source B2"> Risque d'échecs source B2</label>
+                    <div class="form-group">
+                        <h4>ALARMES DIVERSES ?</h4>
+                        <div class="checkbox-group" id="alarmes_diverses">
+                            <label><input type="checkbox" value="Controleur passage d'eau local sprinkler"> Controleur passage d'eau local sprinkler</label>
+                            <label><input type="checkbox" value="Défaut général source B1"> Défaut général source B1</label>
+                            <label><input type="checkbox" value="Défaut général source B2"> Défaut général source B2</label>
+                            <label><input type="checkbox" value="Défaut manque d'air poste n13 bat1"> Défaut manque d'air poste n13 bat1</label>
+                            <label><input type="checkbox" value="Défaut niveau réserve source B1"> Défaut niveau réserve source B1</label>
+                            <label><input type="checkbox" value="Défaut niveau réserve source B2"> Défaut niveau réserve source B2</label>
+                            <label><input type="checkbox" value="Défaut synthèse armoire de répartition"> Défaut synthèse armoire de répartition</label>
+                            <label><input type="checkbox" value="Défaut synthèse pompe jockey"> Défaut synthèse pompe jockey</label>
+                            <label><input type="checkbox" value="Défaut température local sprinkler"> Défaut température local sprinkler</label>
+                            <label><input type="checkbox" value="Défaut température s/station n7 bat1"> Défaut température s/station n7 bat1</label>
+                            <label><input type="checkbox" value="Défaut vanne bi-pass réserve B1/B2"> Défaut vanne bi-pass réserve B1/B2</label>
+                            <label><input type="checkbox" value="Défaut vanne réserve source B1"> Défaut vanne réserve source B1</label>
+                            <label><input type="checkbox" value="Défaut vannes aspi ou refoul source B1"> Défaut vannes aspi ou refoul source B1</label>
+                            <label><input type="checkbox" value="Défaut vannes aspi ou refoul source B2"> Défaut vannes aspi ou refoul source B2</label>
+                            <label><input type="checkbox" value="Intrusion local sprinkler"> Intrusion local sprinkler</label>
+                            <label><input type="checkbox" value="Marche pompe source B1"> Marche pompe source B1</label>
+                            <label><input type="checkbox" value="Marche pompe source B2"> Marche pompe source B2</label>
+                            <label><input type="checkbox" value="Non démarrage source B1"> Non démarrage source B1</label>
+                            <label><input type="checkbox" value="Non démarrage source B2"> Non démarrage source B2</label>
+                            <label><input type="checkbox" value="Passage d'eau RIA s/station n1 bat1"> Passage d'eau RIA s/station n1 bat1</label>
+                            <label><input type="checkbox" value="Passage d'eau ria s/station n6 bat1"> Passage d'eau ria s/station n6 bat1</label>
+                            <label><input type="checkbox" value="Passage d'eau ria s/station n4 bat2"> Passage d'eau ria s/station n4 bat2</label>
+                            <label><input type="checkbox" value="Position clé essais aérothermes"> Position clé essais aérothermes</label>
+                            <label><input type="checkbox" value="Position clé non auto source B1"> Position clé non auto source B1</label>
+                            <label><input type="checkbox" value="Position clé non auto source B2"> Position clé non auto source B2</label>
+                            <label><input type="checkbox" value="Risque d'échecs source B1"> Risque d'échecs source B1</label>
+                            <label><input type="checkbox" value="Risque d'échecs source B2"> Risque d'échecs source B2</label>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- LOCATIONS ET POSTES -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <span>INTRUSIONS & POSTES (VANNES / FEU)</span>
-                <span>▼</span>
-            </div>
-            <div class="section-content">
-                <h3>INTRUSION S/STATION ... ?</h3>
-                <div class="form-group">
-                    <div class="grid-checkbox" id="intrusion_list"></div>
-                </div>
-                
-                <h3>DEFAUT VANNE POSTE ...</h3>
-                <div class="form-group">
-                    <div class="grid-checkbox" id="vannes_list"></div>
-                </div>
+                    <div class="form-group">
+                        <h4>INTRUSION S/STATION ... ?</h4>
+                        <div class="grid-checkbox" id="intrusion_list"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <h4>DEFAUT VANNE POSTE ...</h4>
+                        <div class="grid-checkbox" id="vannes_list"></div>
+                    </div>
 
-                <h3>FEU POSTE DE CONTROLE ...</h3>
-                <div class="form-group">
-                    <div class="grid-checkbox" id="feu_poste_list"></div>
+                    <div class="form-group">
+                        <h4>FEU POSTE DE CONTROLE ...</h4>
+                        <div class="grid-checkbox" id="feu_poste_list"></div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -321,14 +317,20 @@
                     </div>
                 </div>
                 <div id="siemens_b1_details" class="hidden">
-                    <h4>VOYANTS ALLUMÉS ?</h4>
-                    <label><input type="checkbox" id="siemens_b1_derangement" value="Dérangement"> Dérangement</label>
+                    <div class="form-group">
+                        <label><strong>VOYANTS ALLUMÉS ?</strong></label>
+                        <label><input type="checkbox" id="siemens_b1_derangement" value="Dérangement"> Dérangement</label>
+                    </div>
                     
-                    <h4>INTITULE ANAMOLIE RECURENTE</h4>
-                    <label><input type="checkbox" id="siemens_b1_recurrente" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
+                    <div class="form-group">
+                        <label><strong>INTITULE ANAMOLIE RECURENTE</strong></label>
+                        <label><input type="checkbox" id="siemens_b1_recurrente" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
+                    </div>
                     
-                    <h4>INTITULE ANAMOLIE</h4>
-                    <input type="text" id="siemens_b1_libre" placeholder="Saisir manuellement">
+                    <div class="form-group">
+                        <label><strong>INTITULE ANAMOLIE</strong></label>
+                        <input type="text" id="siemens_b1_libre" placeholder="Saisir manuellement">
+                    </div>
                 </div>
 
                 <hr style="border-color: #333; margin: 20px 0;">
@@ -342,14 +344,20 @@
                     </div>
                 </div>
                 <div id="siemens_b2_details" class="hidden">
-                    <h4>VOYANTS ALLUMÉS ?</h4>
-                    <label><input type="checkbox" id="siemens_b2_derangement" value="Dérangement"> Dérangement</label>
+                    <div class="form-group">
+                        <label><strong>VOYANTS ALLUMÉS ?</strong></label>
+                        <label><input type="checkbox" id="siemens_b2_derangement" value="Dérangement"> Dérangement</label>
+                    </div>
                     
-                    <h4>INTITULE ANAMOLIE RECURENTE</h4>
-                    <label><input type="checkbox" id="siemens_b2_recurrente" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
+                    <div class="form-group">
+                        <label><strong>INTITULE ANAMOLIE RECURENTE</strong></label>
+                        <label><input type="checkbox" id="siemens_b2_recurrente" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
+                    </div>
                     
-                    <h4>INTITULE ANAMOLIE</h4>
-                    <input type="text" id="siemens_b2_libre" placeholder="Saisir manuellement">
+                    <div class="form-group">
+                        <label><strong>INTITULE ANAMOLIE</strong></label>
+                        <input type="text" id="siemens_b2_libre" placeholder="Saisir manuellement">
+                    </div>
                 </div>
             </div>
         </div>
@@ -358,7 +366,7 @@
     </div>
 
     <script>
-        // Horloge sans secondes + Onglet dynamique (Ex: 21:30 | Dedoum)
+        // Horloge sans secondes + Onglet dynamique
         function updateClock() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -389,16 +397,14 @@
             }
         }
 
-        // Génération des listes dynamiques (Intrusions et Postes)
+        // Remplissage automatique des listes de structures
         const intrusionList = document.getElementById('intrusion_list');
         const vannesList = document.getElementById('vannes_list');
         const feuPosteList = document.getElementById('feu_poste_list');
 
-        // Intrusions : n1 bat1 à n9 bat1, puis n1 bat2 à n4 bat2
         for(let i = 1; i <= 9; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="n${i} bat1"> n${i} bat1</label>`;
         for(let i = 1; i <= 4; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="n${i} bat2"> n${i} bat2</label>`;
 
-        // Remplissage des listes de postes identiques (Vannes et Feux)
         function injecterPostes(conteneurHTML) {
             for(let i = 1; i <= 12; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="n${i} bat1"> n${i} bat1</label>`;
             conteneurHTML.innerHTML += `<label><input type="checkbox" value="A air n13 bat1"> A air n13 bat1</label>`;
@@ -408,82 +414,75 @@
         injecterPostes(vannesList);
         injecterPostes(feuPosteList);
 
-        // Analyse complète de la saisie et formatage du résultat
+        // Analyse complète et formatage du résultat
         function genererRapport() {
-            let structureTxt = `=== COMPTE RENDU DE RONDE (${document.getElementById('clock').textContent}) ===\n\n`;
+            let txt = `=== RAPPORT DE RONDE (${document.getElementById('clock').textContent}) ===\n\n`;
 
-            // Extraction utilitaire pour les cases cochées d'un bloc
-            function getCheckedItems(containerId) {
+            function getChecked(containerId) {
                 const checked = document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`);
                 return Array.from(checked).map(el => el.value);
             }
 
             // SSI B1
-            const ssiB1Statut = document.querySelector('input[name="ssi_b1"]:checked').value;
-            structureTxt += `REPORT SSI B1 : ${ssiB1Statut}\n`;
-            if (ssiB1Statut === "NON RAS") {
-                const voyants = getCheckedItems('ssi_b1_voyants');
-                const zones = getCheckedItems('ssi_b1_zones');
-                if(voyants.length) structureTxt += ` - Voyants allumés : ${voyants.join(', ')}\n`;
-                if(zones.length) structureTxt += ` - Zones en alarmes : ${zones.join(', ')}\n`;
+            const ssiB1 = document.querySelector('input[name="ssi_b1"]:checked').value;
+            txt += `REPORT SSI B1 : ${ssiB1}\n`;
+            if (ssiB1 === "NON RAS") {
+                const voyants = getChecked('ssi_b1_voyants');
+                const zones = getChecked('ssi_b1_zones');
+                if(voyants.length) txt += ` - Voyants allumés : ${voyants.join(', ')}\n`;
+                if(zones.length) txt += ` - Zones en alarmes : ${zones.join(', ')}\n`;
             }
 
             // SSI B2
-            const ssiB2Statut = document.querySelector('input[name="ssi_b2"]:checked').value;
-            structureTxt += `\nREPORT SSI B2 : ${ssiB2Statut}\n`;
-            if (ssiB2Statut === "NON RAS") {
-                const voyants = getCheckedItems('ssi_b2_voyants');
-                const zones = getCheckedItems('ssi_b2_zones');
-                if(voyants.length) structureTxt += ` - Voyants allumés : ${voyants.join(', ')}\n`;
-                if(zones.length) structureTxt += ` - Zones en alarmes : ${zones.join(', ')}\n`;
+            const ssiB2 = document.querySelector('input[name="ssi_b2"]:checked').value;
+            txt += `\nREPORT SSI B2 : ${ssiB2}\n`;
+            if (ssiB2 === "NON RAS") {
+                const voyants = getChecked('ssi_b2_voyants');
+                const zones = getChecked('ssi_b2_zones');
+                if(voyants.length) txt += ` - Voyants allumés : ${voyants.join(', ')}\n`;
+                if(zones.length) txt += ` - Zones en alarmes : ${zones.join(', ')}\n`;
             }
 
-            // Sprinkler
-            const sprStatut = document.querySelector('input[name="sprinkler"]:checked').value;
-            structureTxt += `\nREPORT SPRINKLER : ${sprStatut}\n`;
-            if (sprStatut === "NON RAS") {
-                const voyants = getCheckedItems('sprinkler_voyants');
+            // Sprinkler Globalisé
+            const spr = document.querySelector('input[name="sprinkler"]:checked').value;
+            txt += `\nREPORT SPRINKLER : ${spr}\n`;
+            if (spr === "NON RAS") {
+                const voyants = getChecked('sprinkler_voyants');
                 const ptsHs = document.getElementById('pts_hs').value || '0';
-                if(voyants.length) structureTxt += ` - VOYANTS ALLUMÉS : ${voyants.join(', ')}\n`;
-                structureTxt += ` - NOMBRE TOTAL DE POINTS HORS SERVICE = ${ptsHs}\n`;
+                const diverses = getChecked('alarmes_diverses');
+                const intrusions = getChecked('intrusion_list');
+                const vannes = getChecked('vannes_list');
+                const feux = getChecked('feu_poste_list');
+
+                if(voyants.length) txt += ` - VOYANTS ALLUMÉS : ${voyants.join(', ')}\n`;
+                txt += ` - NOMBRE TOTAL DE POINTS HORS SERVICE = ${ptsHs}\n`;
+                if(diverses.length) txt += ` - ALARMES DIVERSES : ${diverses.join(', ')}\n`;
+                if(intrusions.length) txt += ` - INTRUSION S/STATION : ${intrusions.join(', ')}\n`;
+                if(vannes.length) txt += ` - DEFAUT VANNE POSTE : ${vannes.join(', ')}\n`;
+                if(feux.length) txt += ` - FEU POSTE DE CONTROLE : ${feux.join(', ')}\n`;
             }
-
-            // Alarmes diverses
-            const diverses = getCheckedItems('alarmes_diverses');
-            if(diverses.length) structureTxt += ` - ALARMES DIVERSES : ${diverses.join(', ')}\n`;
-
-            // Localisations
-            const intrusions = getCheckedItems('intrusion_list');
-            if(intrusions.length) structureTxt += `\nINTRUSION S/STATION : ${intrusions.join(', ')}\n`;
-
-            const vannes = getCheckedItems('vannes_list');
-            if(vannes.length) structureTxt += `DEFAUT VANNE POSTE : ${vannes.join(', ')}\n`;
-
-            const feux = getCheckedItems('feu_poste_list');
-            if(feux.length) structureTxt += `FEU POSTE DE CONTROLE : ${feux.join(', ')}\n`;
 
             // Siemens B1
-            const siemensB1Statut = document.querySelector('input[name="siemens_b1"]:checked').value;
-            structureTxt += `\nREPORT SIEMENS B1 : ${siemensB1Statut}\n`;
-            if (siemensB1Statut === "NON RAS") {
-                if(document.getElementById('siemens_b1_derangement').checked) structureTxt += ` - VOYANTS ALLUMÉS : Dérangement\n`;
-                if(document.getElementById('siemens_b1_recurrente').checked) structureTxt += ` - INTITULE ANOMALIE RECURENTE : Reprise info locaux technique coupure armoire chaufferie\n`;
+            const siemensB1 = document.querySelector('input[name="siemens_b1"]:checked').value;
+            txt += `\nREPORT Siemens B1 : ${siemensB1}\n`;
+            if (siemensB1 === "NON RAS") {
+                if(document.getElementById('siemens_b1_derangement').checked) txt += ` - VOYANTS ALLUMÉS : Dérangement\n`;
+                if(document.getElementById('siemens_b1_recurrente').checked) txt += ` - INTITULE ANOMALIE RECURENTE : Reprise info locaux technique coupure armoire chaufferie\n`;
                 const libre = document.getElementById('siemens_b1_libre').value;
-                if(libre) structureTxt += ` - INTITULE ANOMALIE : ${libre}\n`;
+                if(libre) txt += ` - INTITULE ANOMALIE : ${libre}\n`;
             }
 
             // Siemens B2
-            const siemensB2Statut = document.querySelector('input[name="siemens_b2"]:checked').value;
-            structureTxt += `\nREPORT SIEMENS B2 : ${siemensB2Statut}\n`;
-            if (siemensB2Statut === "NON RAS") {
-                if(document.getElementById('siemens_b2_derangement').checked) structureTxt += ` - VOYANTS ALLUMÉS : Dérangement\n`;
-                if(document.getElementById('siemens_b2_recurrente').checked) structureTxt += ` - INTITULE ANOMALIE RECURENTE : Reprise info locaux technique coupure armoire chaufferie\n`;
+            const siemensB2 = document.querySelector('input[name="siemens_b2"]:checked').value;
+            txt += `\nREPORT Siemens B2 : ${siemensB2}\n`;
+            if (siemensB2 === "NON RAS") {
+                if(document.getElementById('siemens_b2_derangement').checked) txt += ` - VOYANTS ALLUMÉS : Dérangement\n`;
+                if(document.getElementById('siemens_b2_recurrente').checked) txt += ` - INTITULE ANOMALIE RECURENTE : Reprise info locaux technique coupure armoire chaufferie\n`;
                 const libre = document.getElementById('siemens_b2_libre').value;
-                if(libre) structureTxt += ` - INTITULE ANOMALIE : ${libre}\n`;
+                if(libre) txt += ` - INTITULE ANOMALIE : ${libre}\n`;
             }
 
-            // Affiche le récapitulatif final
-            alert(structureTxt);
+            alert(txt);
         }
     </script>
 </body>
