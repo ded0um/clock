@@ -3,520 +3,383 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dedoum</title>
+    <title>00:00 | Dedoum</title>
     <style>
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
             margin: 0;
-            height: 100vh;
-            display: flex;
-            background-color: black;
-            color: white;
-            font-family: system-ui, sans-serif;
-            overflow: hidden;
-            user-select: none;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        /* Conteneur principal */
-        #main-container {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            align-items: center;
-        }
-
-        /* Partie Horloge : 100% par défaut, 66% si la liste est active */
-        #clock-zone {
-            flex: 0 0 100%;
-            width: 100%;
-            height: 100%;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: flex 0.4s ease;
-            position: relative;
-        }
-
-        /* Partie Liste (1/3) */
-        #todo-list {
-            flex: 0 0 33.33%;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.05);
-            height: 100%;
-            box-sizing: border-box;
-            overflow-y: auto;
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
-            display: none;
-            transition: all 0.4s ease;
-        }
-
-        #date { font-size: 2.5vw; opacity: 0.6; margin-bottom: 1vh; text-transform: capitalize; }
-        #clock { font-size: 13vw; font-weight: 700; }
-
-        .todo-item {
-            font-size: 1.5vw;
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transition: all 0.4s ease;
-        }
-        .todo-item.fade-out { opacity: 0; transform: translateX(30px); height: 0; margin: 0; overflow: hidden; }
-        .todo-checkbox { width: 1.6vw; height: 1.6vw; cursor: pointer; }
-
-        /* Onglet latéral style Samsung */
-        #side-handle {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 16px;
-            height: 90px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 8px 0 0 8px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 30;
-            transition: background 0.2s, right 0.4s ease;
-        }
-        #side-handle:hover {
-            background: rgba(255, 255, 255, 0.4);
-        }
-        #side-handle::after {
-            content: "‹";
-            font-size: 20px;
-            color: rgba(255, 255, 255, 0.7);
-        }
-        #side-handle.open::after {
-            content: "›";
-        }
-
-        /* Conteneur des LEDs en haut à droite */
-        #led-container {
-            position: absolute;
-            top: 25px;
-            right: 25px;
-            display: flex;
-            gap: 15px;
-            z-index: 20;
-        }
-
-        /* Style des LEDs (30px x 30px) */
-        .led {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: transparent;
-            box-shadow: none;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* LED Rouge Active */
-        #notification-led.active {
-            background-color: #ff3b30;
-            box-shadow: 0 0 15px #ff3b30, 0 0 25px #ff3b30;
-        }
-
-        /* LED Jaune Active */
-        #task-led.active {
-            background-color: #ffcc00;
-            box-shadow: 0 0 15px #ffcc00, 0 0 25px #ffcc00;
-        }
-
-        /* Contrôles bas droite */
-        #controls-container { 
-            position: absolute; 
-            bottom: 25px; 
-            right: 25px; 
-            z-index: 10; 
-            display: flex; 
-            flex-direction: column;
-            align-items: flex-end; 
-            gap: 15px; 
-            opacity: 0.5; 
-            transition: opacity 0.2s;
-        }
-        #controls-container:hover { opacity: 0.9; }
-
-        .buttons-row {
-            display: flex;
-            gap: 20px;
             align-items: center;
         }
-
-        #weather {
-            display: none;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px;
-            border-radius: 14px;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            align-items: center;
+        #clock {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #00ffcc;
         }
-        .weather-column { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 8px 10px;
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+        .section {
+            background-color: #1e1e1e;
             border-radius: 8px;
-            transition: all 0.3s ease;
-            min-width: 65px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            border: 1px solid #333;
         }
-        .weather-hour { font-size: 13px; font-weight: bold; opacity: 0.5; margin-bottom: 4px; }
-        .weather-proba { font-size: 20px; margin-bottom: 4px; }
-        .weather-temp { font-size: 12px; font-weight: 500; margin-bottom: 2px; }
-        .weather-wind { font-size: 10px; opacity: 0.7; display: flex; align-items: center; gap: 2px; }
-
-        /* Style spécial pour mettre en valeur l'heure en cours */
-        .weather-column.current-hour {
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid #ffcc00;
-            box-shadow: 0 0 10px rgba(255, 204, 0, 0.2);
+        .section-header {
+            background-color: #2a2a2a;
+            padding: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
         }
-        .weather-column.current-hour .weather-hour {
-            opacity: 1;
-            color: #ffcc00;
+        .section-header:hover {
+            background-color: #333;
         }
-
-        .control-btn { font-size: 24px; cursor: pointer; width: 35px; height: 35px; text-align: center; line-height: 35px; color: inherit; position: relative; display: inline-block; }
-        #color-picker { opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; }
-        
-        :fullscreen #controls-container { display: none; }
-
-        /* Ajustement pour mobiles / tablettes */
-        @media (max-width: 1024px) {
-            #controls-container {
-                bottom: 60px; 
-                right: 20px;
-                opacity: 0.8; 
-            }
-            #weather {
-                max-width: 85vw;
-                overflow-x: auto; 
-            }
+        .section-content {
+            padding: 15px;
+            display: none;
+        }
+        .section-content.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .grid-checkbox {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .grid-checkbox label {
+            background-color: #252525;
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #3a3a3a;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .grid-checkbox label:hover {
+            background-color: #333;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background-color: #2b2b2b;
+            color: #fff;
+            box-sizing: border-box;
+        }
+        .hidden {
+            display: none;
+        }
+        .btn-submit {
+            background-color: #00ffcc;
+            color: #121212;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .btn-submit:hover {
+            background-color: #00ccaa;
+        }
+        h3 {
+            margin-top: 0;
+            color: #00ffcc;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
         }
     </style>
 </head>
 <body>
 
-    <div id="main-container">
-        <div id="clock-zone" onclick="toggleFullscreen()">
-            
-            <div id="side-handle" onclick="toggleTodoListPanel(event)"></div>
+    <!-- Horloge sans les secondes -->
+    <div id="clock">00:00</div>
 
-            <div id="led-container" onclick="event.stopPropagation()">
-                <div id="task-led" class="led" title="Tâches en attente"></div>
-                <div id="notification-led" class="led" title="Alerte Minuit"></div>
+    <div class="container">
+        
+        <!-- SECTION 1 : SSI -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <span>REPORT SSI (B1 & B2)</span>
+                <span>▼</span>
             </div>
-            
-            <div id="date">Chargement...</div>
-            <div id="clock">00:00</div>
-            
-            <div id="controls-container" onclick="event.stopPropagation()">
-                <div id="weather"></div>
-                <div class="buttons-row">
-                    <span id="umbrella-btn" class="control-btn" title="Afficher la météo">&#9730;</span>
-                    <span id="gear-btn" class="control-btn" title="Changer la couleur">
-                        &#9881;
-                        <input type="color" id="color-picker" value="#000000">
-                    </span>
+            <div class="section-content">
+                <!-- SSI B1 -->
+                <h3>SSI B1</h3>
+                <div class="form-group">
+                    <div class="radio-group">
+                        <label><input type="radio" name="ssi_b1" value="RAS" checked onchange="toggleDetails('ssi_b1_details', this.value)"> RAS</label>
+                        <label><input type="radio" name="ssi_b1" value="NON RAS" onchange="toggleDetails('ssi_b1_details', this.value)"> NON RAS (Dérangement / Anomalie)</label>
+                    </div>
+                </div>
+                <div id="ssi_b1_details" class="hidden">
+                    <div class="form-group">
+                        <label>Voyants allumés :</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" value="Dérangement"> Dérangement</label>
+                            <label><input type="checkbox" value="Veille restreinte"> Veille restreinte</label>
+                            <label><input type="checkbox" value="Alarme feu"> Alarme feu</label>
+                            <label><input type="checkbox" value="Évacuation générale"> Évacuation générale</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Zones en alarme (B1) :</label>
+                        <div class="grid-checkbox">
+                            <label><input type="checkbox" value="Z1"> Z1</label>
+                            <label><input type="checkbox" value="Z2"> Z2</label>
+                            <label><input type="checkbox" value="Z3"> Z3</label>
+                            <label><input type="checkbox" value="Z4"> Z4</label>
+                            <label><input type="checkbox" value="Z5"> Z5</label>
+                            <label><input type="checkbox" value="Z6"> Z6</label>
+                            <label><input type="checkbox" value="Z7"> Z7</label>
+                            <label><input type="checkbox" value="Z8"> Z8</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr style="border-color: #333; margin: 20px 0;">
+
+                <!-- SSI B2 -->
+                <h3>SSI B2</h3>
+                <div class="form-group">
+                    <div class="radio-group">
+                        <label><input type="radio" name="ssi_b2" value="RAS" checked onchange="toggleDetails('ssi_b2_details', this.value)"> RAS</label>
+                        <label><input type="radio" name="ssi_b2" value="NON RAS" onchange="toggleDetails('ssi_b2_details', this.value)"> NON RAS</label>
+                    </div>
+                </div>
+                <div id="ssi_b2_details" class="hidden">
+                    <div class="form-group">
+                        <label>Voyants allumés :</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" value="Dérangement"> Dérangement</label>
+                            <label><input type="checkbox" value="Veille restreinte"> Veille restreinte</label>
+                            <label><input type="checkbox" value="Alarme feu"> Alarme feu</label>
+                            <label><input type="checkbox" value="Évacuation générale"> Évacuation générale</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Zones en alarme (B2) :</label>
+                        <div class="grid-checkbox">
+                            <label><input type="checkbox" value="Z1"> Z1</label>
+                            <label><input type="checkbox" value="Z2"> Z2</label>
+                            <label><input type="checkbox" value="Z3"> Z3</label>
+                            <label><input type="checkbox" value="Z4"> Z4</label>
+                            <label><input type="checkbox" value="Z5"> Z5</label>
+                            <label><input type="checkbox" value="Z6"> Z6</label>
+                            <label><input type="checkbox" value="Z7"> Z7</label>
+                            <label><input type="checkbox" value="Z8"> Z8</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div id="todo-list">
-            <div id="todo-items-container"></div>
+        <!-- SECTION 2 : SPRINKLER & ALARMES TECHNIQUES -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <span>REPORT SPRINKLER & ALARMES</span>
+                <span>▼</span>
+            </div>
+            <div class="section-content">
+                <h3>Sprinkler</h3>
+                <div class="form-group">
+                    <div class="radio-group">
+                        <label><input type="radio" name="sprinkler" value="RAS" checked onchange="toggleDetails('sprinkler_details', this.value)"> RAS Sprinkler</label>
+                        <label><input type="radio" name="sprinkler" value="NON RAS" onchange="toggleDetails('sprinkler_details', this.value)"> NON RAS Sprinkler</label>
+                    </div>
+                </div>
+                <div id="sprinkler_details" class="hidden">
+                    <div class="form-group">
+                        <label>Voyants Sprinkler :</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" value="Feu"> Feu</label>
+                            <label><input type="checkbox" value="Zone locale"> Zone locale</label>
+                            <label><input type="checkbox" value="Zone voisine"> Zone voisine</label>
+                            <label><input type="checkbox" value="Défaut général"> Défaut général</label>
+                            <label><input type="checkbox" value="Hors service"> Hors service</label>
+                            <label><input type="checkbox" value="Défaut T.R.E."> Défaut T.R.E.</label>
+                            <label><input type="checkbox" value="Défaut alimentation"> Défaut alimentation</label>
+                            <label><input type="checkbox" value="Essai"> Essai</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre total de points hors service :</label>
+                        <input type="number" id="pts_hs" placeholder="Ex: 0">
+                    </div>
+                </div>
+
+                <hr style="border-color: #333; margin: 20px 0;">
+
+                <h3>Alarmes Diverses / Techniques</h3>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" value="Contrôleur passage d'eau local sprinkler"> Contrôleur passage d'eau local sprinkler</label>
+                        <label><input type="checkbox" value="Défauts généraux sources B1/B2"> Défauts généraux sources B1/B2</label>
+                        <label><input type="checkbox" value="Manque d'air"> Manque d'air</label>
+                        <label><input type="checkbox" value="Niveaux de réserve"> Niveaux de réserve</label>
+                        <label><input type="checkbox" value="Pompe jockey"> Pompe jockey</label>
+                        <label><input type="checkbox" value="Pompe source B1"> Pompe source B1</label>
+                        <label><input type="checkbox" value="Pompe source B2"> Pompe source B2</label>
+                        <label><input type="checkbox" value="Températures locaux"> Températures locaux</label>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- SECTION 3 : SIEMENS -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <span>REPORT SIEMENS (B1 & B2)</span>
+                <span>▼</span>
+            </div>
+            <div class="section-content">
+                <h3>Siemens B1</h3>
+                <div class="form-group">
+                    <div class="radio-group">
+                        <label><input type="radio" name="siemens_b1" value="RAS" checked onchange="toggleDetails('siemens_b1_details', this.value)"> RAS</label>
+                        <label><input type="radio" name="siemens_b1" value="NON RAS" onchange="toggleDetails('siemens_b1_details', this.value)"> NON RAS</label>
+                    </div>
+                </div>
+                <div id="siemens_b1_details" class="hidden">
+                    <div class="checkbox-group" style="margin-bottom: 10px;">
+                        <label><input type="checkbox" value="Dérangement"> Dérangement</label>
+                        <label><input type="checkbox" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
+                    </div>
+                    <input type="text" id="siemens_b1_libre" placeholder="Autre anomalie (texte libre)">
+                </div>
+
+                <hr style="border-color: #333; margin: 20px 0;">
+
+                <h3>Siemens B2</h3>
+                <div class="form-group">
+                    <div class="radio-group">
+                        <label><input type="radio" name="siemens_b2" value="RAS" checked onchange="toggleDetails('siemens_b2_details', this.value)"> RAS</label>
+                        <label><input type="radio" name="siemens_b2" value="NON RAS" onchange="toggleDetails('siemens_b2_details', this.value)"> NON RAS</label>
+                    </div>
+                </div>
+                <div id="siemens_b2_details" class="hidden">
+                    <div class="checkbox-group" style="margin-bottom: 10px;">
+                        <label><input type="checkbox" value="Dérangement"> Dérangement</label>
+                        <label><input type="checkbox" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
+                    </div>
+                    <input type="text" id="siemens_b2_libre" placeholder="Autre anomalie (texte libre)">
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 4 : LOCALISATION VANNES & INTRUSIONS -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <span>VANNES & INTRUSIONS</span>
+                <span>▼</span>
+            </div>
+            <div class="section-content">
+                <h3>Intrusions Sous-Station</h3>
+                <div class="form-group">
+                    <div class="grid-checkbox" id="intrusion_list"></div>
+                </div>
+                
+                <h3>Défauts Vannes / Feu Poste</h3>
+                <div class="form-group">
+                    <div class="grid-checkbox" id="vannes_list"></div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-submit" onclick="genererRapport()">Générer le résumé de Ronde</button>
     </div>
 
     <script>
-        let lastCheckedDayStr = "";
-        
-        let hiddenTasks = new Set(JSON.parse(localStorage.getItem('hiddenTasks')) || []);
-        
-        const weatherDiv = document.getElementById('weather');
-        const controlsContainer = document.getElementById('controls-container');
-        
-        let ledDismissed = false;
-        let pageLaunched = false; 
-        let midnightCrossed = false;
-        let panelManuallyClosed = false;
-
-        function saveHiddenTasks() {
-            localStorage.setItem('hiddenTasks', JSON.stringify(Array.from(hiddenTasks)));
-        }
-
-        function clearHiddenTasks() {
-            hiddenTasks.clear();
-            localStorage.removeItem('hiddenTasks');
-        }
-
-        function getFirstMondayDate(year, month) {
-            let d = new Date(year, month, 1);
-            while (d.getDay() !== 1) {
-                d.setDate(d.getDate() + 1);
-            }
-            return d.getDate();
-        }
-
-        function updateClockAndTasks() {
+        // Gestion de l'horloge et titre dynamique (ex: 01:51 | Dedoum)
+        function updateClock() {
             const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}`;
             
-            document.getElementById('date').textContent = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-            
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            const timeStr = String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
-            
-            // Met à jour la grande horloge sur la page
-            document.getElementById('clock').innerHTML = timeStr;
-            
-            // Met à jour dynamiquement le titre de l'onglet au format demandé
-            document.title = timeStr + " | Dedoum";
+            document.getElementById('clock').textContent = timeString;
+            document.title = `${timeString} | Dedoum`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
-            const totalMinutes = hours * 60 + minutes;
-            
-            // --- GESTION DE LA LED ROUGE (FRANCHISSEMENT DE MINUIT) ---
-            const redLed = document.getElementById('notification-led');
-            
-            if (!pageLaunched) {
-                pageLaunched = true;
-                midnightCrossed = false;
-            }
+        // Gestion du pliage/dépliage des sections accordéons
+        function toggleSection(header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('span:last-child');
+            content.classList.toggle('active');
+            icon.textContent = content.classList.contains('active') ? '▲' : '▼';
+        }
 
-            if (hours === 0 && minutes === 0) {
-                if (!midnightCrossed) {
-                    midnightCrossed = true;
-                    ledDismissed = false;
-                }
-            }
-
-            if (totalMinutes >= 6 * 60 + 30 && totalMinutes < 19 * 60) {
-                midnightCrossed = false;
-                ledDismissed = false;
-            }
-
-            if (midnightCrossed && !ledDismissed && totalMinutes < 6 * 60 + 30) {
-                redLed.classList.add('active');
+        // Afficher ou masquer les zones d'anomalies selon le bouton coché
+        function toggleDetails(id, value) {
+            const element = document.getElementById(id);
+            if (value === 'NON RAS') {
+                element.classList.remove('hidden');
             } else {
-                redLed.classList.remove('active');
-            }
-
-            // --- VÉRIFICATION DU SHIFT POUR LES TÂCHES ---
-            const isShiftActive = (totalMinutes >= 19 * 60) || (totalMinutes < 6 * 60 + 30);
-            
-            const todoListDiv = document.getElementById('todo-list');
-            const clockZone = document.getElementById('clock-zone');
-            const sideHandle = document.getElementById('side-handle');
-            const taskLed = document.getElementById('task-led');
-
-            if (!isShiftActive) {
-                todoListDiv.style.display = 'none';
-                clockZone.style.flex = "0 0 100%";
-                sideHandle.style.display = 'none';
-                clearHiddenTasks(); 
-                taskLed.classList.remove('active');
-                return; 
-            }
-
-            let referenceDate = new Date(now);
-            if (hours < 12) referenceDate.setDate(referenceDate.getDate() - 1);
-            
-            const currentDayStr = referenceDate.toDateString();
-            if (currentDayStr !== lastCheckedDayStr) {
-                clearHiddenTasks(); 
-                lastCheckedDayStr = currentDayStr;
-                panelManuallyClosed = false; 
-            }
-
-            const dayOfWeek = referenceDate.getDay();
-            const dateNum = referenceDate.getDate();
-
-            const firstMondayDate = getFirstMondayDate(referenceDate.getFullYear(), referenceDate.getMonth());
-            
-            const isFirstMonday = (dayOfWeek === 1 && dateNum === firstMondayDate);
-            const isFirstTuesday = (dayOfWeek === 2 && dateNum === (firstMondayDate + 1));
-            const isFirstWednesday = (dayOfWeek === 3 && dateNum === (firstMondayDate + 2));
-            const isFirstThursday = (dayOfWeek === 4 && dateNum === (firstMondayDate + 3));
-            const isFirstFriday = (dayOfWeek === 5 && dateNum === (firstMondayDate + 4));
-
-            let tasks = [];
-            
-            if (dayOfWeek === 2) tasks.push("B1 : Contrôle des vannes de postes");
-            
-            if (isFirstMonday) { tasks.push("B1 : Contrôle des IS"); tasks.push("B1 : Contrôle des DM"); }
-            if (isFirstTuesday) { tasks.push("B1 : Contrôle des compteurs paratonnerre"); tasks.push("B1 : Contrôle des douches et rince-œil"); tasks.push("B2 : Contrôle des compteurs paratonnerre"); }
-            if (isFirstWednesday) tasks.push("B1 : Contrôle des cales et chandelles");
-            if (isFirstThursday) tasks.push("B1 : Contrôle des éclairages entrepôt");
-            if (isFirstFriday) tasks.push("B1 : Contrôle des BAES");
-
-            const visibleTasks = tasks.filter(task => !hiddenTasks.has(task));
-
-            // --- GESTION DE LA LED JAUNE ET DU PANNEAU LATÉRAL ---
-            if (visibleTasks.length > 0) {
-                taskLed.classList.add('active');
-                sideHandle.style.display = 'flex';
-
-                if (!panelManuallyClosed) {
-                    todoListDiv.style.display = 'block';
-                    clockZone.style.flex = "0 0 66.66%";
-                    sideHandle.classList.add('open');
-                } else {
-                    todoListDiv.style.display = 'none';
-                    clockZone.style.flex = "0 0 100%";
-                    sideHandle.classList.remove('open');
-                }
-
-                const container = document.getElementById('todo-items-container');
-                const activeItems = container.querySelectorAll('.todo-item:not(.fade-out)');
-                if (activeItems.length !== visibleTasks.length) {
-                    container.innerHTML = visibleTasks.map(task => `
-                        <div class="todo-item" data-task="${task}">
-                            <input type="checkbox" class="todo-checkbox" onchange="checkTask(this)">
-                            <span>${task}</span>
-                        </div>
-                    `).join('');
-                }
-            } else {
-                taskLed.classList.remove('active');
-                sideHandle.style.display = 'none';
-                todoListDiv.style.display = 'none';
-                clockZone.style.flex = "0 0 100%";
+                element.classList.add('hidden');
             }
         }
 
-        function toggleTodoListPanel(e) {
-            if (e) e.stopPropagation();
-            const todoListDiv = document.getElementById('todo-list');
-            if (todoListDiv.style.display === 'block') {
-                panelManuallyClosed = true;
-            } else {
-                panelManuallyClosed = false;
-            }
-            updateClockAndTasks();
+        // Génération automatique des listes de bâtiments pour éviter un code trop lourd
+        const intrusionList = document.getElementById('intrusion_list');
+        const vannesList = document.getElementById('vannes_list');
+
+        // Remplissage Intrusions : n1 bat1 à n9 bat1, et n1 bat2 à n4 bat2
+        for(let i = 1; i <= 9; i++) {
+            intrusionList.innerHTML += `<label><input type="checkbox" value="Intrusion n${i} bat1"> n${i} bat1</label>`;
+        }
+        for(let i = 1; i <= 4; i++) {
+            intrusionList.innerHTML += `<label><input type="checkbox" value="Intrusion n${i} bat2"> n${i} bat2</label>`;
         }
 
-        window.addEventListener('keydown', function(e) {
-            if (e.code === 'Space' || e.key === ' ') {
-                const led = document.getElementById('notification-led');
-                if (led.classList.contains('active')) {
-                    e.preventDefault();
-                    ledDismissed = true;
-                    led.classList.remove('active');
-                }
-            }
-            if (e.code === 'Enter' || e.key === 'Enter') {
-                e.preventDefault();
-                toggleTodoListPanel();
-            }
-        });
-
-        function checkTask(checkbox) {
-            const item = checkbox.closest('.todo-item');
-            hiddenTasks.add(item.getAttribute('data-task'));
-            saveHiddenTasks(); 
-            item.classList.add('fade-out');
-            setTimeout(updateClockAndTasks, 400);
+        // Remplissage Vannes/Postes : n1 bat1 à n12 bat1, compresseur A air n13 bat1, n14 bat1 à n18 bat1, et n1 bat2 à n9 bat2
+        for(let i = 1; i <= 12; i++) {
+            vannesList.innerHTML += `<label><input type="checkbox" value="Poste n${i} bat1"> n${i} bat1</label>`;
+        }
+        vannesList.innerHTML += `<label><input type="checkbox" value="Poste A air n13 bat1"> A air n13</label>`;
+        for(let i = 14; i <= 18; i++) {
+            vannesList.innerHTML += `<label><input type="checkbox" value="Poste n${i} bat1"> n${i} bat1</label>`;
+        }
+        for(let i = 1; i <= 9; i++) {
+            vannesList.innerHTML += `<label><input type="checkbox" value="Poste n${i} bat2"> n${i} bat2</label>`;
         }
 
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
-            else document.exitFullscreen();
+        // Fonction pour générer le récapitulatif
+        function genererRapport() {
+            const time = document.getElementById('clock').textContent;
+            alert(`Rapport initié à ${time}. Cette fonction peut maintenant être connectée à votre base Sheets ou servir à générer un bloc de texte propre à copier !`);
         }
-
-        function getProbaEmoji(proba, hour) {
-            const isNight = (hour >= 22 || hour < 6); 
-            
-            if (proba <= 10) {
-                return isNight ? "🌙" : "☀️";   
-            }
-            if (proba <= 30) {
-                return isNight ? "☁️🌙" : "⛅"; 
-            }
-            if (proba <= 50) {
-                return "🌦️";                   
-            }
-            if (proba <= 75) {
-                return "🌧️";                   
-            }
-            return "⛈️";                       
-        }
-
-        async function updateWeather() {
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=49.8942&longitude=2.2957&hourly=precipitation_probability,temperature_2m,apparent_temperature,wind_speed_10m&forecast_days=2');
-                const data = await res.json();
-                const currentHour = new Date().getHours();
-                let htmlContent = '';
-                
-                for (let i = 0; i <= 12; i++) {
-                    const index = currentHour + i;
-                    const targetHour = (currentHour + i) % 24;
-                    
-                    const proba = data.hourly.precipitation_probability[index];
-                    const temp = Math.round(data.hourly.temperature_2m[index]);
-                    const apparentTemp = Math.round(data.hourly.apparent_temperature[index]);
-                    const windSpeed = Math.round(data.hourly.wind_speed_10m[index]);
-                    
-                    const emoji = getProbaEmoji(proba, targetHour);
-                    const isCurrent = (i === 0) ? 'current-hour' : '';
-                    
-                    htmlContent += `
-                        <div class="weather-column ${isCurrent}" title="${proba}% de chance de pluie">
-                            <span class="weather-hour">${targetHour}h</span>
-                            <span class="weather-proba">${emoji}</span>
-                            <span class="weather-temp">${temp}° / <span style="opacity:0.7">${apparentTemp}°</span></span>
-                            <span class="weather-wind">💨 ${windSpeed} km/h</span>
-                        </div>`;
-                }
-                weatherDiv.innerHTML = htmlContent;
-            } catch (err) {
-                weatherDiv.textContent = 'Météo indisponible';
-            }
-        }
-
-        document.getElementById('umbrella-btn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (weatherDiv.style.display === 'flex') {
-                weatherDiv.style.display = 'none';
-            } else {
-                weatherDiv.style.display = 'flex';
-                updateWeather();
-            }
-        });
-
-        document.getElementById('color-picker').addEventListener('input', (e) => {
-            const col = e.target.value;
-            document.body.style.backgroundColor = col;
-            const brightness = (parseInt(col.substr(1,2),16)*299 + parseInt(col.substr(3,2),16)*587 + parseInt(col.substr(5,2),16)*114)/1000;
-            const finalColor = brightness > 128 ? '#000000' : '#ffffff';
-            document.body.style.color = finalColor;
-            document.getElementById('umbrella-btn').style.color = finalColor;
-            document.getElementById('gear-btn').style.color = finalColor;
-        });
-
-        let wakeLock = null;
-        async function requestWakeLock() {
-            if ('wakeLock' in navigator) {
-                try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
-            }
-        }
-        requestWakeLock();
-        document.addEventListener('visibilitychange', () => {
-            if (wakeLock !== null && document.visibilityState === 'visible') requestWakeLock();
-        });
-
-        setInterval(() => {
-            if (weatherDiv.style.display === 'flex') updateWeather();
-        }, 15 * 60 * 1000);
-
-        setInterval(updateClockAndTasks, 1000);
-        updateClockAndTasks();
     </script>
 </body>
 </html>
