@@ -19,7 +19,7 @@
             font-size: 4rem;
             font-weight: bold;
             margin-bottom: 20px;
-            color: #00ffcc;
+            color: #ff9900; /* Orange de contrôle */
         }
         .container {
             width: 100%;
@@ -98,7 +98,7 @@
             display: none;
         }
         .btn-submit {
-            background-color: #00ffcc;
+            background-color: #ff9900; /* Orange de contrôle */
             color: #121212;
             border: none;
             padding: 12px;
@@ -110,18 +110,18 @@
             margin-top: 15px;
         }
         .btn-submit:hover {
-            background-color: #00ccaa;
+            background-color: #cc7a00;
         }
         h3 {
             margin-top: 0;
-            color: #00ffcc;
+            color: #ff9900; /* Orange de contrôle */
             border-bottom: 1px solid #333;
             padding-bottom: 5px;
             font-size: 1.1rem;
         }
         h4 {
             margin: 15px 0 5px 0;
-            color: #00ffcc;
+            color: #ff9900; /* Orange de contrôle */
             font-size: 1rem;
             border-bottom: 1px dashed #444;
             padding-bottom: 3px;
@@ -462,7 +462,6 @@
                 let sectionTxt = `REPORT SPRINKLER\n`;
                 const voyants = getChecked('sprinkler_voyants');
                 
-                // Récupération de la valeur brute du champ input
                 const ptsHsRaw = document.getElementById('pts_hs').value.trim();
                 const ptsHs = ptsHsRaw === "" ? 0 : parseInt(ptsHsRaw, 10);
                 
@@ -477,7 +476,6 @@
                     voyants.forEach(v => sectionTxt += ` --- ${v}\n`);
                 }
                 
-                // Affiché UNIQUEMENT si strictement supérieur à 0
                 if (ptsHs > 0) {
                     sectionTxt += `- Nombre total de points hors service=${ptsHs} (sans libellé)\n`;
                 }
