@@ -5,71 +5,196 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>00:00 | Dedoum</title>
     <style>
+        :root {
+            --primary-color: #00ff00; /* Vert lime */
+            --bg-color: #121212;
+            --panel-bg: #1e1e1e;
+            --header-bg: #2a2a2a;
+            --border-color: #333;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
+            background-color: var(--bg-color);
             color: #ffffff;
             margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- BARRE SUPÉRIEURE --- */
+        header {
+            background-color: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, color 0.2s;
+        }
+
+        .icon-btn:hover { color: var(--primary-color); transform: scale(1.1); }
+        .icon-btn.active { color: var(--primary-color); }
+
+        /* --- ZONE CENTRALE --- */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
+            gap: 20px;
+        }
+
+        .clock-display-container {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        #clock {
+            font-size: 7rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            user-select: none;
+        }
+
+        .led-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .led-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
+            gap: 4px;
         }
-        #clock {
-            font-size: 4rem;
+
+        /* Taille stricte 30px x 30px */
+        .led {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #252525;
+            box-shadow: inset 0 3px 5px rgba(0,0,0,0.6);
+            transition: all 0.3s ease;
+        }
+
+        .led-red.blink {
+            background-color: #ff3b30;
+            box-shadow: 0 0 20px #ff3b30, inset 0 -3px 6px rgba(0,0,0,0.4);
+            animation: blink-animation 0.8s infinite alternate;
+        }
+
+        .led-yellow.blink {
+            background-color: #ffcc00;
+            box-shadow: 0 0 20px #ffcc00, inset 0 -3px 6px rgba(0,0,0,0.4);
+            animation: blink-animation 0.8s infinite alternate;
+        }
+
+        .led-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #777;
+        }
+
+        @keyframes blink-animation {
+            from { opacity: 0.3; }
+            to { opacity: 1; }
+        }
+
+        /* Bouton de validation des tâches physiques au centre */
+        .btn-action-centre {
+            background-color: #2a2a2a;
+            color: #ffcc00;
+            border: 1px solid #ffcc00;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
             font-weight: bold;
-            margin-bottom: 20px;
-            color: #00ff00; /* Vert lime de contrôle */
+            transition: all 0.2s;
+            font-size: 0.9rem;
         }
-        .container {
+        .btn-action-centre:hover {
+            background-color: #ffcc00;
+            color: #121212;
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
+        }
+
+        /* --- VOLET DROIT (QUESTIONNAIRE RAPPORT) --- */
+        .side-panel {
+            position: fixed;
+            top: 53px;
+            right: -450px;
             width: 100%;
-            max-width: 650px;
+            max-width: 420px;
+            height: calc(100vh - 53px);
+            background-color: var(--panel-bg);
+            border-left: 1px solid var(--border-color);
+            box-shadow: -5px 0 25px rgba(0,0,0,0.5);
+            transition: right 0.4s cubic-bezier(0.05, 0.74, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            z-index: 5;
         }
+
+        .side-panel.open { right: 0; }
+        .panel-content { flex: 1; overflow-y: auto; padding: 20px; }
+
         .section {
-            background-color: #1e1e1e;
-            border-radius: 8px;
+            background-color: #252525;
+            border-radius: 6px;
             margin-bottom: 12px;
             overflow: hidden;
-            border: 1px solid #333;
+            border: 1px solid #3a3a3a;
         }
         .section-header {
-            background-color: #2a2a2a;
-            padding: 15px;
+            background-color: #2d2d2d;
+            padding: 12px 15px;
             cursor: pointer;
             font-weight: bold;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #333;
         }
-        .section-header:hover {
-            background-color: #333;
-        }
-        .section-content {
-            padding: 15px;
-            display: none;
-        }
-        .section-content.active {
-            display: block;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-        .radio-group, .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+        .section-content { display: none; padding: 15px; background-color: #1e1e1e; }
+        .section-content.active { display: block; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; }
+        .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 8px; }
+        
         .grid-checkbox {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-            gap: 10px;
-            margin-top: 5px;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 8px;
         }
         .grid-checkbox label {
             background-color: #252525;
@@ -77,14 +202,12 @@
             border-radius: 4px;
             border: 1px solid #3a3a3a;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
-        .grid-checkbox label:hover {
-            background-color: #333;
-        }
+
         input[type="text"], input[type="number"] {
             width: 100%;
             padding: 8px;
@@ -94,8 +217,12 @@
             color: #fff;
             box-sizing: border-box;
         }
+
+        h3 { margin-top: 0; color: var(--primary-color); font-size: 1rem; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        h4 { margin: 12px 0 5px 0; color: var(--primary-color); font-size: 0.9rem; }
+
         .btn-submit {
-            background-color: #00ff00; /* Vert lime de contrôle */
+            background-color: var(--primary-color);
             color: #121212;
             border: none;
             padding: 12px;
@@ -104,375 +231,380 @@
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 15px;
-        }
-        .btn-submit:hover {
-            background-color: #00cc00;
-        }
-        h3 {
-            margin-top: 0;
-            color: #00ff00; /* Vert lime de contrôle */
-            border-bottom: 1px solid #333;
-            padding-bottom: 5px;
-            font-size: 1.1rem;
-        }
-        h4 {
-            margin: 15px 0 5px 0;
-            color: #00ff00; /* Vert lime de contrôle */
-            font-size: 1rem;
-            border-bottom: 1px dashed #444;
-            padding-bottom: 3px;
+            margin-top: 10px;
         }
 
-        /* --- STYLE DU RAPPORT MODALE --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+        .report-result-box {
+            margin-top: 20px;
+            background-color: #121212;
+            border: 1px dashed var(--primary-color);
+            padding: 12px;
+            border-radius: 6px;
         }
-        .modal-box {
-            background-color: #1e1e1e;
-            border: 2px solid #00ff00; /* Vert lime de contrôle */
-            border-radius: 8px;
-            width: 95%;
-            max-width: 600px;
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 4px 25px rgba(0,0,0,0.7);
-        }
-        .modal-header {
-            background-color: #2a2a2a;
-            padding: 15px;
-            border-bottom: 1px solid #333;
-            font-weight: bold;
-            color: #00ff00; /* Vert lime de contrôle */
-            font-size: 1.2rem;
-            letter-spacing: 0.5px;
-        }
-        .modal-body {
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-        .modal-text {
+        .report-text {
             white-space: pre-wrap;
             font-family: monospace;
-            font-size: 1rem;
-            line-height: 1.5;
-            color: #ffffff;
-            margin-bottom: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            max-height: 150px;
+            overflow-y: auto;
         }
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: auto;
-            padding-top: 10px;
-            border-top: 1px solid #333;
-        }
-        .btn-modal-close {
-            background-color: #00ff00; /* Vert lime de contrôle */
-            color: #121212;
+        .btn-copy {
+            background-color: #34c759;
+            color: #fff;
             border: none;
-            padding: 10px 30px;
+            padding: 8px;
+            width: 100%;
             border-radius: 4px;
             font-weight: bold;
-            font-size: 1rem;
             cursor: pointer;
         }
-        .btn-modal-close:hover {
-            background-color: #00cc00;
-        }
 
-        /* FORCE LE MASQUAGE (Placé à la fin pour être prioritaire) */
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- Horloge sans les secondes -->
-    <div id="clock">00:00</div>
-
-    <div class="container">
+    <!-- BARRE SUPÉRIEURE -->
+    <header>
+        <div class="header-icons">
+            <button class="icon-btn" title="Sprinkler">☔</button>
+        </div>
         
-        <!-- REPORT SSI BAT1 & BAT2 -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <span>REPORT SSI (BAT1 & BAT2)</span>
-                <span>▼</span>
-            </div>
-            <div class="section-content">
-                <!-- SSI B1 -->
-                <h3>REPORT SSI BAT1</h3>
-                <div class="form-group">
-                    <div class="radio-group">
-                        <label><input type="radio" name="ssi_b1" value="RAS" checked onchange="toggleDetails('ssi_b1_details', this.value)"> RAS</label>
-                        <label><input type="radio" name="ssi_b1" value="NON RAS" onchange="toggleDetails('ssi_b1_details', this.value)"> NON RAS</label>
-                    </div>
-                </div>
-                <div id="ssi_b1_details" class="hidden">
-                    <div class="form-group">
-                        <label><strong>Voyants allumés ?</strong></label>
-                        <div class="checkbox-group" id="ssi_b1_voyants">
-                            <label><input type="checkbox" value="Veille restreinte"> Veille restreinte</label>
-                            <label><input type="checkbox" value="Dérangement"> Dérangement</label>
-                            <label><input type="checkbox" value="Alarme feu"> Alarme feu</label>
-                            <label><input type="checkbox" value="Évacuation générale"> Évacuation générale</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label><strong>Zones en alarmes ?</strong></label>
-                        <div class="grid-checkbox" id="ssi_b1_zones">
-                            <label><input type="checkbox" value="1"> 1</label>
-                            <label><input type="checkbox" value="2"> 2</label>
-                            <label><input type="checkbox" value="3"> 3</label>
-                            <label><input type="checkbox" value="4"> 4</label>
-                            <label><input type="checkbox" value="5"> 5</label>
-                            <label><input type="checkbox" value="6"> 6</label>
-                            <label><input type="checkbox" value="7"> 7</label>
-                            <label><input type="checkbox" value="8"> 8</label>
-                        </div>
-                    </div>
-                </div>
+        <button class="icon-btn" id="togglePanelBtn" title="Ouvrir le Questionnaire" style="font-size: 1.8rem;">📝</button>
+        
+        <div class="header-icons">
+            <button class="icon-btn" title="Paramètres">⚙️</button>
+        </div>
+    </header>
 
-                <hr style="border-color: #333; margin: 20px 0;">
+    <!-- ZONE CENTRALE -->
+    <main>
+        <div class="clock-display-container">
+            <div id="clock">00:00</div>
 
-                <!-- SSI B2 -->
-                <h3>REPORT SSI BAT2</h3>
-                <div class="form-group">
-                    <div class="radio-group">
-                        <label><input type="radio" name="ssi_b2" value="RAS" checked onchange="toggleDetails('ssi_b2_details', this.value)"> RAS</label>
-                        <label><input type="radio" name="ssi_b2" value="NON RAS" onchange="toggleDetails('ssi_b2_details', this.value)"> NON RAS</label>
-                    </div>
+            <div class="led-column">
+                <div class="led-wrapper">
+                    <div id="led-rouge" class="led led-red"></div>
+                    <div class="led-label">Alerte</div>
                 </div>
-                <div id="ssi_b2_details" class="hidden">
-                    <div class="form-group">
-                        <label><strong>Voyants allumés ?</strong></label>
-                        <div class="checkbox-group" id="ssi_b2_voyants">
-                            <label><input type="checkbox" value="Veille restreinte"> Veille restreinte</label>
-                            <label><input type="checkbox" value="Dérangement"> Dérangement</label>
-                            <label><input type="checkbox" value="Alarme feu"> Alarme feu</label>
-                            <label><input type="checkbox" value="Évacuation générale"> Évacuation générale</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label><strong>Zones en alarmes ?</strong></label>
-                        <div class="grid-checkbox" id="ssi_b2_zones">
-                            <label><input type="checkbox" value="1"> 1</label>
-                            <label><input type="checkbox" value="2"> 2</label>
-                            <label><input type="checkbox" value="3"> 3</label>
-                            <label><input type="checkbox" value="4"> 4</label>
-                            <label><input type="checkbox" value="5"> 5</label>
-                            <label><input type="checkbox" value="6"> 6</label>
-                            <label><input type="checkbox" value="7"> 7</label>
-                            <label><input type="checkbox" value="8"> 8</label>
-                        </div>
-                    </div>
+                <div class="led-wrapper">
+                    <div id="led-jaune" class="led led-yellow"></div>
+                    <div class="led-label">Contrôles</div>
                 </div>
             </div>
         </div>
 
-        <!-- REPORT SPRINKLER -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <span>REPORT SPRINKLER</span>
-                <span>▼</span>
-            </div>
-            <div class="section-content">
-                <h3>REPORT SPRINKLER</h3>
-                <div class="form-group">
-                    <div class="radio-group">
-                        <label><input type="radio" name="sprinkler" value="RAS" checked onchange="toggleDetails('sprinkler_global_details', this.value)"> RAS</label>
-                        <label><input type="radio" name="sprinkler" value="NON RAS" onchange="toggleDetails('sprinkler_global_details', this.value)"> NON RAS</label>
-                    </div>
+        <!-- Bouton pour valider la ronde physique et éteindre la LED Jaune -->
+        <button id="btnValiderControles" class="btn-action-centre">Acmé / Contrôles Effectués</button>
+    </main>
+
+    <!-- VOLET DE DROITE (RAPPORTS) -->
+    <div class="side-panel" id="questionnairePanel">
+        <div class="panel-content">
+            
+            <!-- REPORT SSI -->
+            <div class="section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span>REPORT SSI (BAT1 & BAT2)</span>
+                    <span>▼</span>
                 </div>
-                
-                <div id="sprinkler_global_details" class="hidden">
-                    
+                <div class="section-content">
+                    <h3>REPORT SSI BAT1</h3>
                     <div class="form-group">
-                        <h4>VOYANTS ALLUMÉS ?</h4>
-                        <div class="checkbox-group" id="sprinkler_voyants">
-                            <label><input type="checkbox" value="Feu"> Feu</label>
-                            <label><input type="checkbox" value="Zone locale"> Zone locale</label>
-                            <label><input type="checkbox" value="Zone voisine"> Zone voisine</label>
-                            <label><input type="checkbox" value="Défaut générale"> Défaut générale</label>
-                            <label><input type="checkbox" value="Hors service"> Hors service</label>
-                            <label><input type="checkbox" value="Défaut T.R.E."> Défaut T.R.E.</label>
-                            <label><input type="checkbox" value="Défaut alimentation"> Défaut alimentation</label>
-                            <label><input type="checkbox" value="Essai"> Essai</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="ssi_b1" value="RAS" checked onchange="toggleDetails('ssi_b1_details', this.value)"> RAS</label>
+                            <label><input type="radio" name="ssi_b1" value="NON RAS" onchange="toggleDetails('ssi_b1_details', this.value)"> NON RAS</label>
                         </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label><strong>NOMBRE TOTAL DE POINTS HORS SERVICE=</strong></label>
-                        <input type="number" id="pts_hs" placeholder="Saisir le nombre (Masqué si égal à 0)">
-                    </div>
-
-                    <div class="form-group">
-                        <h4>ALARMES DIVERSES ?</h4>
-                        <div class="checkbox-group" id="alarmes_diverses">
-                            <label><input type="checkbox" value="Controleur passage d'eau local sprinkler"> Controleur passage d'eau local sprinkler</label>
-                            <label><input type="checkbox" value="Défaut général source B1"> Défaut général source B1</label>
-                            <label><input type="checkbox" value="Défaut général source B2"> Défaut général source B2</label>
-                            <label><input type="checkbox" value="Défaut manque d'air poste n13 bat1"> Défaut manque d'air poste n13 bat1</label>
-                            <label><input type="checkbox" value="Défaut niveau réserve source B1"> Défaut niveau réserve source B1</label>
-                            <label><input type="checkbox" value="Défaut niveau réserve source B2"> Défaut niveau réserve source B2</label>
-                            <label><input type="checkbox" value="Défaut synthèse armoire de répartition"> Défaut synthèse armoire de répartition</label>
-                            <label><input type="checkbox" value="Défaut synthèse pompe jockey"> Défaut synthèse pompe jockey</label>
-                            <label><input type="checkbox" value="Défaut température local sprinkler"> Défaut température local sprinkler</label>
-                            <label><input type="checkbox" value="Défaut température s/station n7 bat1"> Défaut température s/station n7 bat1</label>
-                            <label><input type="checkbox" value="Défaut vanne bi-pass réserve B1/B2"> Défaut vanne bi-pass réserve B1/B2</label>
-                            <label><input type="checkbox" value="Défaut vanne réserve source B1"> Défaut vanne réserve source B1</label>
-                            <label><input type="checkbox" value="Défaut vannes aspi ou refoul source B1"> Défaut vannes aspi ou refoul source B1</label>
-                            <label><input type="checkbox" value="Défaut vannes aspi ou refoul source B2"> Défaut vannes aspi ou refoul source B2</label>
-                            <label><input type="checkbox" value="Intrusion local sprinkler"> Intrusion local sprinkler</label>
-                            <label><input type="checkbox" value="Marche pompe source B1"> Marche pompe source B1</label>
-                            <label><input type="checkbox" value="Marche pompe source B2"> Marche pompe source B2</label>
-                            <label><input type="checkbox" value="Non démarrage source B1"> Non démarrage source B1</label>
-                            <label><input type="checkbox" value="Non démarrage source B2"> Non démarrage source B2</label>
-                            <label><input type="checkbox" value="Passage d'eau RIA s/station n1 bat1"> Passage d'eau RIA s/station n1 bat1</label>
-                            <label><input type="checkbox" value="Passage d'eau ria s/station n6 bat1"> Passage d'eau ria s/station n6 bat1</label>
-                            <label><input type="checkbox" value="Passage d'eau ria s/station n4 bat2"> Passage d'eau ria s/station n4 bat2</label>
-                            <label><input type="checkbox" value="Position clé essais aérothermes"> Position clé essais aérothermes</label>
-                            <label><input type="checkbox" value="Position clé non auto source B1"> Position clé non auto source B1</label>
-                            <label><input type="checkbox" value="Position clé non auto source B2"> Position clé non auto source B2</label>
-                            <label><input type="checkbox" value="Risque d'échecs source B1"> Risque d'échecs source B1</label>
-                            <label><input type="checkbox" value="Risque d'échecs source B2"> Risque d'échecs source B2</label>
+                    <div id="ssi_b1_details" class="hidden">
+                        <div class="form-group">
+                            <label>Voyants allumés ?</label>
+                            <div class="checkbox-group" id="ssi_b1_voyants">
+                                <label><input type="checkbox" value="Veille restreinte"> Veille restreinte</label>
+                                <label><input type="checkbox" value="Dérangement"> Dérangement</label>
+                                <label><input type="checkbox" value="Alarme feu"> Alarme feu</label>
+                                <label><input type="checkbox" value="Évacuation générale"> Évacuation générale</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Zones en alarmes ?</label>
+                            <div class="grid-checkbox" id="ssi_b1_zones">
+                                <label><input type="checkbox" value="1"> 1</label>
+                                <label><input type="checkbox" value="2"> 2</label>
+                                <label><input type="checkbox" value="3"> 3</label>
+                                <label><input type="checkbox" value="4"> 4</label>
+                                <label><input type="checkbox" value="5"> 5</label>
+                                <label><input type="checkbox" value="6"> 6</label>
+                                <label><input type="checkbox" value="7"> 7</label>
+                                <label><input type="checkbox" value="8"> 8</label>
+                            </div>
                         </div>
                     </div>
 
+                    <hr style="border-color: #333; margin: 15px 0;">
+
+                    <h3>REPORT SSI BAT2</h3>
                     <div class="form-group">
-                        <h4>INTRUSION S/STATION ... ?</h4>
-                        <div class="grid-checkbox" id="intrusion_list"></div>
+                        <div class="radio-group">
+                            <label><input type="radio" name="ssi_b2" value="RAS" checked onchange="toggleDetails('ssi_b2_details', this.value)"> RAS</label>
+                            <label><input type="radio" name="ssi_b2" value="NON RAS" onchange="toggleDetails('ssi_b2_details', this.value)"> NON RAS</label>
+                        </div>
+                    </div>
+                    <div id="ssi_b2_details" class="hidden">
+                        <div class="form-group">
+                            <label>Voyants allumés ?</label>
+                            <div class="checkbox-group" id="ssi_b2_voyants">
+                                <label><input type="checkbox" value="Veille restreinte"> Veille restreinte</label>
+                                <label><input type="checkbox" value="Dérangement"> Dérangement</label>
+                                <label><input type="checkbox" value="Alarme feu"> Alarme feu</label>
+                                <label><input type="checkbox" value="Évacuation générale"> Évacuation générale</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Zones en alarmes ?</label>
+                            <div class="grid-checkbox" id="ssi_b2_zones">
+                                <label><input type="checkbox" value="1"> 1</label>
+                                <label><input type="checkbox" value="2"> 2</label>
+                                <label><input type="checkbox" value="3"> 3</label>
+                                <label><input type="checkbox" value="4"> 4</label>
+                                <label><input type="checkbox" value="5"> 5</label>
+                                <label><input type="checkbox" value="6"> 6</label>
+                                <label><input type="checkbox" value="7"> 7</label>
+                                <label><input type="checkbox" value="8"> 8</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REPORT SPRINKLER -->
+            <div class="section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span>REPORT SPRINKLER</span>
+                    <span>▼</span>
+                </div>
+                <div class="section-content">
+                    <h3>REPORT SPRINKLER</h3>
+                    <div class="form-group">
+                        <div class="radio-group">
+                            <label><input type="radio" name="sprinkler" value="RAS" checked onchange="toggleDetails('sprinkler_global_details', this.value)"> RAS</label>
+                            <label><input type="radio" name="sprinkler" value="NON RAS" onchange="toggleDetails('sprinkler_global_details', this.value)"> NON RAS</label>
+                        </div>
                     </div>
                     
-                    <div class="form-group">
-                        <h4>DEFAUT VANNE POSTE ...</h4>
-                        <div class="grid-checkbox" id="vannes_list"></div>
+                    <div id="sprinkler_global_details" class="hidden">
+                        <div class="form-group">
+                            <h4>VOYANTS ALLUMÉS ?</h4>
+                            <div class="checkbox-group" id="sprinkler_voyants">
+                                <label><input type="checkbox" value="Feu"> Feu</label>
+                                <label><input type="checkbox" value="Zone locale"> Zone locale</label>
+                                <label><input type="checkbox" value="Zone voisine"> Zone voisine</label>
+                                <label><input type="checkbox" value="Défaut générale"> Défaut générale</label>
+                                <label><input type="checkbox" value="Hors service"> Hors service</label>
+                                <label><input type="checkbox" value="Défaut T.R.E."> Défaut T.R.E.</label>
+                                <label><input type="checkbox" value="Défaut alimentation"> Défaut alimentation</label>
+                                <label><input type="checkbox" value="Essai"> Essai</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><strong>NIVEAU POINTS HS=</strong></label>
+                            <input type="number" id="pts_hs" placeholder="Saisir (Masqué si 0)">
+                        </div>
+                        <div class="form-group">
+                            <h4>ALARMES DIVERSES ?</h4>
+                            <div class="checkbox-group" id="alarmes_diverses">
+                                <label><input type="checkbox" value="Controleur passage d'eau local sprinkler"> Controleur passage d'eau local sprinkler</label>
+                                <label><input type="checkbox" value="Défaut général source B1"> Défaut général source B1</label>
+                                <label><input type="checkbox" value="Défaut général source B2"> Défaut général source B2</label>
+                                <label><input type="checkbox" value="Défaut manque d'air poste n13 bat1"> Défaut manque d'air poste n13 bat1</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h4>INTRUSION S/STATION ... ?</h4>
+                            <div class="grid-checkbox" id="intrusion_list"></div>
+                        </div>
+                        <div class="form-group">
+                            <h4>DEFAUT VANNE POSTE ...</h4>
+                            <div class="grid-checkbox" id="vannes_list"></div>
+                        </div>
+                        <div class="form-group">
+                            <h4>FEU POSTE DE CONTROLE ...</h4>
+                            <div class="grid-checkbox" id="feu_poste_list"></div>
+                        </div>
                     </div>
-
-                    <div class="form-group">
-                        <h4>FEU POSTE DE CONTROLE ...</h4>
-                        <div class="grid-checkbox" id="feu_poste_list"></div>
-                    </div>
-
                 </div>
             </div>
-        </div>
 
-        <!-- REPORT SIEMENS -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <span>REPORT SIEMENS (BAT1 & BAT2)</span>
-                <span>▼</span>
-            </div>
-            <div class="section-content">
-                <!-- SIEMENS B1 -->
-                <h3>REPORT SIEMENS BAT1</h3>
-                <div class="form-group">
-                    <div class="radio-group">
-                        <label><input type="radio" name="siemens_b1" value="RAS" checked onchange="toggleDetails('siemens_b1_details', this.value)"> RAS</label>
-                        <label><input type="radio" name="siemens_b1" value="NON RAS" onchange="toggleDetails('siemens_b1_details', this.value)"> NON RAS</label>
-                    </div>
+            <!-- REPORT SIEMENS -->
+            <div class="section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <span>REPORT SIEMENS</span>
+                    <span>▼</span>
                 </div>
-                <div id="siemens_b1_details" class="hidden">
+                <div class="section-content">
+                    <h3>REPORT SIEMENS BAT1</h3>
                     <div class="form-group">
-                        <label><strong>VOYANTS ALLUMÉS ?</strong></label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="siemens_b1" value="RAS" checked onchange="toggleDetails('siemens_b1_details', this.value)"> RAS</label>
+                            <label><input type="radio" name="siemens_b1" value="NON RAS" onchange="toggleDetails('siemens_b1_details', this.value)"> NON RAS</label>
+                        </div>
+                    </div>
+                    <div id="siemens_b1_details" class="hidden">
                         <label><input type="checkbox" id="siemens_b1_derangement" value="Dérangement"> Dérangement</label>
+                        <br><label><input type="checkbox" id="siemens_b1_recurrente" value="Reprise info locaux technique coupure armoire chaufferie"> Anomalie récurrente</label>
+                        <br><input type="text" id="siemens_b1_libre" placeholder="Saisir manuellement" style="margin-top:8px;">
                     </div>
-                    
-                    <div class="form-group">
-                        <label><strong>INTITULE ANAMOLIE RECURENTE</strong></label>
-                        <label><input type="checkbox" id="siemens_b1_recurrente" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><strong>INTITULE ANAMOLIE</strong></label>
-                        <input type="text" id="siemens_b1_libre" placeholder="Saisir manuellement">
-                    </div>
-                </div>
 
-                <hr style="border-color: #333; margin: 20px 0;">
+                    <hr style="border-color: #333; margin: 15px 0;">
 
-                <!-- SIEMENS B2 -->
-                <h3>REPORT SIEMENS BAT2</h3>
-                <div class="form-group">
-                    <div class="radio-group">
-                        <label><input type="radio" name="siemens_b2" value="RAS" checked onchange="toggleDetails('siemens_b2_details', this.value)"> RAS</label>
-                        <label><input type="radio" name="siemens_b2" value="NON RAS" onchange="toggleDetails('siemens_b2_details', this.value)"> NON RAS</label>
-                    </div>
-                </div>
-                <div id="siemens_b2_details" class="hidden">
+                    <h3>REPORT SIEMENS BAT2</h3>
                     <div class="form-group">
-                        <label><strong>VOYANTS ALLUMÉS ?</strong></label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="siemens_b2" value="RAS" checked onchange="toggleDetails('siemens_b2_details', this.value)"> RAS</label>
+                            <label><input type="radio" name="siemens_b2" value="NON RAS" onchange="toggleDetails('siemens_b2_details', this.value)"> NON RAS</label>
+                        </div>
+                    </div>
+                    <div id="siemens_b2_details" class="hidden">
                         <label><input type="checkbox" id="siemens_b2_derangement" value="Dérangement"> Dérangement</label>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><strong>INTITULE ANAMOLIE RECURENTE</strong></label>
-                        <label><input type="checkbox" id="siemens_b2_recurrente" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><strong>INTITULE ANAMOLIE</strong></label>
-                        <input type="text" id="siemens_b2_libre" placeholder="Saisir manuellement">
+                        <br><label><input type="checkbox" id="siemens_b2_recurrente" value="Reprise info locaux technique coupure armoire chaufferie"> Anomalie récurrente</label>
+                        <br><input type="text" id="siemens_b2_libre" placeholder="Saisir manuellement" style="margin-top:8px;">
                     </div>
                 </div>
             </div>
-        </div>
 
-        <button class="btn-submit" onclick="genererRapport()">Générer le résumé de Ronde</button>
-    </div>
+            <button class="btn-submit" onclick="genererRapport()">Générer le résumé</button>
 
-    <!-- MODALE AVEC EN-TÊTE ÉVÉNEMENT DIVERS ET BOUTON DANS LE SCROLL -->
-    <div id="customModal" class="modal-overlay hidden">
-        <div class="modal-box">
-            <div class="modal-header">Evenement divers</div>
-            <div class="modal-body">
-                <div class="modal-text" id="modalBodyText"></div>
-                <div class="modal-actions">
-                    <button class="btn-modal-close" onclick="closeModal()">OK</button>
-                </div>
+            <!-- BOÎTE DE COPIE -->
+            <div id="reportOutputBox" class="report-result-box hidden">
+                <div class="report-text" id="reportOutputText"></div>
+                <button class="btn-copy" onclick="copierRapport()">📋 Copier dans le presse-papier</button>
             </div>
+
         </div>
     </div>
 
     <script>
-        // Horloge sans secondes + Onglet dynamique
+        // --- LOGIQUE HORLOGE & LEDS ---
+        let controlesJaunesFaits = false;
+        let forceEteindreRouge = false;
+
         function updateClock() {
             const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const timeString = `${hours}:${minutes}`;
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
             
+            const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
             document.getElementById('clock').textContent = timeString;
             document.title = `${timeString} | Dedoum`;
+
+            // Reset quotidien automatique à minuit pile
+            if (hours === 0 && minutes === 0 && now.getSeconds() === 0) {
+                forceEteindreRouge = false;
+                controlesJaunesFaits = false;
+            }
+
+            gestionLedRouge(hours, minutes);
+            gestionLedJaune(now);
         }
+
+        // LED ROUGE : Minuit -> 06:30 (Arrêt manuel par Espace)
+        function gestionLedRouge(hours, minutes) {
+            const ledRouge = document.getElementById('led-rouge');
+            const currentTimeInMinutes = (hours * 60) + minutes;
+            const limitTimeInMinutes = (6 * 60) + 30;
+
+            if (!forceEteindreRouge && currentTimeInMinutes >= 0 && currentTimeInMinutes < limitTimeInMinutes) {
+                ledRouge.classList.add('blink');
+            } else {
+                ledRouge.classList.remove('blink');
+            }
+        }
+
+        // Touche Espace pour couper la LED Rouge
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                const target = e.target.tagName.toLowerCase();
+                if (target === 'input' || target === 'textarea') return; // Ne coupe pas si on écrit
+                
+                e.preventDefault(); 
+                const ledRouge = document.getElementById('led-rouge');
+                if (ledRouge.classList.contains('blink')) {
+                    forceEteindreRouge = true;
+                    ledRouge.classList.remove('blink');
+                }
+            }
+        });
+
+        // LED JAUNE : Plannings spécifiques des rondes physiques
+        function gestionLedJaune(dateObj) {
+            const ledJaune = document.getElementById('led-jaune');
+            
+            if (controlesJaunesFaits) {
+                ledJaune.classList.remove('blink');
+                return;
+            }
+
+            const dayOfWeek = dateObj.getDay(); // 0=Dim, 1=Lun, 2=Mar...
+            const dayOfMonth = dateObj.getDate();
+
+            let estMardi = (dayOfWeek === 2);
+            let estPremierLundi = (dayOfWeek === 1 && dayOfMonth <= 7);
+            let estSemaineApresPremierLundi = false;
+
+            // Date du 1er lundi du mois en cours
+            let tempDate = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1);
+            while (tempDate.getDay() !== 1) {
+                tempDate.setDate(tempDate.getDate() + 1);
+            }
+            const premierLundiDate = tempDate.getDate();
+            
+            const debutSemaineSuivante = premierLundiDate + 7;
+            const finSemaineSuivante = premierLundiDate + 13;
+
+            if (dayOfMonth >= debutSemaineSuivante && dayOfMonth <= finSemaineSuivante) {
+                estSemaineApresPremierLundi = true;
+            }
+
+            if (estMardi || estPremierLundi || estSemaineApresPremierLundi) {
+                ledJaune.classList.add('blink');
+            } else {
+                ledJaune.classList.remove('blink');
+            }
+        }
+
+        // Action sur le bouton central pour éteindre la LED Jaune
+        document.getElementById('btnValiderControles').addEventListener('click', () => {
+            controlesJaunesFaits = true;
+            document.getElementById('led-jaune').classList.remove('blink');
+        });
+
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Gestion de la boîte modale
-        function showModal(content) {
-            document.getElementById('modalBodyText').textContent = content;
-            document.getElementById('customModal').classList.remove('hidden');
-            document.querySelector('.modal-body').scrollTop = 0;
+        // --- ANTI-VEILLE (WAKE LOCK) ---
+        let wakeLock = null;
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) {
+                console.log(`Wake lock restreint: ${err.message}`);
+            }
         }
+        document.addEventListener('click', () => { if(!wakeLock) requestWakeLock(); });
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestWakeLock(); });
 
-        function closeModal() {
-            document.getElementById('customModal').classList.add('hidden');
-        }
+        // --- INTERFACE VOLET DROIT ---
+        const panel = document.getElementById('questionnairePanel');
+        const toggleBtn = document.getElementById('togglePanelBtn');
 
-        // Pliage/Dépliage des sections
+        toggleBtn.addEventListener('click', () => {
+            panel.classList.toggle('open');
+            toggleBtn.classList.toggle('active');
+        });
+
         function toggleSection(header) {
             const content = header.nextElementSibling;
             const icon = header.querySelector('span:last-child');
@@ -480,157 +612,100 @@
             icon.textContent = content.classList.contains('active') ? '▲' : '▼';
         }
 
-        // Affichage Conditionnel "Si non RAS"
         function toggleDetails(id, value) {
             const element = document.getElementById(id);
-            if (value === 'NON RAS') {
-                element.classList.remove('hidden');
-            } else {
-                element.classList.add('hidden');
-            }
+            if (value === 'NON RAS') element.classList.remove('hidden');
+            else element.classList.add('hidden');
         }
 
-        // Remplissage automatique des listes de structures
+        // --- INJECTION DES COMPOSANTS ---
         const intrusionList = document.getElementById('intrusion_list');
         const vannesList = document.getElementById('vannes_list');
         const feuPosteList = document.getElementById('feu_poste_list');
 
-        for(let i = 1; i <= 9; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="Intrusion s/station n${i} bat1"> n${i} bat1</label>`;
-        for(let i = 1; i <= 4; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="Intrusion s/station n${i} bat2"> n${i} bat2</label>`;
+        for(let i = 1; i <= 9; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="Intrusion s/station n${i} bat1"> n${i} b1</label>`;
+        for(let i = 1; i <= 4; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="Intrusion s/station n${i} bat2"> n${i} b2</label>`;
 
         function injecterPostes(conteneurHTML, prefixe) {
-            for(let i = 1; i <= 12; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} bat1</label>`;
-            conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} A air n13 bat1"> A air n13 bat1</label>`;
-            for(let i = 14; i <= 18; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} bat1</label>`;
-            for(let i = 1; i <= 9; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat2"> n${i} bat2</label>`;
+            for(let i = 1; i <= 12; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} b1</label>`;
+            conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} A air n13 bat1"> n13 air</label>`;
+            for(let i = 14; i <= 18; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} b1</label>`;
+            for(let i = 1; i <= 9; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat2"> n${i} b2</label>`;
         }
         injecterPostes(vannesList, "Défaut vanne poste");
         injecterPostes(feuPosteList, "Feu poste de controle");
 
-        // Analyse complète et formatage strict
+        // --- GÉNÉRATION DU TEXTE DU RAPPORT ---
         function genererRapport() {
             let blocsTxt = [];
+            function getChecked(id) { return Array.from(document.querySelectorAll(`#${id} input:checked`)).map(el => el.value); }
 
-            function getChecked(containerId) {
-                const checked = document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`);
-                return Array.from(checked).map(el => el.value);
+            if (document.querySelector('input[name="ssi_b1"]:checked').value === "NON RAS") {
+                let txt = `REPORT SSI BAT1\n`;
+                let v = getChecked('ssi_b1_voyants'), z = getChecked('ssi_b1_zones');
+                if(v.length) txt += `- Voyants allumés :\n` + v.map(x => ` --- ${x}`).join('\n') + '\n';
+                if(z.length) txt += `- Zones en alarmes :\n` + z.map(x => ` --- ${x}`).join('\n') + '\n';
+                blocsTxt.push(txt.trimEnd());
             }
 
-            // REPORT SSI BAT1
-            const ssiB1 = document.querySelector('input[name="ssi_b1"]:checked').value;
-            if (ssiB1 === "NON RAS") {
-                let sectionTxt = `REPORT SSI BAT1\n`;
-                const voyants = getChecked('ssi_b1_voyants');
-                const zones = getChecked('ssi_b1_zones');
-                if(voyants.length) {
-                    sectionTxt += `- Voyants allumés :\n`;
-                    voyants.forEach(v => sectionTxt += ` --- ${v}\n`);
-                }
-                if(zones.length) {
-                    sectionTxt += `- Zones en alarmes :\n`;
-                    zones.forEach(z => sectionTxt += ` --- ${z}\n`);
-                }
-                blocsTxt.push(sectionTxt.trimEnd());
+            if (document.querySelector('input[name="ssi_b2"]:checked').value === "NON RAS") {
+                let txt = `REPORT SSI BAT2\n`;
+                let v = getChecked('ssi_b2_voyants'), z = getChecked('ssi_b2_zones');
+                if(v.length) txt += `- Voyants allumés :\n` + v.map(x => ` --- ${x}`).join('\n') + '\n';
+                if(z.length) txt += `- Zones en alarmes :\n` + z.map(x => ` --- ${x}`).join('\n') + '\n';
+                blocsTxt.push(txt.trimEnd());
             }
 
-            // REPORT SSI BAT2
-            const ssiB2 = document.querySelector('input[name="ssi_b2"]:checked').value;
-            if (ssiB2 === "NON RAS") {
-                let sectionTxt = `REPORT SSI BAT2\n`;
-                const voyants = getChecked('ssi_b2_voyants');
-                const zones = getChecked('ssi_b2_zones');
-                if(voyants.length) {
-                    sectionTxt += `- Voyants allumés :\n`;
-                    voyants.forEach(v => sectionTxt += ` --- ${v}\n`);
-                }
-                if(zones.length) {
-                    sectionTxt += `- Zones en alarmes :\n`;
-                    zones.forEach(z => sectionTxt += ` --- ${z}\n`);
-                }
-                blocsTxt.push(sectionTxt.trimEnd());
-            }
-
-            // REPORT SPRINKLER
-            const spr = document.querySelector('input[name="sprinkler"]:checked').value;
-            if (spr === "NON RAS") {
-                let sectionTxt = `REPORT SPRINKLER\n`;
-                const voyants = getChecked('sprinkler_voyants');
+            if (document.querySelector('input[name="sprinkler"]:checked').value === "NON RAS") {
+                let txt = `REPORT SPRINKLER\n`;
+                let v = getChecked('sprinkler_voyants');
+                let valHs = parseInt(document.getElementById('pts_hs').value, 10) || 0;
+                let al = [...getChecked('alarmes_diverses'), ...getChecked('intrusion_list'), ...getChecked('vannes_list'), ...getChecked('feu_poste_list')];
                 
-                const ptsHsRaw = document.getElementById('pts_hs').value.trim();
-                const ptsHs = ptsHsRaw === "" ? 0 : parseInt(ptsHsRaw, 10);
-                
-                let alarmesSprinkler = [];
-                alarmesSprinkler.push(...getChecked('alarmes_diverses'));
-                alarmesSprinkler.push(...getChecked('intrusion_list'));
-                alarmesSprinkler.push(...getChecked('vannes_list'));
-                alarmesSprinkler.push(...getChecked('feu_poste_list'));
-
-                if(voyants.length) {
-                    sectionTxt += `- Voyants allumés :\n`;
-                    voyants.forEach(v => sectionTxt += ` --- ${v}\n`);
-                }
-                
-                if (ptsHs > 0) {
-                    sectionTxt += `- Nombre total de points hors service=${ptsHs} (sans libellé)\n`;
-                }
-                
-                if(alarmesSprinkler.length) {
-                    sectionTxt += `- Alarmes :\n`;
-                    alarmesSprinkler.forEach(a => sectionTxt += ` --- ${a}\n`);
-                }
-                blocsTxt.push(sectionTxt.trimEnd());
+                if(v.length) txt += `- Voyants allumés :\n` + v.map(x => ` --- ${x}`).join('\n') + '\n';
+                if(valHs > 0) txt += `- Nombre total de points hors service=${valHs} (sans libellé)\n`;
+                if(al.length) txt += `- Alarmes :\n` + al.map(x => ` --- ${x}`).join('\n') + '\n';
+                blocsTxt.push(txt.trimEnd());
             }
 
-            // REPORT SIEMENS BAT1
-            const siemensB1 = document.querySelector('input[name="siemens_b1"]:checked').value;
-            if (siemensB1 === "NON RAS") {
-                let sectionTxt = `REPORT SIEMENS BAT1\n`;
-                if(document.getElementById('siemens_b1_derangement').checked) {
-                    sectionTxt += `- Voyants allumés :\n --- Dérangement\n`;
-                }
-                
-                let alarmesB1 = [];
-                if(document.getElementById('siemens_b1_recurrente').checked) {
-                    alarmesB1.push("Reprise info locaux technique Coupure armoire chaufferie");
-                }
-                const libreB1 = document.getElementById('siemens_b1_libre').value;
-                if(libreB1) alarmesB1.push(libreB1);
-
-                if(alarmesB1.length) {
-                    sectionTxt += `- Alarmes :\n`;
-                    alarmesB1.forEach(a => sectionTxt += ` --- ${a}\n`);
-                }
-                blocsTxt.push(sectionTxt.trimEnd());
+            if (document.querySelector('input[name="siemens_b1"]:checked').value === "NON RAS") {
+                let txt = `REPORT SIEMENS BAT1\n`;
+                if(document.getElementById('siemens_b1_derangement').checked) txt += `- Voyants allumés :\n --- Dérangement\n`;
+                let al = [];
+                if(document.getElementById('siemens_b1_recurrente').checked) al.push("Reprise info locaux technique Coupure armoire chaufferie");
+                if(document.getElementById('siemens_b1_libre').value.trim()) al.push(document.getElementById('siemens_b1_libre').value.trim());
+                if(al.length) txt += `- Alarmes :\n` + al.map(x => ` --- ${x}`).join('\n') + '\n';
+                blocsTxt.push(txt.trimEnd());
             }
 
-            // REPORT SIEMENS BAT2
-            const siemensB2 = document.querySelector('input[name="siemens_b2"]:checked').value;
-            if (siemensB2 === "NON RAS") {
-                let sectionTxt = `REPORT SIEMENS BAT2\n`;
-                if(document.getElementById('siemens_b2_derangement').checked) {
-                    sectionTxt += `- Voyants allumés :\n --- Dérangement\n`;
-                }
-                
-                let alarmesB2 = [];
-                if(document.getElementById('siemens_b2_recurrente').checked) {
-                    alarmesB2.push("Reprise info locaux technique Coupure armoire chaufferie");
-                }
-                const libreB2 = document.getElementById('siemens_b2_libre').value;
-                if(libreB2) alarmesB2.push(libreB2);
-
-                if(alarmesB2.length) {
-                    sectionTxt += `- Alarmes :\n`;
-                    alarmesB2.forEach(a => sectionTxt += ` --- ${a}\n`);
-                }
-                blocsTxt.push(sectionTxt.trimEnd());
+            if (document.querySelector('input[name="siemens_b2"]:checked').value === "NON RAS") {
+                let txt = `REPORT SIEMENS BAT2\n`;
+                if(document.getElementById('siemens_b2_derangement').checked) txt += `- Voyants allumés :\n --- Dérangement\n`;
+                let al = [];
+                if(document.getElementById('siemens_b2_recurrente').checked) al.push("Reprise info locaux technique Coupure armoire chaufferie");
+                if(document.getElementById('siemens_b2_libre').value.trim()) al.push(document.getElementById('siemens_b2_libre').value.trim());
+                if(al.length) txt += `- Alarmes :\n` + al.map(x => ` --- ${x}`).join('\n') + '\n';
+                blocsTxt.push(txt.trimEnd());
             }
 
-            // Lancement de la fenêtre modale
-            if(blocsTxt.length === 0) {
-                showModal("Rien à signaler (Tout est RAS).");
-            } else {
-                showModal(blocsTxt.join('\n\n'));
-            }
+            const finalResult = blocsTxt.length === 0 ? "Rien à signaler (Tout est RAS)." : blocsTxt.join('\n\n');
+            document.getElementById('reportOutputText').textContent = finalResult;
+            document.getElementById('reportOutputBox').classList.remove('hidden');
+        }
+
+        function copierRapport() {
+            const textToCopy = document.getElementById('reportOutputText').textContent;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const btn = document.querySelector('.btn-copy');
+                btn.textContent = "✅ Copié avec succès !";
+                btn.style.backgroundColor = "#00ff00";
+                btn.style.color = "#121212";
+                setTimeout(() => {
+                    btn.textContent = "📋 Copier dans le presse-papier";
+                    btn.style.backgroundColor = "#34c759";
+                    btn.style.color = "#fff";
+                }, 2000);
+            });
         }
     </script>
 </body>
