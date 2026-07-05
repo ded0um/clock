@@ -413,9 +413,9 @@
         injecterPostes(vannesList, "Défaut vanne poste");
         injecterPostes(feuPosteList, "Feu poste de controle");
 
-        // Analyse complète et formatage strict selon modèle demandé
+        // Analyse complète et formatage strict selon modèle demandé (Exclusion des RAS)
         function genererRapport() {
-            let txt = "";
+            let blocsTxt = [];
 
             function getChecked(containerId) {
                 const checked = document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`);
@@ -424,50 +424,45 @@
 
             // REPORT SSI BAT1
             const ssiB1 = document.querySelector('input[name="ssi_b1"]:checked').value;
-            txt += `REPORT SSI BAT1\n`;
-            if (ssiB1 === "RAS") {
-                txt += ` --- RAS\n`;
-            } else {
+            if (ssiB1 === "NON RAS") {
+                let sectionTxt = `REPORT SSI BAT1\n`;
                 const voyants = getChecked('ssi_b1_voyants');
                 const zones = getChecked('ssi_b1_zones');
                 if(voyants.length) {
-                    txt += `- Voyants allumés :\n`;
-                    voyants.forEach(v => txt += ` --- ${v}\n`);
+                    sectionTxt += `- Voyants allumés :\n`;
+                    voyants.forEach(v => sectionTxt += ` --- ${v}\n`);
                 }
                 if(zones.length) {
-                    txt += `- Zones en alarmes :\n`;
-                    zones.forEach(z => txt += ` --- ${z}\n`);
+                    sectionTxt += `- Zones en alarmes :\n`;
+                    zones.forEach(z => sectionTxt += ` --- ${z}\n`);
                 }
+                blocsTxt.push(sectionTxt.trimEnd());
             }
 
             // REPORT SSI BAT2
             const ssiB2 = document.querySelector('input[name="ssi_b2"]:checked').value;
-            txt += `\nREPORT SSI BAT2\n`;
-            if (ssiB2 === "RAS") {
-                txt += ` --- RAS\n`;
-            } else {
+            if (ssiB2 === "NON RAS") {
+                let sectionTxt = `REPORT SSI BAT2\n`;
                 const voyants = getChecked('ssi_b2_voyants');
                 const zones = getChecked('ssi_b2_zones');
                 if(voyants.length) {
-                    txt += `- Voyants allumés :\n`;
-                    voyants.forEach(v => txt += ` --- ${v}\n`);
+                    sectionTxt += `- Voyants allumés :\n`;
+                    voyants.forEach(v => sectionTxt += ` --- ${v}\n`);
                 }
                 if(zones.length) {
-                    txt += `- Zones en alarmes :\n`;
-                    zones.forEach(z => txt += ` --- ${z}\n`);
+                    sectionTxt += `- Zones en alarmes :\n`;
+                    zones.forEach(z => sectionTxt += ` --- ${z}\n`);
                 }
+                blocsTxt.push(sectionTxt.trimEnd());
             }
 
             // REPORT SPRINKLER
             const spr = document.querySelector('input[name="sprinkler"]:checked').value;
-            txt += `\nREPORT SPRINKLER\n`;
-            if (spr === "RAS") {
-                txt += ` --- RAS\n`;
-            } else {
+            if (spr === "NON RAS") {
+                let sectionTxt = `REPORT SPRINKLER\n`;
                 const voyants = getChecked('sprinkler_voyants');
                 const ptsHs = document.getElementById('pts_hs').value || '0';
                 
-                // On rassemble tous les types d'alarmes sous la même bannière
                 let alarmesSprinkler = [];
                 alarmesSprinkler.push(...getChecked('alarmes_diverses'));
                 alarmesSprinkler.push(...getChecked('intrusion_list'));
@@ -475,25 +470,24 @@
                 alarmesSprinkler.push(...getChecked('feu_poste_list'));
 
                 if(voyants.length) {
-                    txt += `- Voyants allumés :\n`;
-                    voyants.forEach(v => txt += ` --- ${v}\n`);
+                    sectionTxt += `- Voyants allumés :\n`;
+                    voyants.forEach(v => sectionTxt += ` --- ${v}\n`);
                 }
-                txt += `- Nombre total de points hors service=${ptsHs} (sans libellé)\n`;
+                sectionTxt += `- Nombre total de points hors service=${ptsHs} (sans libellé)\n`;
                 
                 if(alarmesSprinkler.length) {
-                    txt += `- Alarmes :\n`;
-                    alarmesSprinkler.forEach(a => txt += ` --- ${a}\n`);
+                    sectionTxt += `- Alarmes :\n`;
+                    alarmesSprinkler.forEach(a => sectionTxt += ` --- ${a}\n`);
                 }
+                blocsTxt.push(sectionTxt.trimEnd());
             }
 
             // REPORT SIEMENS BAT1
             const siemensB1 = document.querySelector('input[name="siemens_b1"]:checked').value;
-            txt += `\nREPORT SIEMENS BAT1\n`;
-            if (siemensB1 === "RAS") {
-                txt += ` --- RAS\n`;
-            } else {
+            if (siemensB1 === "NON RAS") {
+                let sectionTxt = `REPORT SIEMENS BAT1\n`;
                 if(document.getElementById('siemens_b1_derangement').checked) {
-                    txt += `- Voyants allumés :\n --- Dérangement\n`;
+                    sectionTxt += `- Voyants allumés :\n --- Dérangement\n`;
                 }
                 
                 let alarmesB1 = [];
@@ -504,19 +498,18 @@
                 if(libreB1) alarmesB1.push(libreB1);
 
                 if(alarmesB1.length) {
-                    txt += `- Alarmes :\n`;
-                    alarmesB1.forEach(a => txt += ` --- ${a}\n`);
+                    sectionTxt += `- Alarmes :\n`;
+                    alarmesB1.forEach(a => sectionTxt += ` --- ${a}\n`);
                 }
+                blocsTxt.push(sectionTxt.trimEnd());
             }
 
             // REPORT SIEMENS BAT2
             const siemensB2 = document.querySelector('input[name="siemens_b2"]:checked').value;
-            txt += `\nREPORT SIEMENS BAT2\n`;
-            if (siemensB2 === "RAS") {
-                txt += ` --- RAS\n`;
-            } else {
+            if (siemensB2 === "NON RAS") {
+                let sectionTxt = `REPORT SIEMENS BAT2\n`;
                 if(document.getElementById('siemens_b2_derangement').checked) {
-                    txt += `- Voyants allumés :\n --- Dérangement\n`;
+                    sectionTxt += `- Voyants allumés :\n --- Dérangement\n`;
                 }
                 
                 let alarmesB2 = [];
@@ -527,12 +520,18 @@
                 if(libreB2) alarmesB2.push(libreB2);
 
                 if(alarmesB2.length) {
-                    txt += `- Alarmes :\n`;
-                    alarmesB2.forEach(a => txt += ` --- ${a}\n`);
+                    sectionTxt += `- Alarmes :\n`;
+                    alarmesB2.forEach(a => sectionTxt += ` --- ${a}\n`);
                 }
+                blocsTxt.push(sectionTxt.trimEnd());
             }
 
-            alert(txt);
+            // Si absolument tout est RAS
+            if(blocsTxt.length === 0) {
+                alert("Rien à signaler (Tout est RAS).");
+            } else {
+                alert(blocsTxt.join('\n\n'));
+            }
         }
     </script>
 </body>
