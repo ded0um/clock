@@ -23,12 +23,12 @@
         }
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
         }
         .section {
             background-color: #1e1e1e;
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             overflow: hidden;
             border: 1px solid #333;
         }
@@ -117,6 +117,12 @@
             color: #00ffcc;
             border-bottom: 1px solid #333;
             padding-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        h4 {
+            margin: 10px 0 5px 0;
+            color: #aaa;
+            font-size: 0.95rem;
         }
     </style>
 </head>
@@ -135,34 +141,34 @@
             </div>
             <div class="section-content">
                 <!-- SSI B1 -->
-                <h3>SSI B1</h3>
+                <h3>REPORT SSI B1</h3>
                 <div class="form-group">
                     <div class="radio-group">
                         <label><input type="radio" name="ssi_b1" value="RAS" checked onchange="toggleDetails('ssi_b1_details', this.value)"> RAS</label>
-                        <label><input type="radio" name="ssi_b1" value="NON RAS" onchange="toggleDetails('ssi_b1_details', this.value)"> NON RAS (Dérangement / Anomalie)</label>
+                        <label><input type="radio" name="ssi_b1" value="NON RAS" onchange="toggleDetails('ssi_b1_details', this.value)"> NON RAS</label>
                     </div>
                 </div>
                 <div id="ssi_b1_details" class="hidden">
                     <div class="form-group">
-                        <label>Voyants allumés :</label>
+                        <label><strong>Voyants allumés ?</strong></label>
                         <div class="checkbox-group">
-                            <label><input type="checkbox" value="Dérangement"> Dérangement</label>
                             <label><input type="checkbox" value="Veille restreinte"> Veille restreinte</label>
+                            <label><input type="checkbox" value="Dérangement"> Dérangement</label>
                             <label><input type="checkbox" value="Alarme feu"> Alarme feu</label>
                             <label><input type="checkbox" value="Évacuation générale"> Évacuation générale</label>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Zones en alarme (B1) :</label>
+                        <label><strong>Zones en alarmes ?</strong></label>
                         <div class="grid-checkbox">
-                            <label><input type="checkbox" value="Z1"> Z1</label>
-                            <label><input type="checkbox" value="Z2"> Z2</label>
-                            <label><input type="checkbox" value="Z3"> Z3</label>
-                            <label><input type="checkbox" value="Z4"> Z4</label>
-                            <label><input type="checkbox" value="Z5"> Z5</label>
-                            <label><input type="checkbox" value="Z6"> Z6</label>
-                            <label><input type="checkbox" value="Z7"> Z7</label>
-                            <label><input type="checkbox" value="Z8"> Z8</label>
+                            <label><input type="checkbox" value="1"> 1</label>
+                            <label><input type="checkbox" value="2"> 2</label>
+                            <label><input type="checkbox" value="3"> 3</label>
+                            <label><input type="checkbox" value="4"> 4</label>
+                            <label><input type="checkbox" value="5"> 5</label>
+                            <label><input type="checkbox" value="6"> 6</label>
+                            <label><input type="checkbox" value="7"> 7</label>
+                            <label><input type="checkbox" value="8"> 8</label>
                         </div>
                     </div>
                 </div>
@@ -170,7 +176,7 @@
                 <hr style="border-color: #333; margin: 20px 0;">
 
                 <!-- SSI B2 -->
-                <h3>SSI B2</h3>
+                <h3>REPORT SSI B2</h3>
                 <div class="form-group">
                     <div class="radio-group">
                         <label><input type="radio" name="ssi_b2" value="RAS" checked onchange="toggleDetails('ssi_b2_details', this.value)"> RAS</label>
@@ -179,53 +185,53 @@
                 </div>
                 <div id="ssi_b2_details" class="hidden">
                     <div class="form-group">
-                        <label>Voyants allumés :</label>
+                        <label><strong>Voyants allumés ?</strong></label>
                         <div class="checkbox-group">
-                            <label><input type="checkbox" value="Dérangement"> Dérangement</label>
                             <label><input type="checkbox" value="Veille restreinte"> Veille restreinte</label>
+                            <label><input type="checkbox" value="Dérangement"> Dérangement</label>
                             <label><input type="checkbox" value="Alarme feu"> Alarme feu</label>
                             <label><input type="checkbox" value="Évacuation générale"> Évacuation générale</label>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Zones en alarme (B2) :</label>
+                        <label><strong>Zones en alarmes ?</strong></label>
                         <div class="grid-checkbox">
-                            <label><input type="checkbox" value="Z1"> Z1</label>
-                            <label><input type="checkbox" value="Z2"> Z2</label>
-                            <label><input type="checkbox" value="Z3"> Z3</label>
-                            <label><input type="checkbox" value="Z4"> Z4</label>
-                            <label><input type="checkbox" value="Z5"> Z5</label>
-                            <label><input type="checkbox" value="Z6"> Z6</label>
-                            <label><input type="checkbox" value="Z7"> Z7</label>
-                            <label><input type="checkbox" value="Z8"> Z8</label>
+                            <label><input type="checkbox" value="1"> 1</label>
+                            <label><input type="checkbox" value="2"> 2</label>
+                            <label><input type="checkbox" value="3"> 3</label>
+                            <label><input type="checkbox" value="4"> 4</label>
+                            <label><input type="checkbox" value="5"> 5</label>
+                            <label><input type="checkbox" value="6"> 6</label>
+                            <label><input type="checkbox" value="7"> 7</label>
+                            <label><input type="checkbox" value="8"> 8</label>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- SECTION 2 : SPRINKLER & ALARMES TECHNIQUES -->
+        <!-- SECTION 2 : SPRINKLER -->
         <div class="section">
             <div class="section-header" onclick="toggleSection(this)">
-                <span>REPORT SPRINKLER & ALARMES</span>
+                <span>REPORT SPRINKLER</span>
                 <span>▼</span>
             </div>
             <div class="section-content">
-                <h3>Sprinkler</h3>
+                <h3>REPORT SPRINKLER</h3>
                 <div class="form-group">
                     <div class="radio-group">
-                        <label><input type="radio" name="sprinkler" value="RAS" checked onchange="toggleDetails('sprinkler_details', this.value)"> RAS Sprinkler</label>
-                        <label><input type="radio" name="sprinkler" value="NON RAS" onchange="toggleDetails('sprinkler_details', this.value)"> NON RAS Sprinkler</label>
+                        <label><input type="radio" name="sprinkler" value="RAS" checked onchange="toggleDetails('sprinkler_details', this.value)"> RAS</label>
+                        <label><input type="radio" name="sprinkler" value="NON RAS" onchange="toggleDetails('sprinkler_details', this.value)"> NON RAS</label>
                     </div>
                 </div>
                 <div id="sprinkler_details" class="hidden">
                     <div class="form-group">
-                        <label>Voyants Sprinkler :</label>
+                        <label><strong>VOYANTS ALLUMÉS ?</strong></label>
                         <div class="checkbox-group">
                             <label><input type="checkbox" value="Feu"> Feu</label>
                             <label><input type="checkbox" value="Zone locale"> Zone locale</label>
                             <label><input type="checkbox" value="Zone voisine"> Zone voisine</label>
-                            <label><input type="checkbox" value="Défaut général"> Défaut général</label>
+                            <label><input type="checkbox" value="Défaut générale"> Défaut générale</label>
                             <label><input type="checkbox" value="Hors service"> Hors service</label>
                             <label><input type="checkbox" value="Défaut T.R.E."> Défaut T.R.E.</label>
                             <label><input type="checkbox" value="Défaut alimentation"> Défaut alimentation</label>
@@ -233,37 +239,81 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Nombre total de points hors service :</label>
-                        <input type="number" id="pts_hs" placeholder="Ex: 0">
+                        <label><strong>NOMBRE TOTAL DE POINTS HORS SERVICE=</strong></label>
+                        <input type="number" id="pts_hs" placeholder="Saisir le nombre manuellement">
                     </div>
                 </div>
 
                 <hr style="border-color: #333; margin: 20px 0;">
 
-                <h3>Alarmes Diverses / Techniques</h3>
+                <h3>ALARMES DIVERSES ?</h3>
                 <div class="form-group">
                     <div class="checkbox-group">
-                        <label><input type="checkbox" value="Contrôleur passage d'eau local sprinkler"> Contrôleur passage d'eau local sprinkler</label>
-                        <label><input type="checkbox" value="Défauts généraux sources B1/B2"> Défauts généraux sources B1/B2</label>
-                        <label><input type="checkbox" value="Manque d'air"> Manque d'air</label>
-                        <label><input type="checkbox" value="Niveaux de réserve"> Niveaux de réserve</label>
-                        <label><input type="checkbox" value="Pompe jockey"> Pompe jockey</label>
-                        <label><input type="checkbox" value="Pompe source B1"> Pompe source B1</label>
-                        <label><input type="checkbox" value="Pompe source B2"> Pompe source B2</label>
-                        <label><input type="checkbox" value="Températures locaux"> Températures locaux</label>
+                        <label><input type="checkbox" value="Controleur passage d'eau local sprinkler"> Controleur passage d'eau local sprinkler</label>
+                        <label><input type="checkbox" value="Défaut général source B1"> Défaut général source B1</label>
+                        <label><input type="checkbox" value="Défaut général source B2"> Défaut général source B2</label>
+                        <label><input type="checkbox" value="Défaut manque d'air poste n13 bat1"> Défaut manque d'air poste n13 bat1</label>
+                        <label><input type="checkbox" value="Défaut niveau réserve source B1"> Défaut niveau réserve source B1</label>
+                        <label><input type="checkbox" value="Défaut niveau réserve source B2"> Défaut niveau réserve source B2</label>
+                        <label><input type="checkbox" value="Défaut synthèse armoire de répartition"> Défaut synthèse armoire de répartition</label>
+                        <label><input type="checkbox" value="Défaut synthèse pompe jockey"> Défaut synthèse pompe jockey</label>
+                        <label><input type="checkbox" value="Défaut température local sprinkler"> Défaut température local sprinkler</label>
+                        <label><input type="checkbox" value="Défaut température s/station n7 bat1"> Défaut température s/station n7 bat1</label>
+                        <label><input type="checkbox" value="Défaut vanne bi-pass réserve B1/B2"> Défaut vanne bi-pass réserve B1/B2</label>
+                        <label><input type="checkbox" value="Défaut vanne réserve source B1"> Défaut vanne réserve source B1</label>
+                        <label><input type="checkbox" value="Défaut vannes aspi ou refoul source B1"> Défaut vannes aspi ou refoul source B1</label>
+                        <label><input type="checkbox" value="Défaut vannes aspi ou refoul source B2"> Défaut vannes aspi ou refoul source B2</label>
+                        <label><input type="checkbox" value="Intrusion local sprinkler"> Intrusion local sprinkler</label>
+                        <label><input type="checkbox" value="Marche pompe source B1"> Marche pompe source B1</label>
+                        <label><input type="checkbox" value="Marche pompe source B2"> Marche pompe source B2</label>
+                        <label><input type="checkbox" value="Non démarrage source B1"> Non démarrage source B1</label>
+                        <label><input type="checkbox" value="Non démarrage source B2"> Non démarrage source B2</label>
+                        <label><input type="checkbox" value="Passage d'eau RIA s/station n1 bat1"> Passage d'eau RIA s/station n1 bat1</label>
+                        <label><input type="checkbox" value="Passage d'eau ria s/station n6 bat1"> Passage d'eau ria s/station n6 bat1</label>
+                        <label><input type="checkbox" value="Passage d'eau ria s/station n4 bat2"> Passage d'eau ria s/station n4 bat2</label>
+                        <label><input type="checkbox" value="Position clé essais aérothermes"> Position clé essais aérothermes</label>
+                        <label><input type="checkbox" value="Position clé non auto source B1"> Position clé non auto source B1</label>
+                        <label><input type="checkbox" value="Position clé non auto source B2"> Position clé non auto source B2</label>
+                        <label><input type="checkbox" value="Risque d'échecs source B1"> Risque d'échecs source B1</label>
+                        <label><input type="checkbox" value="Risque d'échecs source B2"> Risque d'échecs source B2</label>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- SECTION 3 : SIEMENS -->
+        <!-- SECTION 3 : LOCATIONS ET POSTES -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <span>INTRUSIONS & POSTES (VANNES / FEU)</span>
+                <span>▼</span>
+            </div>
+            <div class="section-content">
+                <h3>INTRUSION S/STATION ... ?</h3>
+                <div class="form-group">
+                    <div class="grid-checkbox" id="intrusion_list"></div>
+                </div>
+                
+                <h3>DEFAUT VANNE POSTE ...</h3>
+                <div class="form-group">
+                    <div class="grid-checkbox" id="vannes_list"></div>
+                </div>
+
+                <h3>FEU POSTE DE CONTROLE ...</h3>
+                <div class="form-group">
+                    <div class="grid-checkbox" id="feu_poste_list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 4 : SIEMENS -->
         <div class="section">
             <div class="section-header" onclick="toggleSection(this)">
                 <span>REPORT SIEMENS (B1 & B2)</span>
                 <span>▼</span>
             </div>
             <div class="section-content">
-                <h3>Siemens B1</h3>
+                <!-- SIEMENS B1 -->
+                <h3>REPORT SIEMENS B1 :</h3>
                 <div class="form-group">
                     <div class="radio-group">
                         <label><input type="radio" name="siemens_b1" value="RAS" checked onchange="toggleDetails('siemens_b1_details', this.value)"> RAS</label>
@@ -271,16 +321,20 @@
                     </div>
                 </div>
                 <div id="siemens_b1_details" class="hidden">
-                    <div class="checkbox-group" style="margin-bottom: 10px;">
-                        <label><input type="checkbox" value="Dérangement"> Dérangement</label>
-                        <label><input type="checkbox" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
-                    </div>
-                    <input type="text" id="siemens_b1_libre" placeholder="Autre anomalie (texte libre)">
+                    <h4>VOYANTS ALLUMÉS ?</h4>
+                    <label><input type="checkbox" value="Dérangement"> Dérangement</label>
+                    
+                    <h4>INTITULE ANAMOLIE RECURENTE</h4>
+                    <label><input type="checkbox" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
+                    
+                    <h4>INTITULE ANAMOLIE</h4>
+                    <input type="text" id="siemens_b1_libre" placeholder="Saisir manuellement">
                 </div>
 
                 <hr style="border-color: #333; margin: 20px 0;">
 
-                <h3>Siemens B2</h3>
+                <!-- SIEMENS B2 -->
+                <h3>REPORT SIEMENS B2 :</h3>
                 <div class="form-group">
                     <div class="radio-group">
                         <label><input type="radio" name="siemens_b2" value="RAS" checked onchange="toggleDetails('siemens_b2_details', this.value)"> RAS</label>
@@ -288,30 +342,14 @@
                     </div>
                 </div>
                 <div id="siemens_b2_details" class="hidden">
-                    <div class="checkbox-group" style="margin-bottom: 10px;">
-                        <label><input type="checkbox" value="Dérangement"> Dérangement</label>
-                        <label><input type="checkbox" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
-                    </div>
-                    <input type="text" id="siemens_b2_libre" placeholder="Autre anomalie (texte libre)">
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION 4 : LOCALISATION VANNES & INTRUSIONS -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <span>VANNES & INTRUSIONS</span>
-                <span>▼</span>
-            </div>
-            <div class="section-content">
-                <h3>Intrusions Sous-Station</h3>
-                <div class="form-group">
-                    <div class="grid-checkbox" id="intrusion_list"></div>
-                </div>
-                
-                <h3>Défauts Vannes / Feu Poste</h3>
-                <div class="form-group">
-                    <div class="grid-checkbox" id="vannes_list"></div>
+                    <h4>VOYANTS ALLUMÉS ?</h4>
+                    <label><input type="checkbox" value="Dérangement"> Dérangement</label>
+                    
+                    <h4>INTITULE ANAMOLIE RECURENTE</h4>
+                    <label><input type="checkbox" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
+                    
+                    <h4>INTITULE ANAMOLIE</h4>
+                    <input type="text" id="siemens_b2_libre" placeholder="Saisir manuellement">
                 </div>
             </div>
         </div>
@@ -320,7 +358,7 @@
     </div>
 
     <script>
-        // Gestion de l'horloge et titre dynamique (ex: 01:51 | Dedoum)
+        // Horloge sans secondes + Onglet dynamique
         function updateClock() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -333,7 +371,7 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Gestion du pliage/dépliage des sections accordéons
+        // Pliage sections
         function toggleSection(header) {
             const content = header.nextElementSibling;
             const icon = header.querySelector('span:last-child');
@@ -341,7 +379,7 @@
             icon.textContent = content.classList.contains('active') ? '▲' : '▼';
         }
 
-        // Afficher ou masquer les zones d'anomalies selon le bouton coché
+        // Affichage Conditionnel "Si non RAS"
         function toggleDetails(id, value) {
             const element = document.getElementById(id);
             if (value === 'NON RAS') {
@@ -351,34 +389,29 @@
             }
         }
 
-        // Génération automatique des listes de bâtiments pour éviter un code trop lourd
+        // Génération automatique des listes de structures de bâtiments
         const intrusionList = document.getElementById('intrusion_list');
         const vannesList = document.getElementById('vannes_list');
+        const feuPosteList = document.getElementById('feu_poste_list');
 
-        // Remplissage Intrusions : n1 bat1 à n9 bat1, et n1 bat2 à n4 bat2
-        for(let i = 1; i <= 9; i++) {
-            intrusionList.innerHTML += `<label><input type="checkbox" value="Intrusion n${i} bat1"> n${i} bat1</label>`;
-        }
-        for(let i = 1; i <= 4; i++) {
-            intrusionList.innerHTML += `<label><input type="checkbox" value="Intrusion n${i} bat2"> n${i} bat2</label>`;
-        }
+        // Intrusions : n1 bat1 à n9 bat1, puis n1 bat2 à n4 bat2
+        for(let i = 1; i <= 9; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="n${i} bat1"> n${i} bat1</label>`;
+        for(let i = 1; i <= 4; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="n${i} bat2"> n${i} bat2</label>`;
 
-        // Remplissage Vannes/Postes : n1 bat1 à n12 bat1, compresseur A air n13 bat1, n14 bat1 à n18 bat1, et n1 bat2 à n9 bat2
-        for(let i = 1; i <= 12; i++) {
-            vannesList.innerHTML += `<label><input type="checkbox" value="Poste n${i} bat1"> n${i} bat1</label>`;
-        }
-        vannesList.innerHTML += `<label><input type="checkbox" value="Poste A air n13 bat1"> A air n13</label>`;
-        for(let i = 14; i <= 18; i++) {
-            vannesList.innerHTML += `<label><input type="checkbox" value="Poste n${i} bat1"> n${i} bat1</label>`;
-        }
-        for(let i = 1; i <= 9; i++) {
-            vannesList.innerHTML += `<label><input type="checkbox" value="Poste n${i} bat2"> n${i} bat2</label>`;
+        // Fonction pour remplir les blocs de postes (Vannes et Feux partagent les mêmes options)
+        function injecterPostes(conteneurHTML) {
+            for(let i = 1; i <= 12; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="n${i} bat1"> n${i} bat1</label>`;
+            conteneurHTML.innerHTML += `<label><input type="checkbox" value="A air n13 bat1"> A air n13 bat1</label>`;
+            for(let i = 14; i <= 18; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="n${i} bat1"> n${i} bat1</label>`;
+            for(let i = 1; i <= 9; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="n${i} bat2"> n${i} bat2</label>`;
         }
 
-        // Fonction pour générer le récapitulatif
+        injecterPostes(vannesList);
+        injecterPostes(feuPosteList);
+
         function genererRapport() {
             const time = document.getElementById('clock').textContent;
-            alert(`Rapport initié à ${time}. Cette fonction peut maintenant être connectée à votre base Sheets ou servir à générer un bloc de texte propre à copier !`);
+            alert(`Rapport initié à ${time}.`);
         }
     </script>
 </body>
