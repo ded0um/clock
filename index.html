@@ -135,15 +135,15 @@
 
     <div class="container">
         
-        <!-- REPORT SSI B1 & B2 -->
+        <!-- REPORT SSI BAT1 & BAT2 -->
         <div class="section">
             <div class="section-header" onclick="toggleSection(this)">
-                <span>REPORT SSI (B1 & B2)</span>
+                <span>REPORT SSI (BAT1 & BAT2)</span>
                 <span>▼</span>
             </div>
             <div class="section-content">
                 <!-- SSI B1 -->
-                <h3>REPORT SSI B1</h3>
+                <h3>REPORT SSI BAT1</h3>
                 <div class="form-group">
                     <div class="radio-group">
                         <label><input type="radio" name="ssi_b1" value="RAS" checked onchange="toggleDetails('ssi_b1_details', this.value)"> RAS</label>
@@ -178,7 +178,7 @@
                 <hr style="border-color: #333; margin: 20px 0;">
 
                 <!-- SSI B2 -->
-                <h3>REPORT SSI B2</h3>
+                <h3>REPORT SSI BAT2</h3>
                 <div class="form-group">
                     <div class="radio-group">
                         <label><input type="radio" name="ssi_b2" value="RAS" checked onchange="toggleDetails('ssi_b2_details', this.value)"> RAS</label>
@@ -212,7 +212,7 @@
             </div>
         </div>
 
-        <!-- REPORT SPRINKLER (Intègre toutes les sous-questions si NON RAS) -->
+        <!-- REPORT SPRINKLER -->
         <div class="section">
             <div class="section-header" onclick="toggleSection(this)">
                 <span>REPORT SPRINKLER</span>
@@ -227,7 +227,6 @@
                     </div>
                 </div>
                 
-                <!-- Tout le bloc suivant se masque/s'affiche selon le choix ci-dessus -->
                 <div id="sprinkler_global_details" class="hidden">
                     
                     <div class="form-group">
@@ -304,12 +303,12 @@
         <!-- REPORT SIEMENS -->
         <div class="section">
             <div class="section-header" onclick="toggleSection(this)">
-                <span>REPORT SIEMENS (B1 & B2)</span>
+                <span>REPORT SIEMENS (BAT1 & BAT2)</span>
                 <span>▼</span>
             </div>
             <div class="section-content">
                 <!-- SIEMENS B1 -->
-                <h3>REPORT SIEMENS B1</h3>
+                <h3>REPORT SIEMENS BAT1</h3>
                 <div class="form-group">
                     <div class="radio-group">
                         <label><input type="radio" name="siemens_b1" value="RAS" checked onchange="toggleDetails('siemens_b1_details', this.value)"> RAS</label>
@@ -336,7 +335,7 @@
                 <hr style="border-color: #333; margin: 20px 0;">
 
                 <!-- SIEMENS B2 -->
-                <h3>REPORT SIEMENS B2</h3>
+                <h3>REPORT SIEMENS BAT2</h3>
                 <div class="form-group">
                     <div class="radio-group">
                         <label><input type="radio" name="siemens_b2" value="RAS" checked onchange="toggleDetails('siemens_b2_details', this.value)"> RAS</label>
@@ -402,84 +401,135 @@
         const vannesList = document.getElementById('vannes_list');
         const feuPosteList = document.getElementById('feu_poste_list');
 
-        for(let i = 1; i <= 9; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="n${i} bat1"> n${i} bat1</label>`;
-        for(let i = 1; i <= 4; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="n${i} bat2"> n${i} bat2</label>`;
+        for(let i = 1; i <= 9; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="Intrusion s/station n${i} bat1"> n${i} bat1</label>`;
+        for(let i = 1; i <= 4; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="Intrusion s/station n${i} bat2"> n${i} bat2</label>`;
 
-        function injecterPostes(conteneurHTML) {
-            for(let i = 1; i <= 12; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="n${i} bat1"> n${i} bat1</label>`;
-            conteneurHTML.innerHTML += `<label><input type="checkbox" value="A air n13 bat1"> A air n13 bat1</label>`;
-            for(let i = 14; i <= 18; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="n${i} bat1"> n${i} bat1</label>`;
-            for(let i = 1; i <= 9; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="n${i} bat2"> n${i} bat2</label>`;
+        function injecterPostes(conteneurHTML, prefixe) {
+            for(let i = 1; i <= 12; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} bat1</label>`;
+            conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} A air n13 bat1"> A air n13 bat1</label>`;
+            for(let i = 14; i <= 18; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} bat1</label>`;
+            for(let i = 1; i <= 9; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat2"> n${i} bat2</label>`;
         }
-        injecterPostes(vannesList);
-        injecterPostes(feuPosteList);
+        injecterPostes(vannesList, "Défaut vanne poste");
+        injecterPostes(feuPosteList, "Feu poste de controle");
 
-        // Analyse complète et formatage du résultat
+        // Analyse complète et formatage strict selon modèle demandé
         function genererRapport() {
-            let txt = `=== RAPPORT DE RONDE (${document.getElementById('clock').textContent}) ===\n\n`;
+            let txt = "";
 
             function getChecked(containerId) {
                 const checked = document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`);
                 return Array.from(checked).map(el => el.value);
             }
 
-            // SSI B1
+            // REPORT SSI BAT1
             const ssiB1 = document.querySelector('input[name="ssi_b1"]:checked').value;
-            txt += `REPORT SSI B1 : ${ssiB1}\n`;
-            if (ssiB1 === "NON RAS") {
+            txt += `REPORT SSI BAT1\n`;
+            if (ssiB1 === "RAS") {
+                txt += ` --- RAS\n`;
+            } else {
                 const voyants = getChecked('ssi_b1_voyants');
                 const zones = getChecked('ssi_b1_zones');
-                if(voyants.length) txt += ` - Voyants allumés : ${voyants.join(', ')}\n`;
-                if(zones.length) txt += ` - Zones en alarmes : ${zones.join(', ')}\n`;
+                if(voyants.length) {
+                    txt += `- Voyants allumés :\n`;
+                    voyants.forEach(v => txt += ` --- ${v}\n`);
+                }
+                if(zones.length) {
+                    txt += `- Zones en alarmes :\n`;
+                    zones.forEach(z => txt += ` --- ${z}\n`);
+                }
             }
 
-            // SSI B2
+            // REPORT SSI BAT2
             const ssiB2 = document.querySelector('input[name="ssi_b2"]:checked').value;
-            txt += `\nREPORT SSI B2 : ${ssiB2}\n`;
-            if (ssiB2 === "NON RAS") {
+            txt += `\nREPORT SSI BAT2\n`;
+            if (ssiB2 === "RAS") {
+                txt += ` --- RAS\n`;
+            } else {
                 const voyants = getChecked('ssi_b2_voyants');
                 const zones = getChecked('ssi_b2_zones');
-                if(voyants.length) txt += ` - Voyants allumés : ${voyants.join(', ')}\n`;
-                if(zones.length) txt += ` - Zones en alarmes : ${zones.join(', ')}\n`;
+                if(voyants.length) {
+                    txt += `- Voyants allumés :\n`;
+                    voyants.forEach(v => txt += ` --- ${v}\n`);
+                }
+                if(zones.length) {
+                    txt += `- Zones en alarmes :\n`;
+                    zones.forEach(z => txt += ` --- ${z}\n`);
+                }
             }
 
-            // Sprinkler Globalisé
+            // REPORT SPRINKLER
             const spr = document.querySelector('input[name="sprinkler"]:checked').value;
-            txt += `\nREPORT SPRINKLER : ${spr}\n`;
-            if (spr === "NON RAS") {
+            txt += `\nREPORT SPRINKLER\n`;
+            if (spr === "RAS") {
+                txt += ` --- RAS\n`;
+            } else {
                 const voyants = getChecked('sprinkler_voyants');
                 const ptsHs = document.getElementById('pts_hs').value || '0';
-                const diverses = getChecked('alarmes_diverses');
-                const intrusions = getChecked('intrusion_list');
-                const vannes = getChecked('vannes_list');
-                const feux = getChecked('feu_poste_list');
+                
+                // On rassemble tous les types d'alarmes sous la même bannière
+                let alarmesSprinkler = [];
+                alarmesSprinkler.push(...getChecked('alarmes_diverses'));
+                alarmesSprinkler.push(...getChecked('intrusion_list'));
+                alarmesSprinkler.push(...getChecked('vannes_list'));
+                alarmesSprinkler.push(...getChecked('feu_poste_list'));
 
-                if(voyants.length) txt += ` - VOYANTS ALLUMÉS : ${voyants.join(', ')}\n`;
-                txt += ` - NOMBRE TOTAL DE POINTS HORS SERVICE = ${ptsHs}\n`;
-                if(diverses.length) txt += ` - ALARMES DIVERSES : ${diverses.join(', ')}\n`;
-                if(intrusions.length) txt += ` - INTRUSION S/STATION : ${intrusions.join(', ')}\n`;
-                if(vannes.length) txt += ` - DEFAUT VANNE POSTE : ${vannes.join(', ')}\n`;
-                if(feux.length) txt += ` - FEU POSTE DE CONTROLE : ${feux.join(', ')}\n`;
+                if(voyants.length) {
+                    txt += `- Voyants allumés :\n`;
+                    voyants.forEach(v => txt += ` --- ${v}\n`);
+                }
+                txt += `- Nombre total de points hors service=${ptsHs} (sans libellé)\n`;
+                
+                if(alarmesSprinkler.length) {
+                    txt += `- Alarmes :\n`;
+                    alarmesSprinkler.forEach(a => txt += ` --- ${a}\n`);
+                }
             }
 
-            // Siemens B1
+            // REPORT SIEMENS BAT1
             const siemensB1 = document.querySelector('input[name="siemens_b1"]:checked').value;
-            txt += `\nREPORT Siemens B1 : ${siemensB1}\n`;
-            if (siemensB1 === "NON RAS") {
-                if(document.getElementById('siemens_b1_derangement').checked) txt += ` - VOYANTS ALLUMÉS : Dérangement\n`;
-                if(document.getElementById('siemens_b1_recurrente').checked) txt += ` - INTITULE ANOMALIE RECURENTE : Reprise info locaux technique coupure armoire chaufferie\n`;
-                const libre = document.getElementById('siemens_b1_libre').value;
-                if(libre) txt += ` - INTITULE ANOMALIE : ${libre}\n`;
+            txt += `\nREPORT SIEMENS BAT1\n`;
+            if (siemensB1 === "RAS") {
+                txt += ` --- RAS\n`;
+            } else {
+                if(document.getElementById('siemens_b1_derangement').checked) {
+                    txt += `- Voyants allumés :\n --- Dérangement\n`;
+                }
+                
+                let alarmesB1 = [];
+                if(document.getElementById('siemens_b1_recurrente').checked) {
+                    alarmesB1.push("Reprise info locaux technique Coupure armoire chaufferie");
+                }
+                const libreB1 = document.getElementById('siemens_b1_libre').value;
+                if(libreB1) alarmesB1.push(libreB1);
+
+                if(alarmesB1.length) {
+                    txt += `- Alarmes :\n`;
+                    alarmesB1.forEach(a => txt += ` --- ${a}\n`);
+                }
             }
 
-            // Siemens B2
+            // REPORT SIEMENS BAT2
             const siemensB2 = document.querySelector('input[name="siemens_b2"]:checked').value;
-            txt += `\nREPORT Siemens B2 : ${siemensB2}\n`;
-            if (siemensB2 === "NON RAS") {
-                if(document.getElementById('siemens_b2_derangement').checked) txt += ` - VOYANTS ALLUMÉS : Dérangement\n`;
-                if(document.getElementById('siemens_b2_recurrente').checked) txt += ` - INTITULE ANOMALIE RECURENTE : Reprise info locaux technique coupure armoire chaufferie\n`;
-                const libre = document.getElementById('siemens_b2_libre').value;
-                if(libre) txt += ` - INTITULE ANOMALIE : ${libre}\n`;
+            txt += `\nREPORT SIEMENS BAT2\n`;
+            if (siemensB2 === "RAS") {
+                txt += ` --- RAS\n`;
+            } else {
+                if(document.getElementById('siemens_b2_derangement').checked) {
+                    txt += `- Voyants allumés :\n --- Dérangement\n`;
+                }
+                
+                let alarmesB2 = [];
+                if(document.getElementById('siemens_b2_recurrente').checked) {
+                    alarmesB2.push("Reprise info locaux technique Coupure armoire chaufferie");
+                }
+                const libreB2 = document.getElementById('siemens_b2_libre').value;
+                if(libreB2) alarmesB2.push(libreB2);
+
+                if(alarmesB2.length) {
+                    txt += `- Alarmes :\n`;
+                    alarmesB2.forEach(a => txt += ` --- ${a}\n`);
+                }
             }
 
             alert(txt);
