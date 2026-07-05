@@ -5,27 +5,37 @@
     <title>Dedoum | Console</title>
     <style>
         :root { --bg-color: #000; --panel-bg: #111; --text-color: #fff; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
         #clock { font-size: 8rem; font-weight: bold; }
-        #weather-display { font-size: 1.5rem; color: #aaa; margin-top: 10px; }
-        .controls { position: absolute; bottom: 30px; right: 30px; }
-        .icon-btn { background: none; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; opacity: 0.5; }
-        .side-panel { position: fixed; top: 0; right: -450px; width: 420px; height: 100vh; background: #111; border-left: 1px solid #333; transition: 0.4s; padding: 25px; }
+        .controls-bottom-right { position: absolute; bottom: 30px; right: 30px; display: flex; gap: 20px; z-index: 10; }
+        .icon-btn { background: none; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; opacity: 0.4; transition: 0.2s; }
+        .icon-btn:hover { opacity: 1; transform: scale(1.1); }
+        
+        /* Panneau Météo */
+        #weather-panel { position: absolute; bottom: 80px; right: 30px; background: #000; border: 1px solid #333; padding: 10px; border-radius: 8px; z-index: 20; color: #fff; font-size: 0.8rem; }
+        
+        /* Panneau latéral */
+        .side-panel { position: fixed; top: 0; right: -450px; width: 420px; height: 100vh; background: #111; border-left: 1px solid #333; transition: 0.4s; z-index: 15; padding: 25px; overflow-y: auto; }
         .side-panel.open { right: 0; }
-        input, select, textarea { width: 100%; background: #222; color: #fff; border: 1px solid #444; padding: 8px; margin-top: 5px; box-sizing: border-box;}
+        input, select, textarea { width: 100%; background: #222; color: #fff; border: 1px solid #444; padding: 8px; margin-top: 5px; box-sizing: border-box; }
         .btn-submit { background: #fff; color: #000; width: 100%; padding: 10px; border: none; cursor: pointer; margin-top: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <main style="text-align:center;">
+    <main>
         <div id="clock">00:00</div>
-        <!-- Ici s'affichera la météo -->
-        <div id="weather-display">Chargement météo...</div>
     </main>
 
-    <div class="controls">
-        <button class="icon-btn" id="togglePanelBtn">📝</button>
+    <div class="controls-bottom-right">
+        <button class="icon-btn" onclick="toggleWeather()" title="Météo">☔</button>
+        <button class="icon-btn" id="togglePanelBtn" title="Prise de service">📝</button>
+    </div>
+
+    <!-- Panneau Météo (caché par défaut) -->
+    <div id="weather-panel" style="display:none;">
+        <strong>Météo 12h (Amiens)</strong>
+        <iframe src="https://www.meteoblue.com/fr/meteo/widget/three/amiens_france_2995963?geoloc=fixed&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=bright" frameborder="0" scrolling="no" style="width: 200px; height: 350px;"></iframe>
     </div>
 
     <div class="side-panel" id="questionnairePanel">
@@ -38,33 +48,25 @@
     </div>
 
     <script>
-        // 1. HORLOGE
+        // HORLOGE
         setInterval(() => {
             document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }, 1000);
 
-        // 2. MÉTÉO (Automatique sans ouvrir de page)
-        async function fetchWeather() {
-            try {
-                // Coordonnées Amiens
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=49.89&longitude=2.30&current=temperature_2m,weather_code');
-                const data = await res.json();
-                const temp = data.current.temperature_2m;
-                document.getElementById('weather-display').innerText = `Amiens : ${temp}°C`;
-            } catch (e) {
-                document.getElementById('weather-display').innerText = "Météo indisponible";
-            }
+        // MÉTÉO (Affiche/Cache le tableau)
+        function toggleWeather() {
+            const p = document.getElementById('weather-panel');
+            p.style.display = (p.style.display === 'none') ? 'block' : 'none';
         }
-        fetchWeather();
 
-        // 3. PANNEAU
+        // PANNEAU SERVICE
         document.getElementById('togglePanelBtn').onclick = () => document.getElementById('questionnairePanel').classList.toggle('open');
 
         function genererRapport() {
             const e = document.getElementById('effectif').value;
             const s = document.getElementById('ssi').value;
             const c = document.getElementById('commentaires').value;
-            document.getElementById('output').innerText = `Rapport : ${e} agents | ${s} | ${c}`;
+            document.getElementById('output').innerText = `Rapport ${new Date().toLocaleDateString()}:\n- ${e} agent(s)\n- ${s}\n- ${c}`;
         }
     </script>
 </body>
