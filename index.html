@@ -133,7 +133,7 @@
 
     <div class="container">
         
-        <!-- SECTION 1 : SSI -->
+        <!-- REPORT SSI B1 & B2 -->
         <div class="section">
             <div class="section-header" onclick="toggleSection(this)">
                 <span>REPORT SSI (B1 & B2)</span>
@@ -151,7 +151,7 @@
                 <div id="ssi_b1_details" class="hidden">
                     <div class="form-group">
                         <label><strong>Voyants allumés ?</strong></label>
-                        <div class="checkbox-group">
+                        <div class="checkbox-group" id="ssi_b1_voyants">
                             <label><input type="checkbox" value="Veille restreinte"> Veille restreinte</label>
                             <label><input type="checkbox" value="Dérangement"> Dérangement</label>
                             <label><input type="checkbox" value="Alarme feu"> Alarme feu</label>
@@ -160,7 +160,7 @@
                     </div>
                     <div class="form-group">
                         <label><strong>Zones en alarmes ?</strong></label>
-                        <div class="grid-checkbox">
+                        <div class="grid-checkbox" id="ssi_b1_zones">
                             <label><input type="checkbox" value="1"> 1</label>
                             <label><input type="checkbox" value="2"> 2</label>
                             <label><input type="checkbox" value="3"> 3</label>
@@ -186,7 +186,7 @@
                 <div id="ssi_b2_details" class="hidden">
                     <div class="form-group">
                         <label><strong>Voyants allumés ?</strong></label>
-                        <div class="checkbox-group">
+                        <div class="checkbox-group" id="ssi_b2_voyants">
                             <label><input type="checkbox" value="Veille restreinte"> Veille restreinte</label>
                             <label><input type="checkbox" value="Dérangement"> Dérangement</label>
                             <label><input type="checkbox" value="Alarme feu"> Alarme feu</label>
@@ -195,7 +195,7 @@
                     </div>
                     <div class="form-group">
                         <label><strong>Zones en alarmes ?</strong></label>
-                        <div class="grid-checkbox">
+                        <div class="grid-checkbox" id="ssi_b2_zones">
                             <label><input type="checkbox" value="1"> 1</label>
                             <label><input type="checkbox" value="2"> 2</label>
                             <label><input type="checkbox" value="3"> 3</label>
@@ -210,10 +210,10 @@
             </div>
         </div>
 
-        <!-- SECTION 2 : SPRINKLER -->
+        <!-- REPORT SPRINKLER -->
         <div class="section">
             <div class="section-header" onclick="toggleSection(this)">
-                <span>REPORT SPRINKLER</span>
+                <span>REPORT SPRINKLER & ALARMES</span>
                 <span>▼</span>
             </div>
             <div class="section-content">
@@ -227,7 +227,7 @@
                 <div id="sprinkler_details" class="hidden">
                     <div class="form-group">
                         <label><strong>VOYANTS ALLUMÉS ?</strong></label>
-                        <div class="checkbox-group">
+                        <div class="checkbox-group" id="sprinkler_voyants">
                             <label><input type="checkbox" value="Feu"> Feu</label>
                             <label><input type="checkbox" value="Zone locale"> Zone locale</label>
                             <label><input type="checkbox" value="Zone voisine"> Zone voisine</label>
@@ -240,7 +240,7 @@
                     </div>
                     <div class="form-group">
                         <label><strong>NOMBRE TOTAL DE POINTS HORS SERVICE=</strong></label>
-                        <input type="number" id="pts_hs" placeholder="Saisir le nombre manuellement">
+                        <input type="number" id="pts_hs" placeholder="Saisir manuellement">
                     </div>
                 </div>
 
@@ -248,7 +248,7 @@
 
                 <h3>ALARMES DIVERSES ?</h3>
                 <div class="form-group">
-                    <div class="checkbox-group">
+                    <div class="checkbox-group" id="alarmes_diverses">
                         <label><input type="checkbox" value="Controleur passage d'eau local sprinkler"> Controleur passage d'eau local sprinkler</label>
                         <label><input type="checkbox" value="Défaut général source B1"> Défaut général source B1</label>
                         <label><input type="checkbox" value="Défaut général source B2"> Défaut général source B2</label>
@@ -281,7 +281,7 @@
             </div>
         </div>
 
-        <!-- SECTION 3 : LOCATIONS ET POSTES -->
+        <!-- LOCATIONS ET POSTES -->
         <div class="section">
             <div class="section-header" onclick="toggleSection(this)">
                 <span>INTRUSIONS & POSTES (VANNES / FEU)</span>
@@ -305,7 +305,7 @@
             </div>
         </div>
 
-        <!-- SECTION 4 : SIEMENS -->
+        <!-- REPORT SIEMENS -->
         <div class="section">
             <div class="section-header" onclick="toggleSection(this)">
                 <span>REPORT SIEMENS (B1 & B2)</span>
@@ -313,7 +313,7 @@
             </div>
             <div class="section-content">
                 <!-- SIEMENS B1 -->
-                <h3>REPORT SIEMENS B1 :</h3>
+                <h3>REPORT SIEMENS B1</h3>
                 <div class="form-group">
                     <div class="radio-group">
                         <label><input type="radio" name="siemens_b1" value="RAS" checked onchange="toggleDetails('siemens_b1_details', this.value)"> RAS</label>
@@ -322,10 +322,10 @@
                 </div>
                 <div id="siemens_b1_details" class="hidden">
                     <h4>VOYANTS ALLUMÉS ?</h4>
-                    <label><input type="checkbox" value="Dérangement"> Dérangement</label>
+                    <label><input type="checkbox" id="siemens_b1_derangement" value="Dérangement"> Dérangement</label>
                     
                     <h4>INTITULE ANAMOLIE RECURENTE</h4>
-                    <label><input type="checkbox" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
+                    <label><input type="checkbox" id="siemens_b1_recurrente" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
                     
                     <h4>INTITULE ANAMOLIE</h4>
                     <input type="text" id="siemens_b1_libre" placeholder="Saisir manuellement">
@@ -334,7 +334,7 @@
                 <hr style="border-color: #333; margin: 20px 0;">
 
                 <!-- SIEMENS B2 -->
-                <h3>REPORT SIEMENS B2 :</h3>
+                <h3>REPORT SIEMENS B2</h3>
                 <div class="form-group">
                     <div class="radio-group">
                         <label><input type="radio" name="siemens_b2" value="RAS" checked onchange="toggleDetails('siemens_b2_details', this.value)"> RAS</label>
@@ -343,10 +343,10 @@
                 </div>
                 <div id="siemens_b2_details" class="hidden">
                     <h4>VOYANTS ALLUMÉS ?</h4>
-                    <label><input type="checkbox" value="Dérangement"> Dérangement</label>
+                    <label><input type="checkbox" id="siemens_b2_derangement" value="Dérangement"> Dérangement</label>
                     
                     <h4>INTITULE ANAMOLIE RECURENTE</h4>
-                    <label><input type="checkbox" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
+                    <label><input type="checkbox" id="siemens_b2_recurrente" value="Reprise info locaux technique coupure armoire chaufferie"> Reprise info locaux technique coupure armoire chaufferie</label>
                     
                     <h4>INTITULE ANAMOLIE</h4>
                     <input type="text" id="siemens_b2_libre" placeholder="Saisir manuellement">
@@ -358,7 +358,7 @@
     </div>
 
     <script>
-        // Horloge sans secondes + Onglet dynamique
+        // Horloge sans secondes + Onglet dynamique (Ex: 21:30 | Dedoum)
         function updateClock() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -371,7 +371,7 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Pliage sections
+        // Pliage/Dépliage des sections
         function toggleSection(header) {
             const content = header.nextElementSibling;
             const icon = header.querySelector('span:last-child');
@@ -389,7 +389,7 @@
             }
         }
 
-        // Génération automatique des listes de structures de bâtiments
+        // Génération des listes dynamiques (Intrusions et Postes)
         const intrusionList = document.getElementById('intrusion_list');
         const vannesList = document.getElementById('vannes_list');
         const feuPosteList = document.getElementById('feu_poste_list');
@@ -398,20 +398,92 @@
         for(let i = 1; i <= 9; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="n${i} bat1"> n${i} bat1</label>`;
         for(let i = 1; i <= 4; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="n${i} bat2"> n${i} bat2</label>`;
 
-        // Fonction pour remplir les blocs de postes (Vannes et Feux partagent les mêmes options)
+        // Remplissage des listes de postes identiques (Vannes et Feux)
         function injecterPostes(conteneurHTML) {
             for(let i = 1; i <= 12; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="n${i} bat1"> n${i} bat1</label>`;
             conteneurHTML.innerHTML += `<label><input type="checkbox" value="A air n13 bat1"> A air n13 bat1</label>`;
             for(let i = 14; i <= 18; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="n${i} bat1"> n${i} bat1</label>`;
             for(let i = 1; i <= 9; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="n${i} bat2"> n${i} bat2</label>`;
         }
-
         injecterPostes(vannesList);
         injecterPostes(feuPosteList);
 
+        // Analyse complète de la saisie et formatage du résultat
         function genererRapport() {
-            const time = document.getElementById('clock').textContent;
-            alert(`Rapport initié à ${time}.`);
+            let structureTxt = `=== COMPTE RENDU DE RONDE (${document.getElementById('clock').textContent}) ===\n\n`;
+
+            // Extraction utilitaire pour les cases cochées d'un bloc
+            function getCheckedItems(containerId) {
+                const checked = document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`);
+                return Array.from(checked).map(el => el.value);
+            }
+
+            // SSI B1
+            const ssiB1Statut = document.querySelector('input[name="ssi_b1"]:checked').value;
+            structureTxt += `REPORT SSI B1 : ${ssiB1Statut}\n`;
+            if (ssiB1Statut === "NON RAS") {
+                const voyants = getCheckedItems('ssi_b1_voyants');
+                const zones = getCheckedItems('ssi_b1_zones');
+                if(voyants.length) structureTxt += ` - Voyants allumés : ${voyants.join(', ')}\n`;
+                if(zones.length) structureTxt += ` - Zones en alarmes : ${zones.join(', ')}\n`;
+            }
+
+            // SSI B2
+            const ssiB2Statut = document.querySelector('input[name="ssi_b2"]:checked').value;
+            structureTxt += `\nREPORT SSI B2 : ${ssiB2Statut}\n`;
+            if (ssiB2Statut === "NON RAS") {
+                const voyants = getCheckedItems('ssi_b2_voyants');
+                const zones = getCheckedItems('ssi_b2_zones');
+                if(voyants.length) structureTxt += ` - Voyants allumés : ${voyants.join(', ')}\n`;
+                if(zones.length) structureTxt += ` - Zones en alarmes : ${zones.join(', ')}\n`;
+            }
+
+            // Sprinkler
+            const sprStatut = document.querySelector('input[name="sprinkler"]:checked').value;
+            structureTxt += `\nREPORT SPRINKLER : ${sprStatut}\n`;
+            if (sprStatut === "NON RAS") {
+                const voyants = getCheckedItems('sprinkler_voyants');
+                const ptsHs = document.getElementById('pts_hs').value || '0';
+                if(voyants.length) structureTxt += ` - VOYANTS ALLUMÉS : ${voyants.join(', ')}\n`;
+                structureTxt += ` - NOMBRE TOTAL DE POINTS HORS SERVICE = ${ptsHs}\n`;
+            }
+
+            // Alarmes diverses
+            const diverses = getCheckedItems('alarmes_diverses');
+            if(diverses.length) structureTxt += ` - ALARMES DIVERSES : ${diverses.join(', ')}\n`;
+
+            // Localisations
+            const intrusions = getCheckedItems('intrusion_list');
+            if(intrusions.length) structureTxt += `\nINTRUSION S/STATION : ${intrusions.join(', ')}\n`;
+
+            const vannes = getCheckedItems('vannes_list');
+            if(vannes.length) structureTxt += `DEFAUT VANNE POSTE : ${vannes.join(', ')}\n`;
+
+            const feux = getCheckedItems('feu_poste_list');
+            if(feux.length) structureTxt += `FEU POSTE DE CONTROLE : ${feux.join(', ')}\n`;
+
+            // Siemens B1
+            const siemensB1Statut = document.querySelector('input[name="siemens_b1"]:checked').value;
+            structureTxt += `\nREPORT SIEMENS B1 : ${siemensB1Statut}\n`;
+            if (siemensB1Statut === "NON RAS") {
+                if(document.getElementById('siemens_b1_derangement').checked) structureTxt += ` - VOYANTS ALLUMÉS : Dérangement\n`;
+                if(document.getElementById('siemens_b1_recurrente').checked) structureTxt += ` - INTITULE ANOMALIE RECURENTE : Reprise info locaux technique coupure armoire chaufferie\n`;
+                const libre = document.getElementById('siemens_b1_libre').value;
+                if(libre) structureTxt += ` - INTITULE ANOMALIE : ${libre}\n`;
+            }
+
+            // Siemens B2
+            const siemensB2Statut = document.querySelector('input[name="siemens_b2"]:checked').value;
+            structureTxt += `\nREPORT SIEMENS B2 : ${siemensB2Statut}\n`;
+            if (siemensB2Statut === "NON RAS") {
+                if(document.getElementById('siemens_b2_derangement').checked) structureTxt += ` - VOYANTS ALLUMÉS : Dérangement\n`;
+                if(document.getElementById('siemens_b2_recurrente').checked) structureTxt += ` - INTITULE ANOMALIE RECURENTE : Reprise info locaux technique coupure armoire chaufferie\n`;
+                const libre = document.getElementById('siemens_b2_libre').value;
+                if(libre) structureTxt += ` - INTITULE ANOMALIE : ${libre}\n`;
+            }
+
+            // Affiche le récapitulatif final
+            alert(structureTxt);
         }
     </script>
 </body>
