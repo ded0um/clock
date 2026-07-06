@@ -35,12 +35,14 @@
             position: relative;
             height: 100%;
             transition: flex 0.4s ease;
+            cursor: pointer; /* Indique qu'on peut cliquer pour le plein écran */
         }
 
         .date-display {
             font-size: 3rem;
             color: #888888;
             margin-bottom: 10px;
+            pointer-events: none; /* Laisse passer le clic vers le fond */
         }
 
         #clock {
@@ -49,6 +51,7 @@
             color: var(--text-color);
             user-select: none;
             letter-spacing: -2px;
+            pointer-events: none; /* Laisse passer le clic vers le fond */
         }
 
         /* --- ZONE DROITE : TÂCHES (1/3) --- */
@@ -181,10 +184,10 @@
             to { opacity: 1; }
         }
 
-        /* BOUTON ULTRA-DISCRET REHAUSSÉ POUR ÉVITER LA BARRE DES TÂCHES WINDOWS */
+        /* BOUTON REHAUSSÉ POUR ÉVITER LA BARRE DES TÂCHES */
         .icon-btn {
             position: absolute;
-            bottom: 80px; /* Remonté pour passer au-dessus de la barre démarrer */
+            bottom: 80px;
             right: 30px;
             background: none;
             border: none;
@@ -229,13 +232,11 @@
         .section-content { display: none; padding: 15px; background-color: #111111; }
         .section-content.active { display: block; }
         
-        /* Sous-blocs repliables pour le Sprinkler */
         .sub-section { background-color: #141414; border: 1px solid #222; border-radius: 4px; margin: 10px 0; overflow: hidden; }
         .sub-section-header { background-color: #1a1a1a; padding: 8px 12px; cursor: pointer; font-size: 0.85rem; font-weight: bold; display: flex; justify-content: space-between; color: #ccc; text-transform: uppercase; }
         .sub-section-content { display: none; padding: 10px; }
         .sub-section-content.active { display: block; }
 
-        /* Éléments de séparation de bâtiment à l'intérieur des sous-sections */
         .building-separator {
             grid-column: 1 / -1;
             border-top: 1px dashed #444;
@@ -251,14 +252,12 @@
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #aaa; }
         
-        /* Personnalisation moderne des boutons Radio */
         .radio-group-row { display: flex; gap: 20px; font-size: 0.95rem; margin-bottom: 10px; }
         .radio-group-row label { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #ccc; }
         .radio-group-row input[type="radio"] { appearance: none; width: 16px; height: 16px; border: 2px solid #444; border-radius: 50%; background: none; position: relative; cursor: pointer; margin: 0; outline: none; }
         .radio-group-row input[type="radio"]:checked { border-color: var(--yellow-led); }
         .radio-group-row input[type="radio"]:checked::before { content: ""; position: absolute; top: 3px; left: 3px; width: 6px; height: 6px; border-radius: 50%; background-color: var(--yellow-led); }
 
-        /* Personnalisation moderne des Checkboxes en JAUNE */
         .checkbox-group, .grid-checkbox { font-size: 0.9rem; }
         .checkbox-group { display: flex; flex-direction: column; gap: 8px; }
         
@@ -287,7 +286,7 @@
 <body>
 
     <!-- ZONE DE GAUCHE : HORLOGE + BOUTONS FIXES -->
-    <div class="left-zone">
+    <div class="left-zone" id="mainClickZone">
         
         <div class="top-controls">
             <div id="led-yellow-alert" class="led-yellow-alert" title="Tâches actives en attente (Cliquer pour déployer)"></div>
@@ -607,8 +606,15 @@
             majLedJauneAlerte();
         }
 
-        document.getElementById('toggleTasksBtn').addEventListener('click', () => basculerVoletTaches(false));
-        document.getElementById('led-yellow-alert').addEventListener('click', () => basculerVoletTaches(true));
+        document.getElementById('toggleTasksBtn').addEventListener('click', (e) => {
+            e.stopPropagation(); // Évite de déclencher le plein écran par inadvertance
+            basculerVoletTaches(false);
+        });
+        
+        document.getElementById('led-yellow-alert').addEventListener('click', (e) => {
+            e.stopPropagation();
+            basculerVoletTaches(true);
+        });
 
         // --- GESTION HORLOGE & DATE ---
         function updateClock() {
@@ -657,7 +663,8 @@
             }
         }
 
-        document.getElementById('led-rouge').addEventListener('click', function() {
+        document.getElementById('led-rouge').addEventListener('click', function(e) {
+            e.stopPropagation();
             if (this.classList.contains('blink')) {
                 ledRougeEteinteAujourdhui = true;
                 this.classList.remove('blink');
@@ -667,13 +674,45 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // --- WAKE LOCK ---
+        // --- WAKE LOCK & PLEIN ÉCRAN AUTOMATIQUE ---
         let wakeLock = null;
         async function requestWakeLock() {
-            try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); } } catch (err) {}
+            try { 
+                if ('wakeLock' in navigator) { 
+                    wakeLock = await navigator.wakeLock.request('screen'); 
+                } 
+            } catch (err) {}
         }
-        document.addEventListener('click', () => { if(!wakeLock) requestWakeLock(); });
-        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestWakeLock(); });
+
+        // Bascule en Plein Écran si non actif
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            }
+        }
+
+        // Gestionnaire d'interaction principal (Fond de l'horloge)
+        document.getElementById('mainClickZone').addEventListener('click', (e) => {
+            // Empêcher le plein écran si on clique sur le bouton du formulaire ou les leds
+            if (e.target.closest('#togglePanelBtn') || e.target.closest('.top-controls')) {
+                return;
+            }
+            
+            // Ferme le volet si ouvert au lieu de passer en plein écran
+            if (panel.classList.contains('open')) {
+                panel.classList.remove('open');
+                toggleBtn.classList.remove('active');
+                return;
+            }
+
+            toggleFullscreen();
+            requestWakeLock();
+        });
+
+        // Sécurité réactivation anti-veille quand on revient sur l'onglet
+        document.addEventListener('visibilitychange', () => { 
+            if (document.visibilityState === 'visible') requestWakeLock(); 
+        });
 
         // --- GESTION FORMULAIRE DROP-DOWN ---
         const panel = document.getElementById('questionnairePanel');
@@ -683,13 +722,12 @@
             e.stopPropagation();
             panel.classList.toggle('open');
             toggleBtn.classList.toggle('active');
+            requestWakeLock(); // Profite du clic pour armer le wakeLock
         });
 
-        document.querySelector('.left-zone').addEventListener('click', (e) => {
-            if (panel.classList.contains('open') && !toggleBtn.contains(e.target)) {
-                panel.classList.remove('open');
-                toggleBtn.classList.remove('active');
-            }
+        // Bloque la propagation du clic depuis le volet pour éviter de quitter/rentrer en plein écran
+        panel.addEventListener('click', (e) => {
+            e.stopPropagation();
         });
 
         function toggleSection(header) {
