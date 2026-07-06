@@ -35,14 +35,14 @@
             position: relative;
             height: 100%;
             transition: flex 0.4s ease;
-            cursor: pointer; /* Indique qu'on peut cliquer pour le plein écran */
+            cursor: pointer;
         }
 
         .date-display {
             font-size: 3rem;
             color: #888888;
             margin-bottom: 10px;
-            pointer-events: none; /* Laisse passer le clic vers le fond */
+            pointer-events: none;
         }
 
         #clock {
@@ -51,7 +51,7 @@
             color: var(--text-color);
             user-select: none;
             letter-spacing: -2px;
-            pointer-events: none; /* Laisse passer le clic vers le fond */
+            pointer-events: none;
         }
 
         /* --- ZONE DROITE : TÂCHES (1/3) --- */
@@ -184,7 +184,7 @@
             to { opacity: 1; }
         }
 
-        /* BOUTON REHAUSSÉ POUR ÉVITER LA BARRE DES TÂCHES */
+        /* BOUTON REHAUSSÉ */
         .icon-btn {
             position: absolute;
             bottom: 80px;
@@ -199,14 +199,20 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: color 0.2s, transform 0.2s;
+            transition: color 0.2s, transform 0.2s, opacity 0.2s, visibility 0.2s;
             z-index: 10;
             opacity: 0.7;
+            visibility: visible;
         }
         .icon-btn:hover { color: #888888; transform: scale(1.1); opacity: 1; }
         .icon-btn.active { color: var(--yellow-led); opacity: 1; }
 
-        /* --- VOLET FORMULAIRE (SURCOUCHÉ À DROITE) --- */
+        /* MASQUER LE BOUTON QUAND L'APPLICATION EST EN PLEIN ÉCRAN */
+        :-webkit-full-screen #togglePanelBtn { opacity: 0; visibility: hidden; pointer-events: none; }
+        :-ms-fullscreen #togglePanelBtn { opacity: 0; visibility: hidden; pointer-events: none; }
+        :fullscreen #togglePanelBtn { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        /* --- VOLET FORMULAIRE --- */
         .side-panel {
             position: fixed;
             top: 0;
@@ -607,7 +613,7 @@
         }
 
         document.getElementById('toggleTasksBtn').addEventListener('click', (e) => {
-            e.stopPropagation(); // Évite de déclencher le plein écran par inadvertance
+            e.stopPropagation(); 
             basculerVoletTaches(false);
         });
         
@@ -674,7 +680,7 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // --- WAKE LOCK & PLEIN ÉCRAN AUTOMATIQUE ---
+        // --- WAKE LOCK & PLEIN ÉCRAN BASCULE ---
         let wakeLock = null;
         async function requestWakeLock() {
             try { 
@@ -684,21 +690,23 @@
             } catch (err) {}
         }
 
-        // Bascule en Plein Écran si non actif
+        // Bascule Plein Écran (Entrée / Sortie)
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
             }
         }
 
         // Gestionnaire d'interaction principal (Fond de l'horloge)
         document.getElementById('mainClickZone').addEventListener('click', (e) => {
-            // Empêcher le plein écran si on clique sur le bouton du formulaire ou les leds
+            // Empêcher l'action si clic sur le bouton du formulaire ou les leds
             if (e.target.closest('#togglePanelBtn') || e.target.closest('.top-controls')) {
                 return;
             }
             
-            // Ferme le volet si ouvert au lieu de passer en plein écran
+            // Si le volet de formulaire est ouvert, le clic sur le fond le ferme
             if (panel.classList.contains('open')) {
                 panel.classList.remove('open');
                 toggleBtn.classList.remove('active');
@@ -709,7 +717,7 @@
             requestWakeLock();
         });
 
-        // Sécurité réactivation anti-veille quand on revient sur l'onglet
+        // Sécurité anti-veille au retour sur l'onglet
         document.addEventListener('visibilitychange', () => { 
             if (document.visibilityState === 'visible') requestWakeLock(); 
         });
@@ -722,10 +730,9 @@
             e.stopPropagation();
             panel.classList.toggle('open');
             toggleBtn.classList.toggle('active');
-            requestWakeLock(); // Profite du clic pour armer le wakeLock
+            requestWakeLock(); 
         });
 
-        // Bloque la propagation du clic depuis le volet pour éviter de quitter/rentrer en plein écran
         panel.addEventListener('click', (e) => {
             e.stopPropagation();
         });
