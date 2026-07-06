@@ -24,12 +24,6 @@
             overflow: hidden;
         }
 
-        /* --- HARMONISATION DES PUCES EN JAUNE --- */
-        input[type="checkbox"], input[type="radio"] {
-            accent-color: var(--yellow-led);
-            cursor: pointer;
-        }
-
         /* --- ZONE GAUCHE : HORLOGE (2/3) --- */
         .left-zone {
             flex: 2;
@@ -109,20 +103,6 @@
         }
         .toggle-tasks-btn:hover { color: #fff; }
 
-        .toggle-tasks-floating-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: none;
-            border: none;
-            color: #666;
-            font-size: 1.5rem;
-            cursor: pointer;
-            z-index: 10;
-            display: none;
-        }
-        .toggle-tasks-floating-btn:hover { color: #fff; }
-
         .night-tasks {
             display: flex;
             flex-direction: column;
@@ -157,7 +137,7 @@
             flex-shrink: 0;
         }
 
-        /* --- CONTRÔLES ANCRÉS EN HAUT À DROITE --- */
+        /* --- CONTRÔLES ANCRÉS EN HAUT À DROITE DE L'HORLOGE --- */
         .top-controls {
             position: absolute;
             top: 20px;
@@ -201,26 +181,27 @@
             to { opacity: 1; }
         }
 
+        /* BOUTON ULTRA-DISCRET EN BAS À DROITE DE LA ZONE HORLOGE */
         .icon-btn {
             position: absolute;
-            bottom: 65px;
-            right: 20px;
-            background: #111;
-            border: 1px solid #333;
-            border-radius: 50%;
-            color: #ffffff;
-            font-size: 1.4rem;
+            bottom: 30px;
+            right: 30px;
+            background: none;
+            border: none;
+            color: #444444;
+            font-size: 1.5rem;
             cursor: pointer;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.2s, transform 0.2s;
+            transition: color 0.2s, transform 0.2s;
             z-index: 10;
+            opacity: 0.7;
         }
-        .icon-btn:hover { background-color: #222; transform: scale(1.05); }
-        .icon-btn.active { color: var(--yellow-led); border-color: var(--yellow-led); }
+        .icon-btn:hover { color: #888888; transform: scale(1.1); opacity: 1; }
+        .icon-btn.active { color: var(--yellow-led); opacity: 1; }
 
         /* --- VOLET FORMULAIRE (SURCOUCHÉ À DROITE) --- */
         .side-panel {
@@ -254,17 +235,43 @@
         .sub-section-content { display: none; padding: 10px; }
         .sub-section-content.active { display: block; }
 
+        /* Éléments de séparation de bâtiment à l'intérieur des sous-sections */
+        .building-separator {
+            grid-column: 1 / -1;
+            border-top: 1px dashed #444;
+            margin: 10px 0 5px 0;
+            padding-top: 5px;
+            font-size: 0.75rem;
+            color: var(--yellow-led);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #aaa; }
+        
+        /* Personnalisation moderne des boutons Radio */
         .radio-group-row { display: flex; gap: 20px; font-size: 0.95rem; margin-bottom: 10px; }
-        .checkbox-group { display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; }
-        
-        .grid-checkbox { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; }
-        .grid-checkbox label { background-color: #161616; padding: 6px; border-radius: 4px; border: 1px solid #222; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 4px; }
-        
-        /* Séparation visuelle B1 / B2 dans les grilles */
-        .grid-separator { grid-column: 1 / -1; border-top: 1px dashed #444; margin: 8px 0; padding-top: 4px; font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+        .radio-group-row label { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #ccc; }
+        .radio-group-row input[type="radio"] { appearance: none; width: 16px; height: 16px; border: 2px solid #444; border-radius: 50%; background: none; position: relative; cursor: pointer; margin: 0; outline: none; }
+        .radio-group-row input[type="radio"]:checked { border-color: var(--yellow-led); }
+        .radio-group-row input[type="radio"]:checked::before { content: ""; position: absolute; top: 3px; left: 3px; width: 6px; height: 6px; border-radius: 50%; background-color: var(--yellow-led); }
 
+        /* Personnalisation moderne des Checkboxes en JAUNE */
+        .checkbox-group, .grid-checkbox { font-size: 0.9rem; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 8px; }
+        
+        .checkbox-group label, .grid-checkbox label { display: flex; align-items: center; gap: 8px; cursor: pointer; color: #ccc; transition: color 0.2s; }
+        .grid-checkbox label { background-color: #161616; padding: 6px 10px; border-radius: 4px; border: 1px solid #222; font-size: 0.8rem; justify-content: flex-start; }
+        .checkbox-group label:hover, .grid-checkbox label:hover { color: #fff; }
+
+        input[type="checkbox"] { appearance: none; width: 16px; height: 16px; border: 2px solid #444; border-radius: 3px; background: none; position: relative; cursor: pointer; margin: 0; outline: none; flex-shrink: 0; }
+        input[type="checkbox"]:checked { border-color: var(--yellow-led); background-color: rgba(255, 204, 0, 0.1); }
+        input[type="checkbox"]:checked::before { content: "✓"; position: absolute; top: -2px; left: 2px; color: var(--yellow-led); font-size: 0.8rem; font-weight: bold; }
+
+        .grid-checkbox { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; }
+        
         input[type="text"], input[type="number"] { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #333; background-color: #1c1c1c; color: #fff; box-sizing: border-box; }
         h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppercase; }
         
@@ -281,7 +288,6 @@
 
     <!-- ZONE DE GAUCHE : HORLOGE + BOUTONS FIXES -->
     <div class="left-zone">
-        <button class="toggle-tasks-floating-btn" id="toggleTasksFloatingBtn" title="Afficher les tâches">▶</button>
         
         <div class="top-controls">
             <div id="led-yellow-alert" class="led-yellow-alert" title="Tâches actives en attente (Cliquer pour déployer)"></div>
@@ -408,36 +414,31 @@
                             <input type="number" id="pts_hs" placeholder="Saisir manuellement (Masqué si 0)">
                         </div>
 
-                        <!-- ALARMES DIVERSES ET BLOCS DROPDOWN DIRECTEMENT SOUS LE TITRE -->
-                        <div class="form-group">
-                            <h4>Alarmes diverses</h4>
-                            
-                            <!-- SOUS-SECTION VANNE POSTE -->
-                            <div class="sub-section">
-                                <div class="sub-section-header" onclick="toggleSubSection(this)"><span>DEFAUT VANNE POSTE ...</span><span>▼</span></div>
-                                <div class="sub-section-content">
-                                    <div class="grid-checkbox" id="vannes_list"></div>
-                                </div>
-                            </div>
+                        <h4>Alarmes diverses</h4>
 
-                            <!-- SOUS-SECTION FEU POSTE -->
-                            <div class="sub-section">
-                                <div class="sub-section-header" onclick="toggleSubSection(this)"><span>FEU POSTE DE CONTROLE ...</span><span>▼</span></div>
-                                <div class="sub-section-content">
-                                    <div class="grid-checkbox" id="feu_poste_list"></div>
-                                </div>
+                        <div class="sub-section">
+                            <div class="sub-section-header" onclick="toggleSubSection(this)"><span>DEFAUT VANNE POSTE ...</span><span>▼</span></div>
+                            <div class="sub-section-content">
+                                <div class="grid-checkbox" id="vannes_list"></div>
                             </div>
+                        </div>
 
-                            <!-- SOUS-SECTION INTRUSION -->
-                            <div class="sub-section">
-                                <div class="sub-section-header" onclick="toggleSubSection(this)"><span>INTRUSION S/STATION ...</span><span>▼</span></div>
-                                <div class="sub-section-content">
-                                    <div class="grid-checkbox" id="intrusion_list"></div>
-                                </div>
+                        <div class="sub-section">
+                            <div class="sub-section-header" onclick="toggleSubSection(this)"><span>FEU POSTE DE CONTROLE ...</span><span>▼</span></div>
+                            <div class="sub-section-content">
+                                <div class="grid-checkbox" id="feu_poste_list"></div>
                             </div>
+                        </div>
 
-                            <!-- RESTE DES CHECKBOXES ALARMES DIVERSES -->
-                            <div class="checkbox-group" id="alarmes_diverses" style="margin-top: 15px;">
+                        <div class="sub-section">
+                            <div class="sub-section-header" onclick="toggleSubSection(this)"><span>INTRUSION S/STATION ...</span><span>▼</span></div>
+                            <div class="sub-section-content">
+                                <div class="grid-checkbox" id="intrusion_list"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 15px;">
+                            <div class="checkbox-group" id="alarmes_diverses">
                                 <label><input type="checkbox" value="Controleur passage d'eau local sprinkler"> Controleur passage d'eau local sprinkler</label>
                                 <label><input type="checkbox" value="Défaut général source B1"> Défaut général source B1</label>
                                 <label><input type="checkbox" value="Défaut général source B2"> Défaut général source B2</label>
@@ -534,14 +535,13 @@
 
         function marquerTacheTerminee(index, cleNuit) {
             tachesTerminees[index] = cleNuit;
-            const now = new Date(2026, 08, 08, 00, 00, 00); 
+            const now = new Date(); 
             afficherTachesDeNuit(now);
         }
 
         function afficherTachesDeNuit(dateObj) {
             const container = document.getElementById('night-tasks');
             const tasksZone = document.getElementById('tasksZone');
-            const floatingBtn = document.getElementById('toggleTasksFloatingBtn');
             const hours = dateObj.getHours();
             const minutes = dateObj.getMinutes();
             const dansLaFenetre = (hours >= 19) || (hours < 6) || (hours === 6 && minutes < 30);
@@ -549,7 +549,6 @@
             if (!dansLaFenetre) {
                 container.innerHTML = '';
                 tasksZone.classList.add('collapsed');
-                floatingBtn.style.display = 'none';
                 nbTachesActivesGlobal = 0;
                 majLedJauneAlerte();
                 return;
@@ -566,14 +565,11 @@
 
             if (nbTachesActivesGlobal === 0) {
                 tasksZone.classList.add('collapsed');
-                floatingBtn.style.display = 'none';
             } else {
                 if (voletTachesOuvert) {
                     tasksZone.classList.remove('collapsed');
-                    floatingBtn.style.display = 'none';
                 } else {
                     tasksZone.classList.add('collapsed');
-                    floatingBtn.style.display = 'block';
                 }
             }
 
@@ -602,25 +598,21 @@
         function basculerVoletTaches(ouvrir) {
             voletTachesOuvert = ouvrir;
             const tasksZone = document.getElementById('tasksZone');
-            const floatingBtn = document.getElementById('toggleTasksFloatingBtn');
             
             if (voletTachesOuvert) {
                 tasksZone.classList.remove('collapsed');
-                floatingBtn.style.display = 'none';
             } else {
                 tasksZone.classList.add('collapsed');
-                if (nbTachesActivesGlobal > 0) floatingBtn.style.display = 'block';
             }
             majLedJauneAlerte();
         }
 
         document.getElementById('toggleTasksBtn').addEventListener('click', () => basculerVoletTaches(false));
-        document.getElementById('toggleTasksFloatingBtn').addEventListener('click', () => basculerVoletTaches(true));
         document.getElementById('led-yellow-alert').addEventListener('click', () => basculerVoletTaches(true));
 
         // --- GESTION HORLOGE & DATE ---
         function updateClock() {
-            const now = new Date(2026, 08, 08, 00, 00, 00); 
+            const now = new Date(); 
             
             const hours = now.getHours();
             const minutes = now.getMinutes();
@@ -720,31 +712,30 @@
             else element.classList.add('hidden');
         }
 
-        // --- INJECTION ÉLÉMENTS FORMULAIRE AVEC LIGNE DE SÉPARATION B1 / B2 ---
+        // --- INJECTION ÉLÉMENTS FORMULAIRE ---
         const vannesList = document.getElementById('vannes_list');
         const feuPosteList = document.getElementById('feu_poste_list');
         const intrusionList = document.getElementById('intrusion_list');
 
-        function injecterPostes(conteneurHTML, prefixe) {
-            // BAT 1
+        function injecterPostesEtBatiments(conteneurHTML, prefixe) {
             for(let i = 1; i <= 12; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} b1</label>`;
             conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} A air n13 bat1"> n13 air</label>`;
             for(let i = 14; i <= 18; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} b1</label>`;
             
-            // Ligne de Séparation Visuelle
-            conteneurHTML.innerHTML += `<div class="grid-separator">Bâtiment 2</div>`;
+            conteneurHTML.innerHTML += `<div class="building-separator">--- Bâtiment 2 ---</div>`;
             
-            // BAT 2
             for(let i = 1; i <= 9; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat2"> n${i} b2</label>`;
         }
-        
-        injecterPostes(vannesList, "Défaut vanne poste");
-        injecterPostes(feuPosteList, "Feu poste de controle");
 
-        // Cas particulier Intrusion S/Station
-        for(let i = 1; i <= 9; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="Intrusion s/station n${i} bat1"> n${i} b1</label>`;
-        intrusionList.innerHTML += `<div class="grid-separator">Bâtiment 2</div>`;
-        for(let i = 1; i <= 4; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="Intrusion s/station n${i} bat2"> n${i} b2</label>`;
+        function injecterIntrusions(conteneurHTML) {
+            for(let i = 1; i <= 9; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="Intrusion s/station n${i} bat1"> n${i} b1</label>`;
+            conteneurHTML.innerHTML += `<div class="building-separator">--- Bâtiment 2 ---</div>`;
+            for(let i = 1; i <= 4; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="Intrusion s/station n${i} bat2"> n${i} b2</label>`;
+        }
+
+        injecterPostesEtBatiments(vannesList, "Défaut vanne poste");
+        injecterPostesEtBatiments(feuPosteList, "Feu poste de controle");
+        injecterIntrusions(intrusionList);
 
         // --- COMPILATION DU RAPPORT ---
         function genererRapport() {
@@ -793,7 +784,7 @@
                 let txt = `REPORT SPRINKLER\n`;
                 let v = getChecked('sprinkler_voyants');
                 let valHs = parseInt(document.getElementById('pts_hs').value, 10) || 0;
-                let al = [...getChecked('alarmes_diverses'), ...getChecked('intrusion_list'), ...getChecked('vannes_list'), ...getChecked('feu_poste_list')];
+                let al = [...getChecked('vannes_list'), ...getChecked('feu_poste_list'), ...getChecked('intrusion_list'), ...getChecked('alarmes_diverses')];
                 if(v.length) txt += `- Voyants allumés :\n` + v.map(x => ` --- ${x}`).join('\n') + '\n';
                 if(valHs > 0) txt += `- Nombre total de points hors service=${valHs} (sans libellé)\n`;
                 if(al.length) txt += `- Alarmes / États :\n` + al.map(x => ` --- ${x}`).join('\n') + '\n';
