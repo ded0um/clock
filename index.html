@@ -7,124 +7,89 @@
     <style>
         :root { --bg-color: #000000; --panel-bg: #111111; --border-color: #222222; --text-color: #ffffff; --yellow-led: #ffcc00; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .icon-btn { position: absolute; bottom: 25px; right: 30px; background: none; border: none; color: #ffffff; font-size: 1.6rem; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s, transform 0.2s; opacity: 0.8; z-index: 20; }
-        .icon-btn:hover { opacity: 1; transform: scale(1.1); }
-        .icon-btn.active { color: #ffcc00; opacity: 1; }
+
+        /* --- ZONE CENTRALE --- */
         main { flex: 1; display: flex; flex-direction: row; overflow: hidden; }
-        .clock-zone { position: relative; flex: 2; display: flex; flex-direction: column; justify-content: center; align-items: center; padding-bottom: 50px; }
+        .clock-zone { position: relative; flex: 2; display: flex; flex-direction: column; justify-content: center; align-items: center; padding-bottom: 50px; border-right: 1px solid #222; }
         .date-display { font-size: 1.4rem; color: #888888; margin-bottom: 10px; }
         #clock { font-size: 8.5rem; font-weight: bold; color: var(--text-color); user-select: none; letter-spacing: -2px; }
-        .tasks-zone { display: none; flex: 1; flex-direction: column; justify-content: center; align-items: stretch; padding: 30px; border-left: 1px solid #222; overflow-y: auto; }
-        .tasks-zone.has-tasks { display: flex; }
-        .night-tasks { display: flex; flex-direction: column; gap: 12px; }
-        .night-task-item { display: flex; align-items: center; gap: 12px; font-size: 1.1rem; color: var(--text-color); background-color: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 10px 16px; cursor: pointer; transition: opacity 0.2s, transform 0.2s; }
-        .night-task-item:hover { opacity: 0.8; transform: scale(1.02); }
-        .task-led { flex-shrink: 0; width: 14px; height: 14px; border-radius: 50%; background-color: #ffcc00; box-shadow: 0 0 10px #ffcc00, inset 0 -1px 3px rgba(0,0,0,0.4); animation: blink-animation 0.9s infinite alternate; }
-        .tasks-collapse-btn { align-self: flex-end; background: none; border: none; color: #888; font-size: 1.3rem; cursor: pointer; padding: 4px 8px; margin-bottom: 10px; transition: color 0.2s; }
-        .tasks-collapse-btn:hover { color: #fff; }
-        .led-container { position: absolute; top: 20px; right: 40px; display: flex; flex-direction: row; align-items: center; gap: 12px; }
-        .led-red { width: 20px; height: 20px; border-radius: 50%; background-color: transparent; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-        .led-red.blink { background-color: #ff2222; box-shadow: 0 0 16px #ff2222, inset 0 -1px 4px rgba(0,0,0,0.4); animation: blink-animation 0.9s infinite alternate; cursor: pointer; pointer-events: auto; }
-        .led-jaune-mini { width: 20px; height: 20px; border-radius: 50%; background-color: transparent; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-        .led-jaune-mini.visible { background-color: #ffcc00; box-shadow: 0 0 16px #ffcc00, inset 0 -1px 4px rgba(0,0,0,0.4); animation: blink-animation 0.9s infinite alternate; cursor: pointer; pointer-events: auto; }
+
+        /* --- ÉLÉMENTS ANCRÉS DANS CLOCK-ZONE --- */
+        .icon-btn { position: absolute; bottom: 25px; right: 25px; background: none; border: none; color: #ffffff; font-size: 1.6rem; cursor: pointer; opacity: 0.8; transition: opacity 0.2s; }
+        .icon-btn.active { color: var(--yellow-led); opacity: 1; }
+        
+        .led-container { position: absolute; top: 20px; right: 25px; display: flex; flex-direction: row; align-items: center; gap: 12px; }
+        .led-red, .led-jaune-mini { width: 20px; height: 20px; border-radius: 50%; opacity: 0; transition: opacity 0.3s ease; }
+        
+        /* Animation synchronisée */
+        .led-red.blink, .led-jaune-mini.visible { opacity: 1; animation: blink-animation 0.9s infinite alternate; cursor: pointer; pointer-events: auto; }
+        
+        .led-red { background-color: #ff2222; box-shadow: 0 0 16px #ff2222; }
+        .led-jaune-mini { background-color: var(--yellow-led); box-shadow: 0 0 16px var(--yellow-led); }
+
         @keyframes blink-animation { from { opacity: 0.4; } to { opacity: 1; } }
-        .side-panel { position: fixed; top: 0; right: -450px; width: 100%; max-width: 420px; height: 100vh; background-color: var(--panel-bg); border-left: 1px solid var(--border-color); box-shadow: -10px 0 30px rgba(0,0,0,0.7); transition: right 0.4s cubic-bezier(0.05, 0.74, 0.2, 1); display: flex; flex-direction: column; z-index: 15; }
+
+        /* --- TÂCHES --- */
+        .tasks-zone { display: none; flex: 1; flex-direction: column; padding: 30px; overflow-y: auto; }
+        .tasks-zone.has-tasks { display: flex; }
+        .night-task-item { display: flex; align-items: center; gap: 12px; font-size: 1.1rem; background-color: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 10px 16px; cursor: pointer; margin-bottom: 12px; }
+        .task-led { width: 14px; height: 14px; border-radius: 50%; background-color: #ffcc00; animation: blink-animation 0.9s infinite alternate; }
+
+        /* --- VOLET DROIT --- */
+        .side-panel { position: fixed; top: 0; right: -450px; width: 100%; max-width: 420px; height: 100vh; background-color: var(--panel-bg); border-left: 1px solid var(--border-color); box-shadow: -10px 0 30px rgba(0,0,0,0.7); transition: right 0.4s cubic-bezier(0.05, 0.74, 0.2, 1); z-index: 15; }
         .side-panel.open { right: 0; }
-        .panel-content { flex: 1; overflow-y: auto; padding: 25px; }
-        .panel-content h2 { font-size: 1.2rem; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; color: #888; }
-        .section { background-color: #161616; border-radius: 6px; margin-bottom: 12px; overflow: hidden; border: 1px solid #222; }
-        .section-header { background-color: #1f1f1f; padding: 12px 15px; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
-        .section-content { display: none; padding: 15px; background-color: #111111; }
-        .section-content.active { display: block; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #aaa; }
-        .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; }
-        .grid-checkbox { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; }
-        .grid-checkbox label { background-color: #161616; padding: 6px; border-radius: 4px; border: 1px solid #222; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 4px; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #333; background-color: #1c1c1c; color: #fff; box-sizing: border-box; }
-        h3 { margin-top: 0; color: var(--yellow-led); font-size: 0.95rem; border-bottom: 1px solid #222; padding-bottom: 5px; }
-        h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppercase; }
-        .btn-submit { background-color: #ffffff; color: #000000; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 0.95rem; font-weight: bold; cursor: pointer; margin-top: 15px; transition: opacity 0.2s; }
-        .btn-submit:hover { opacity: 0.9; }
-        .report-result-box { margin-top: 20px; background-color: #000; border: 1px dashed #333; padding: 12px; border-radius: 6px; }
-        .report-text { white-space: pre-wrap; font-family: monospace; font-size: 0.85rem; margin-bottom: 12px; max-height: 180px; overflow-y: auto; color: #ccc; }
-        .btn-copy { background-color: #222; color: #fff; border: 1px solid #333; padding: 8px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        .btn-copy:hover { background-color: #2a2a2a; }
+        .panel-content { padding: 25px; }
         .hidden { display: none !important; }
+        .btn-submit { background-color: #ffffff; color: #000000; border: none; padding: 12px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 15px; }
     </style>
 </head>
 <body>
-    <main>
-        <div class="clock-zone">
-            <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports">📋</button>
-            <div class="led-container">
-                <div id="led-rouge" class="led-red" title="Alerte de minuit"></div>
-                <div id="led-jaune-mini" class="led-jaune-mini" title="Tâches en attente" onclick="deployerTaches()"></div>
-            </div>
-            <div class="date-display" id="date-label"></div>
-            <div id="clock">00:00</div>
-        </div>
-        <div class="tasks-zone" id="tasks-zone">
-            <button class="tasks-collapse-btn" id="collapseTasksBtn" title="Réduire les tâches" onclick="retracterTaches()">▸</button>
-            <div class="night-tasks" id="night-tasks"></div>
-        </div>
-    </main>
 
-    <div class="side-panel" id="questionnairePanel">
-        <div class="panel-content">
-            <h2>ÉTAT DES REPORTS</h2>
-            <!-- Sections des rapports ici -->
-            <button class="btn-submit" onclick="genererRapport()">Générer le résumé</button>
-            <div id="reportOutputBox" class="report-result-box hidden">
-                <div class="report-text" id="reportOutputText"></div>
-                <button class="btn-copy" onclick="copierRapport()">📋 Copier le résumé</button>
-            </div>
+<main>
+    <div class="clock-zone">
+        <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports">📝</button>
+        <div class="led-container">
+            <div id="led-rouge" class="led-red" title="Alerte de minuit"></div>
+            <div id="led-jaune-mini" class="led-jaune-mini" title="Tâches en attente" onclick="deployerTaches()"></div>
         </div>
+        <div class="date-display" id="date-label"></div>
+        <div id="clock">00:00</div>
     </div>
 
-    <script>
-        // --- LOGIQUE TÂCHES ET HORLOGE ---
-        const tachesDeNuit = [ /* ... votre liste existante ... */ ];
-        let tachesTerminees = {};
+    <div class="tasks-zone" id="tasks-zone">
+        <button class="tasks-collapse-btn" onclick="retracterTaches()" style="align-self: flex-end; background:none; border:none; color:#888; cursor:pointer;">Réduire ▸</button>
+        <div class="night-tasks" id="night-tasks"></div>
+    </div>
+</main>
 
-        function updateClock() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
-            document.getElementById('clock').textContent = timeString;
-            document.title = `${timeString} | Dedoum`;
-            document.getElementById('date-label').textContent = now.toLocaleDateString('fr-FR', {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'});
-            afficherTachesDeNuit(now);
+<!-- (Le contenu du volet side-panel reste identique à votre version) -->
+<div class="side-panel" id="questionnairePanel">... (Votre contenu de rapport ici) ...</div>
+
+<script>
+    let tachesRetractees = false;
+    let tachesTerminees = {};
+
+    function afficherTachesDeNuit(dateObj) {
+        const container = document.getElementById('night-tasks');
+        const zone = document.getElementById('tasks-zone');
+        const miniLed = document.getElementById('led-jaune-mini');
+        const tachesActives = [/* votre logique existante */]; 
+        const yADesTaches = tachesActives.length > 0;
+
+        if (tachesRetractees) {
+            zone.classList.remove('has-tasks');
+            if(yADesTaches) miniLed.classList.add('visible');
+        } else {
+            zone.classList.toggle('has-tasks', yADesTaches);
+            miniLed.classList.remove('visible');
         }
+    }
 
-        // --- GESTION VOLET DROIT (CORRIGÉE) ---
-        const panel = document.getElementById('questionnairePanel');
-        const toggleBtn = document.getElementById('togglePanelBtn');
+    function retracterTaches() { tachesRetractees = true; afficherTachesDeNuit(new Date()); }
+    function deployerTaches() { tachesRetractees = false; afficherTachesDeNuit(new Date()); }
+    
+    // ... Le reste de vos fonctions (gestionLedRouge, etc.) ...
+</script>
 
-        toggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Empêche la fermeture immédiate
-            panel.classList.toggle('open');
-            toggleBtn.classList.toggle('active');
-        });
-
-        document.querySelector('main').addEventListener('click', () => {
-            if (panel.classList.contains('open')) {
-                panel.classList.remove('open');
-                toggleBtn.classList.remove('active');
-            }
-        });
-
-        panel.addEventListener('click', (e) => {
-            e.stopPropagation(); // Empêche de fermer si on clique dans le volet
-        });
-
-        // --- AUTRES FONCTIONS (Gardez vos fonctions existantes ici) ---
-        function genererRapport() { /* ... */ }
-        function copierRapport() { /* ... */ }
-        function toggleSection(header) { /* ... */ }
-        function toggleDetails(id, value) { /* ... */ }
-        
-        setInterval(updateClock, 1000);
-        updateClock();
-    </script>
 </body>
 </html>
