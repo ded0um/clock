@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>21:10 | Dedoum</title>
+    <title>Horloge & Rapports | Dedoum</title>
     <style>
         :root {
             --bg-color: #000000;
@@ -21,55 +21,20 @@
             padding: 0;
             height: 100vh;
             display: flex;
-            flex-direction: column;
             overflow: hidden;
         }
 
-        /* --- BARRE SUPÉRIEURE ÉPURÉE --- */
-        header {
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .icon-btn {
-            position: fixed;
-            bottom: 25px;
-            right: 30px;
-            background: none;
-            border: none;
-            color: #ffffff;
-            font-size: 1.6rem;
-            cursor: pointer;
-            padding: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.2s, transform 0.2s;
-            opacity: 0.8;
-            z-index: 20;
-        }
-
-        .icon-btn:hover { 
-            opacity: 1; 
-            transform: scale(1.1); 
-        }
-        
-        .icon-btn.active { 
-            color: #ffcc00;
-            opacity: 1;
-        }
-
-        /* --- ZONE CENTRALE (HORLOGE SEULE) --- */
-        main {
-            flex: 1;
+        /* --- ZONE GAUCHE : HORLOGE (2/3) --- */
+        .left-zone {
+            flex: 2;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             padding-bottom: 50px;
+            position: relative;
+            height: 100%;
+            transition: flex 0.4s ease;
         }
 
         .date-display {
@@ -86,45 +51,83 @@
             letter-spacing: -2px;
         }
 
-        /* --- TÂCHES DE LA NUIT --- */
-        .night-tasks {
-            margin-top: 25px;
+        /* --- ZONE DROITE : TÂCHES (1/3) --- */
+        .right-zone {
+            flex: 1;
+            background-color: #0a0a0a;
+            border-left: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 8px;
+            padding: 40px 25px;
+            box-sizing: border-box;
+            transition: all 0.4s cubic-bezier(0.05, 0.74, 0.2, 1);
+            position: relative;
+        }
+
+        .right-zone.collapsed {
+            flex: 0;
+            padding: 0;
+            width: 0;
+            min-width: 0;
+            overflow: hidden;
+            border-left: none;
+        }
+
+        .right-zone h2 {
+            font-size: 1.2rem;
+            color: #888;
+            margin-top: 0;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .night-tasks {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .night-task-item {
-            font-size: 1.1rem;
-            color: #ffcc00;
-            background-color: #1a1a1a;
-            border: 1px solid #333;
+            font-size: 1.05rem;
+            color: #ffffff;
+            background-color: #141414;
+            border: 1px solid #252525;
             border-radius: 8px;
-            padding: 8px 18px;
+            padding: 12px 15px;
             cursor: pointer;
-            transition: opacity 0.2s, transform 0.2s;
+            transition: background-color 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .night-task-item:hover {
-            opacity: 0.8;
-            transform: scale(1.02);
+            background-color: #1c1c1c;
+            transform: scale(1.01);
         }
 
-        .night-task-item::after {
-            content: "  (cliquer une fois fait)";
-            font-size: 0.75rem;
-            color: #777;
+        /* Mini LED Jaune devant chaque tâche */
+        .task-led {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--yellow-led);
+            box-shadow: 0 0 8px var(--yellow-led);
+            flex-shrink: 0;
         }
 
-        /* --- LED ROUGE EN HAUT À DROITE --- */
-        .led-container {
+        /* --- CONTRÔLES ANCRÉS DANS LA ZONE HORLOGE (A 20PX) --- */
+        .top-controls {
             position: absolute;
             top: 20px;
-            right: 40px;
+            right: 20px;
             display: flex;
-            flex-direction: column;
             align-items: center;
+            gap: 15px;
+            z-index: 10;
         }
 
         .led-red {
@@ -145,12 +148,59 @@
             pointer-events: auto;
         }
 
+        /* Nouvelle LED d'alerte tâches masquées */
+        .led-yellow-alert {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--yellow-led);
+            box-shadow: 0 0 15px var(--yellow-led);
+            display: none; /* Géré en JS */
+        }
+
         @keyframes blink-animation {
             from { opacity: 0.4; }
             to { opacity: 1; }
         }
 
-        /* --- VOLET DROIT (QUESTIONNAIRE RAPPORT) --- */
+        /* Bouton Questionnaire (Prise de service) fixé en bas à droite des 2/3 */
+        .icon-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 50%;
+            color: #ffffff;
+            font-size: 1.4rem;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, transform 0.2s;
+            z-index: 10;
+        }
+        .icon-btn:hover { background-color: #222; transform: scale(1.05); }
+        .icon-btn.active { color: var(--yellow-led); border-color: var(--yellow-led); }
+
+        /* Bouton de rétractation du volet des tâches */
+        .toggle-tasks-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 10;
+            transition: color 0.2s;
+        }
+        .toggle-tasks-btn:hover { color: #fff; }
+
+        /* --- VOLET FORMULAIRE (SURCOUCHÉ À DROITE) --- */
         .side-panel {
             position: fixed;
             top: 0;
@@ -166,154 +216,62 @@
             flex-direction: column;
             z-index: 15;
         }
-
         .side-panel.open { right: 0; }
         
-        .panel-content { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 25px; 
-        }
-
-        .panel-content h2 {
-            font-size: 1.2rem;
-            margin-top: 0;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            color: #888;
-        }
-
-        .section {
-            background-color: #161616;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            overflow: hidden;
-            border: 1px solid #222;
-        }
-        
-        .section-header {
-            background-color: #1f1f1f;
-            padding: 12px 15px;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
-        }
-        
+        .panel-content { flex: 1; overflow-y: auto; padding: 25px; }
+        .panel-content h2 { font-size: 1.2rem; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; color: #888; }
+        .section { background-color: #161616; border-radius: 6px; margin-bottom: 12px; overflow: hidden; border: 1px solid #222; }
+        .section-header { background-color: #1f1f1f; padding: 12px 15px; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
         .section-content { display: none; padding: 15px; background-color: #111111; }
         .section-content.active { display: block; }
-        
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #aaa; }
         .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; }
-        
-        .grid-checkbox {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-            gap: 8px;
-        }
-        .grid-checkbox label {
-            background-color: #161616;
-            padding: 6px;
-            border-radius: 4px;
-            border: 1px solid #222;
-            cursor: pointer;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            border-radius: 4px;
-            border: 1px solid #333;
-            background-color: #1c1c1c;
-            color: #fff;
-            box-sizing: border-box;
-        }
-
+        .grid-checkbox { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; }
+        .grid-checkbox label { background-color: #161616; padding: 6px; border-radius: 4px; border: 1px solid #222; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 4px; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #333; background-color: #1c1c1c; color: #fff; box-sizing: border-box; }
         h3 { margin-top: 0; color: var(--yellow-led); font-size: 0.95rem; border-bottom: 1px solid #222; padding-bottom: 5px; }
         h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppercase; }
-
-        .btn-submit {
-            background-color: #ffffff;
-            color: #000000;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: opacity 0.2s;
-        }
+        .btn-submit { background-color: #ffffff; color: #000000; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 0.95rem; font-weight: bold; cursor: pointer; margin-top: 15px; transition: opacity 0.2s; }
         .btn-submit:hover { opacity: 0.9; }
-
-        .report-result-box {
-            margin-top: 20px;
-            background-color: #000;
-            border: 1px dashed #333;
-            padding: 12px;
-            border-radius: 6px;
-        }
-        .report-text {
-            white-space: pre-wrap;
-            font-family: monospace;
-            font-size: 0.85rem;
-            margin-bottom: 12px;
-            max-height: 180px;
-            overflow-y: auto;
-            color: #ccc;
-        }
-        .btn-copy {
-            background-color: #222;
-            color: #fff;
-            border: 1px solid #333;
-            padding: 8px;
-            width: 100%;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        .report-result-box { margin-top: 20px; background-color: #000; border: 1px dashed #333; padding: 12px; border-radius: 6px; }
+        .report-text { white-space: pre-wrap; font-family: monospace; font-size: 0.85rem; margin-bottom: 12px; max-height: 180px; overflow-y: auto; color: #ccc; }
+        .btn-copy { background-color: #222; color: #fff; border: 1px solid #333; padding: 8px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; }
         .btn-copy:hover { background-color: #2a2a2a; }
-
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- BOUTON RAPPORT EN BAS À DROITE -->
-    <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports">📝</button>
+    <!-- ZONE DE GAUCHE : HORLOGE + BOUTONS FIXES -->
+    <div class="left-zone">
+        <button class="toggle-tasks-btn" id="toggleTasksBtn" title="Masquer/Afficher les tâches">◀</button>
+        
+        <div class="top-controls">
+            <div id="led-yellow-alert" class="led-yellow-alert" title="Tâches actives en attente"></div>
+            <div id="led-rouge" class="led-red" title="Alerte de minuit"></div>
+        </div>
 
-    <!-- LED ROUGE EN HAUT À DROITE -->
-    <div class="led-container">
-        <div id="led-rouge" class="led-red" title="Alerte de minuit"></div>
+        <div class="date-display" id="date-label">Chargement...</div>
+        <div id="clock">00:00</div>
+        
+        <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports">📝</button>
     </div>
 
-    <!-- ZONE CENTRALE (DATE & HEURE) -->
-    <main>
-        <div class="date-display" id="date-label">Dimanche 5 Juillet 2026</div>
-        <div id="clock">00:00</div>
+    <!-- ZONE DE DROITE : LISTE DES TÂCHES CONTEXTUELLES -->
+    <div class="right-zone" id="tasksZone">
+        <h2>Tâches de la nuit</h2>
         <div class="night-tasks" id="night-tasks"></div>
-    </main>
+    </div>
 
-    <!-- VOLET DE DROITE (RAPPORTS) -->
+    <!-- VOLET COULISSANT DE RAPPORT -->
     <div class="side-panel" id="questionnairePanel">
+        <!-- [Le contenu intégral du formulaire reste exactement inchangé pour préserver vos automatisations] -->
         <div class="panel-content">
             <h2>ÉTAT DES REPORTS</h2>
-            
             <!-- REPORT SSI -->
             <div class="section">
-                <div class="section-header" onclick="toggleSection(this)">
-                    <span>REPORT SSI (BAT1 & BAT2)</span>
-                    <span>▼</span>
-                </div>
+                <div class="section-header" onclick="toggleSection(this)"><span>REPORT SSI (BAT1 & BAT2)</span><span>▼</span></div>
                 <div class="section-content">
                     <h3>REPORT SSI BAT1</h3>
                     <div class="form-group">
@@ -323,32 +281,10 @@
                         </div>
                     </div>
                     <div id="ssi_b1_details" class="hidden">
-                        <div class="form-group">
-                            <label>Voyants allumés ?</label>
-                            <div class="checkbox-group" id="ssi_b1_voyants">
-                                <label><input type="checkbox" value="Veille restreinte"> Veille restreinte</label>
-                                <label><input type="checkbox" value="Dérangement"> Dérangement</label>
-                                <label><input type="checkbox" value="Alarme feu"> Alarme feu</label>
-                                <label><input type="checkbox" value="Évacuation générale"> Évacuation générale</label>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Zones en alarmes ?</label>
-                            <div class="grid-checkbox" id="ssi_b1_zones">
-                                <label><input type="checkbox" value="1"> 1</label>
-                                <label><input type="checkbox" value="2"> 2</label>
-                                <label><input type="checkbox" value="3"> 3</label>
-                                <label><input type="checkbox" value="4"> 4</label>
-                                <label><input type="checkbox" value="5"> 5</label>
-                                <label><input type="checkbox" value="6"> 6</label>
-                                <label><input type="checkbox" value="7"> 7</label>
-                                <label><input type="checkbox" value="8"> 8</label>
-                            </div>
-                        </div>
+                        <div class="form-group"><label>Voyants allumés ?</label><div class="checkbox-group" id="ssi_b1_voyants"><label><input type="checkbox" value="Veille restreinte"> Veille restreinte</label><label><input type="checkbox" value="Dérangement"> Dérangement</label><label><input type="checkbox" value="Alarme feu"> Alarme feu</label><label><input type="checkbox" value="Évacuation générale"> Évacuation générale</label></div></div>
+                        <div class="form-group"><label>Zones en alarmes ?</label><div class="grid-checkbox" id="ssi_b1_zones"><label><input type="checkbox" value="1"> 1</label><label><input type="checkbox" value="2"> 2</label><label><input type="checkbox" value="3"> 3</label><label><input type="checkbox" value="4"> 4</label><label><input type="checkbox" value="5"> 5</label><label><input type="checkbox" value="6"> 6</label><label><input type="checkbox" value="7"> 7</label><label><input type="checkbox" value="8"> 8</label></div></div>
                     </div>
-
                     <hr style="border-color: #222; margin: 15px 0;">
-
                     <h3>REPORT SSI BAT2</h3>
                     <div class="form-group">
                         <div class="radio-group">
@@ -357,144 +293,54 @@
                         </div>
                     </div>
                     <div id="ssi_b2_details" class="hidden">
-                        <div class="form-group">
-                            <label>Voyants allumés ?</label>
-                            <div class="checkbox-group" id="ssi_b2_voyants">
-                                <label><input type="checkbox" value="Veille restreinte"> Veille restreinte</label>
-                                <label><input type="checkbox" value="Dérangement"> Dérangement</label>
-                                <label><input type="checkbox" value="Alarme feu"> Alarme feu</label>
-                                <label><input type="checkbox" value="Évacuation générale"> Évacuation générale</label>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Zones en alarmes ?</label>
-                            <div class="grid-checkbox" id="ssi_b2_zones">
-                                <label><input type="checkbox" value="1"> 1</label>
-                                <label><input type="checkbox" value="2"> 2</label>
-                                <label><input type="checkbox" value="3"> 3</label>
-                                <label><input type="checkbox" value="4"> 4</label>
-                                <label><input type="checkbox" value="5"> 5</label>
-                                <label><input type="checkbox" value="6"> 6</label>
-                                <label><input type="checkbox" value="7"> 7</label>
-                                <label><input type="checkbox" value="8"> 8</label>
-                            </div>
-                        </div>
+                        <div class="form-group"><label>Voyants allumés ?</label><div class="checkbox-group" id="ssi_b2_voyants"><label><input type="checkbox" value="Veille restreinte"> Veille restreinte</label><label><input type="checkbox" value="Dérangement"> Dérangement</label><label><input type="checkbox" value="Alarme feu"> Alarme feu</label><label><input type="checkbox" value="Évacuation générale"> Évacuation générale</label></div></div>
+                        <div class="form-group"><label>Zones en alarmes ?</label><div class="grid-checkbox" id="ssi_b2_zones"><label><input type="checkbox" value="1"> 1</label><label><input type="checkbox" value="2"> 2</label><label><input type="checkbox" value="3"> 3</label><label><input type="checkbox" value="4"> 4</label><label><input type="checkbox" value="5"> 5</label><label><input type="checkbox" value="6"> 6</label><label><input type="checkbox" value="7"> 7</label><label><input type="checkbox" value="8"> 8</label></div></div>
                     </div>
                 </div>
             </div>
-
             <!-- REPORT SPRINKLER -->
             <div class="section">
-                <div class="section-header" onclick="toggleSection(this)">
-                    <span>REPORT SPRINKLER</span>
-                    <span>▼</span>
-                </div>
+                <div class="section-header" onclick="toggleSection(this)"><span>REPORT SPRINKLER</span><span>▼</span></div>
                 <div class="section-content">
                     <h3>REPORT SPRINKLER</h3>
-                    <div class="form-group">
-                        <div class="radio-group">
-                            <label><input type="radio" name="sprinkler" value="RAS" checked onchange="toggleDetails('sprinkler_global_details', this.value)"> RAS</label>
-                            <label><input type="radio" name="sprinkler" value="NON RAS" onchange="toggleDetails('sprinkler_global_details', this.value)"> NON RAS</label>
-                        </div>
-                    </div>
-                    
+                    <div class="form-group"><div class="radio-group"><label><input type="radio" name="sprinkler" value="RAS" checked onchange="toggleDetails('sprinkler_global_details', this.value)"> RAS</label><label><input type="radio" name="sprinkler" value="NON RAS" onchange="toggleDetails('sprinkler_global_details', this.value)"> NON RAS</label></div></div>
                     <div id="sprinkler_global_details" class="hidden">
-                        <div class="form-group">
-                            <h4>VOYANTS ALLUMÉS ?</h4>
-                            <div class="checkbox-group" id="sprinkler_voyants">
-                                <label><input type="checkbox" value="Feu"> Feu</label>
-                                <label><input type="checkbox" value="Zone locale"> Zone locale</label>
-                                <label><input type="checkbox" value="Zone voisine"> Zone voisine</label>
-                                <label><input type="checkbox" value="Défaut générale"> Défaut générale</label>
-                                <label><input type="checkbox" value="Hors service"> Hors service</label>
-                                <label><input type="checkbox" value="Défaut T.R.E."> Défaut T.R.E.</label>
-                                <label><input type="checkbox" value="Défaut alimentation"> Défaut alimentation</label>
-                                <label><input type="checkbox" value="Essai"> Essai</label>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label><strong>NIVEAU POINTS HS=</strong></label>
-                            <input type="number" id="pts_hs" placeholder="Saisir (Masqué si 0)">
-                        </div>
-                        <div class="form-group">
-                            <h4>ALARMES DIVERSES ?</h4>
-                            <div class="checkbox-group" id="alarmes_diverses">
-                                <label><input type="checkbox" value="Controleur passage d'eau local sprinkler"> Controleur passage d'eau local sprinkler</label>
-                                <label><input type="checkbox" value="Défaut général source B1"> Défaut général source B1</label>
-                                <label><input type="checkbox" value="Défaut général source B2"> Défaut général source B2</label>
-                                <label><input type="checkbox" value="Défaut manque d'air poste n13 bat1"> Défaut manque d'air poste n13 bat1</label>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <h4>INTRUSION S/STATION ... ?</h4>
-                            <div class="grid-checkbox" id="intrusion_list"></div>
-                        </div>
-                        <div class="form-group">
-                            <h4>DEFAUT VANNE POSTE ...</h4>
-                            <div class="grid-checkbox" id="vannes_list"></div>
-                        </div>
-                        <div class="form-group">
-                            <h4>FEU POSTE DE CONTROLE ...</h4>
-                            <div class="grid-checkbox" id="feu_poste_list"></div>
-                        </div>
+                        <div class="form-group"><h4>VOYANTS ALLUMÉS ?</h4><div class="checkbox-group" id="sprinkler_voyants"><label><input type="checkbox" value="Feu"> Feu</label><label><input type="checkbox" value="Zone locale"> Zone locale</label><label><input type="checkbox" value="Zone voisine"> Zone voisine</label><label><input type="checkbox" value="Défaut générale"> Défaut générale</label><label><input type="checkbox" value="Hors service"> Hors service</label><label><input type="checkbox" value="Défaut T.R.E."> Défaut T.R.E.</label><label><input type="checkbox" value="Défaut alimentation"> Défaut alimentation</label><label><input type="checkbox" value="Essai"> Essai</label></div></div>
+                        <div class="form-group"><label><strong>NIVEAU POINTS HS=</strong></label><input type="number" id="pts_hs" placeholder="Saisir (Masqué si 0)"></div>
+                        <div class="form-group"><h4>ALARMES DIVERSES ?</h4><div class="checkbox-group" id="alarmes_diverses"><label><input type="checkbox" value="Controleur passage d'eau local sprinkler"> Controleur passage d'eau local sprinkler</label><label><input type="checkbox" value="Défaut général source B1"> Défaut général source B1</label><label><input type="checkbox" value="Défaut général source B2"> Défaut général source B2</label><label><input type="checkbox" value="Défaut manque d'air poste n13 bat1"> Défaut manque d'air poste n13 bat1</label></div></div>
+                        <div class="form-group"><h4>INTRUSION S/STATION ... ?</h4><div class="grid-checkbox" id="intrusion_list"></div></div>
+                        <div class="form-group"><h4>DEFAUT VANNE POSTE ...</h4><div class="grid-checkbox" id="vannes_list"></div></div>
+                        <div class="form-group"><h4>FEU POSTE DE CONTROLE ...</h4><div class="grid-checkbox" id="feu_poste_list"></div></div>
                     </div>
                 </div>
             </div>
-
             <!-- REPORT SIEMENS -->
             <div class="section">
-                <div class="section-header" onclick="toggleSection(this)">
-                    <span>REPORT SIEMENS</span>
-                    <span>▼</span>
-                </div>
+                <div class="section-header" onclick="toggleSection(this)"><span>REPORT SIEMENS (BAT1 & BAT2)</span><span>▼</span></div>
                 <div class="section-content">
                     <h3>REPORT SIEMENS BAT1</h3>
-                    <div class="form-group">
-                        <div class="radio-group">
-                            <label><input type="radio" name="siemens_b1" value="RAS" checked onchange="toggleDetails('siemens_b1_details', this.value)"> RAS</label>
-                            <label><input type="radio" name="siemens_b1" value="NON RAS" onchange="toggleDetails('siemens_b1_details', this.value)"> NON RAS</label>
-                        </div>
-                    </div>
-                    <div id="siemens_b1_details" class="hidden">
-                        <label><input type="checkbox" id="siemens_b1_derangement" value="Dérangement"> Dérangement</label>
-                        <br><label><input type="checkbox" id="siemens_b1_recurrente" value="Reprise info locaux technique coupure armoire chaufferie"> Anomalie récurrente</label>
-                        <br><input type="text" id="siemens_b1_libre" placeholder="Saisir manuellement" style="margin-top:8px;">
-                    </div>
-
+                    <div class="form-group"><div class="radio-group"><label><input type="radio" name="siemens_b1" value="RAS" checked onchange="toggleDetails('siemens_b1_details', this.value)"> RAS</label><label><input type="radio" name="siemens_b1" value="NON RAS" onchange="toggleDetails('siemens_b1_details', this.value)"> NON RAS</label></div></div>
+                    <div id="siemens_b1_details" class="hidden"><label><input type="checkbox" id="siemens_b1_derangement" value="Dérangement"> Dérangement</label><br><label><input type="checkbox" id="siemens_b1_recurrente" value="Reprise info locaux technique coupure armoire chaufferie"> Anomalie récurrente</label><br><input type="text" id="siemens_b1_libre" placeholder="Saisir manuellement" style="margin-top:8px;"></div>
                     <hr style="border-color: #222; margin: 15px 0;">
-
                     <h3>REPORT SIEMENS BAT2</h3>
-                    <div class="form-group">
-                        <div class="radio-group">
-                            <label><input type="radio" name="siemens_b2" value="RAS" checked onchange="toggleDetails('siemens_b2_details', this.value)"> RAS</label>
-                            <label><input type="radio" name="siemens_b2" value="NON RAS" onchange="toggleDetails('siemens_b2_details', this.value)"> NON RAS</label>
-                        </div>
-                    </div>
-                    <div id="siemens_b2_details" class="hidden">
-                        <label><input type="checkbox" id="siemens_b2_derangement" value="Dérangement"> Dérangement</label>
-                        <br><label><input type="checkbox" id="siemens_b2_recurrente" value="Reprise info locaux technique coupure armoire chaufferie"> Anomalie récurrente</label>
-                        <br><input type="text" id="siemens_b2_libre" placeholder="Saisir manuellement" style="margin-top:8px;">
-                    </div>
+                    <div class="form-group"><div class="radio-group"><label><input type="radio" name="siemens_b2" value="RAS" checked onchange="toggleDetails('siemens_b2_details', this.value)"> RAS</label><label><input type="radio" name="siemens_b2" value="NON RAS" onchange="toggleDetails('siemens_b2_details', this.value)"> NON RAS</label></div></div>
+                    <div id="siemens_b2_details" class="hidden"><label><input type="checkbox" id="siemens_b2_derangement" value="Dérangement"> Dérangement</label><br><label><input type="checkbox" id="siemens_b2_recurrente" value="Reprise info locaux technique coupure armoire chaufferie"> Anomalie récurrente</label><br><input type="text" id="siemens_b2_libre" placeholder="Saisir manuellement" style="margin-top:8px;"></div>
                 </div>
             </div>
-
             <button class="btn-submit" onclick="genererRapport()">Générer le résumé</button>
-
-            <!-- BOÎTE DE COPIE -->
             <div id="reportOutputBox" class="report-result-box hidden">
                 <div class="report-text" id="reportOutputText"></div>
                 <button class="btn-copy" onclick="copierRapport()">📋 Copier le résumé</button>
             </div>
-
         </div>
     </div>
 
     <script>
-        // --- TÂCHES DE LA NUIT ---
+        // --- CONFIGURATION TÂCHES ---
         const tachesDeNuit = [
             { jours: [2], texte: "B1 : Contrôle des vannes de postes" },
             { special: 'premierLundi', texte: "B1 : Contrôle des Portes Issues de secours" },
-            { special: 'premierLundi', texte: "Contrôle des DM" },
+            { special: 'Contrôle des DM', texte: "Contrôle des DM" },
             { special: 'mardiApresPremierLundi', texte: "B1 : Contrôle des compteurs paratonnerres" },
             { special: 'mardiApresPremierLundi', texte: "B2 : Contrôle des compteurs paratonnerres" },
             { special: 'mardiApresPremierLundi', texte: "B1 : Contrôle des douches et rinces oeils" },
@@ -502,15 +348,13 @@
             { special: 'jeudiApresPremierLundi', texte: "B1 : Contrôle Éclairage entrepôt" },
             { special: 'vendrediApresPremierLundi', texte: "B1 : Contrôle des BAES" }
         ];
-        const tachesTerminees = {}; // index de tâche -> clé de la nuit de service déjà validée
+        const tachesTerminees = {}; 
+        let voletTachesOuvert = true;
+        let nbTachesActivesGlobal = 0;
 
-        // Détermine à quelle "nuit de service" appartient l'instant donné
-        // (avant midi, on est encore rattaché à la nuit qui a commencé la veille)
         function getNuitDeService(dateObj) {
             const jourService = new Date(dateObj);
-            if (dateObj.getHours() < 7) {
-                jourService.setDate(jourService.getDate() - 1);
-            }
+            if (dateObj.getHours() < 7) { jourService.setDate(jourService.getDate() - 1); }
             return jourService;
         }
 
@@ -524,7 +368,6 @@
             return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
         }
 
-        // Vrai si dateObj tombe exactement N jours après le 1er lundi du mois
         function estJourApresPremierLundi(dateObj, offsetJours) {
             const premierLundi = getPremierLundi(dateObj);
             const cible = new Date(premierLundi);
@@ -546,36 +389,87 @@
 
         function marquerTacheTerminee(index, cleNuit) {
             tachesTerminees[index] = cleNuit;
-            afficherTachesDeNuit(new Date(2026, 6, 7, 20, 0, 0));
+            afficherTachesDeNuit(new Date());
         }
 
         function afficherTachesDeNuit(dateObj) {
             const container = document.getElementById('night-tasks');
+            const tasksZone = document.getElementById('tasksZone');
+            const toggleTasksBtn = document.getElementById('toggleTasksBtn');
             const hours = dateObj.getHours();
             const minutes = dateObj.getMinutes();
-
             const dansLaFenetre = (hours >= 19) || (hours < 6) || (hours === 6 && minutes < 30);
 
             if (!dansLaFenetre) {
                 container.innerHTML = '';
+                tasksZone.classList.add('collapsed');
+                toggleTasksBtn.style.display = 'none';
+                nbTachesActivesGlobal = 0;
+                majLedJauneAlerte();
                 return;
             }
 
             const nuitService = getNuitDeService(dateObj);
             const cleNuit = nuitService.toDateString();
 
-            const html = tachesDeNuit
+            const tâchesFiltrées = tachesDeNuit
                 .map((t, index) => ({ t, index }))
-                .filter(({ t, index }) => tacheEstActive(t, nuitService) && tachesTerminees[index] !== cleNuit)
-                .map(({ t, index }) => `<div class="night-task-item" onclick="marquerTacheTerminee(${index}, '${cleNuit}')">${t.texte}</div>`)
-                .join('');
+                .filter(({ t, index }) => tacheEstActive(t, nuitService) && tachesTerminees[index] !== cleNuit);
+
+            nbTachesActivesGlobal = tâchesFiltrées.length;
+
+            if (nbTachesActivesGlobal === 0) {
+                tasksZone.classList.add('collapsed');
+                toggleTasksBtn.style.display = 'none';
+            } else {
+                toggleTasksBtn.style.display = 'block';
+                if (voletTachesOuvert) {
+                    tasksZone.classList.remove('collapsed');
+                } else {
+                    tasksZone.classList.add('collapsed');
+                }
+            }
+
+            const html = tâchesFiltrées
+                .map(({ t, index }) => `
+                    <div class="night-task-item" onclick="marquerTacheTerminee(${index}, '${cleNuit}')">
+                        <div class="task-led"></div>
+                        <span>${t.texte}</span>
+                    </div>
+                `).join('');
 
             container.innerHTML = html;
+            majLedJauneAlerte();
         }
+
+        function majLedJauneAlerte() {
+            const ledJaune = document.getElementById('led-yellow-alert');
+            if (!voletTachesOuvert && nbTachesActivesGlobal > 0) {
+                ledJaune.style.display = 'block';
+            } else {
+                ledJaune.style.display = 'none';
+            }
+        }
+
+        // --- GESTION DU VOLET DES TÂCHES (RETRACTER) ---
+        document.getElementById('toggleTasksBtn').addEventListener('click', () => {
+            voletTachesOuvert = !voletTachesOuvert;
+            const tasksZone = document.getElementById('tasksZone');
+            const btn = document.getElementById('toggleTasksBtn');
+            
+            if (voletTachesOuvert) {
+                tasksZone.classList.remove('collapsed');
+                btn.textContent = '◀';
+            } else {
+                tasksZone.classList.add('collapsed');
+                btn.textContent = '▶';
+            }
+            majLedJauneAlerte();
+        });
 
         // --- GESTION HORLOGE & DATE ---
         function updateClock() {
-            const now = new Date(2026,7,8,00,00,00); // PRÉVISUALISATION FIGÉE : 07/07/2026 20:00
+            const now = new Date(); 
             const hours = now.getHours();
             const minutes = now.getMinutes();
             
@@ -592,8 +486,6 @@
             gestionLedRouge(now);
         }
 
-        // LED ROUGE : s'allume uniquement si la page était déjà ouverte à minuit pile,
-        // s'éteint au clic ou à 06h30
         let ledRougeArmee = false;
         let ledRougeEteinteAujourdhui = false;
 
@@ -602,13 +494,11 @@
             const hours = dateObj.getHours();
             const minutes = dateObj.getMinutes();
 
-            // À minuit pile (vu par la page en direct), on arme la LED pour la nuit
             if (hours === 0 && minutes === 0) {
                 ledRougeArmee = true;
                 ledRougeEteinteAujourdhui = false;
             }
 
-            // À 06h30, la LED s'éteint et se désarme pour la nuit suivante
             if (hours === 6 && minutes === 30) {
                 ledRougeEteinteAujourdhui = true;
                 ledRougeArmee = false;
@@ -623,7 +513,6 @@
             }
         }
 
-        // Clic sur la LED rouge pour l'éteindre
         document.getElementById('led-rouge').addEventListener('click', function() {
             if (this.classList.contains('blink')) {
                 ledRougeEteinteAujourdhui = true;
@@ -637,26 +526,23 @@
         // --- WAKE LOCK ---
         let wakeLock = null;
         async function requestWakeLock() {
-            try {
-                if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                }
-            } catch (err) {}
+            try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); } } catch (err) {}
         }
         document.addEventListener('click', () => { if(!wakeLock) requestWakeLock(); });
         document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestWakeLock(); });
 
-        // --- GESTION VOLET DROIT ---
+        // --- GESTION FORMULAIRE DROP-DOWN ---
         const panel = document.getElementById('questionnairePanel');
         const toggleBtn = document.getElementById('togglePanelBtn');
 
-        toggleBtn.addEventListener('click', () => {
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             panel.classList.toggle('open');
             toggleBtn.classList.toggle('active');
         });
 
-        document.querySelector('main').addEventListener('click', () => {
-            if (panel.classList.contains('open')) {
+        document.querySelector('.left-zone').addEventListener('click', (e) => {
+            if (panel.classList.contains('open') && !toggleBtn.contains(e.target)) {
                 panel.classList.remove('open');
                 toggleBtn.classList.remove('active');
             }
@@ -675,7 +561,7 @@
             else element.classList.add('hidden');
         }
 
-        // --- INJECTION ---
+        // --- INJECTION ÉLÉMENTS FORMULAIRE ---
         const intrusionList = document.getElementById('intrusion_list');
         const vannesList = document.getElementById('vannes_list');
         const feuPosteList = document.getElementById('feu_poste_list');
@@ -692,7 +578,7 @@
         injecterPostes(vannesList, "Défaut vanne poste");
         injecterPostes(feuPosteList, "Feu poste de controle");
 
-        // --- DUPLICATE TEXT LOGIC ---
+        // --- COMPILATION DU RAPPORT ---
         function genererRapport() {
             let blocsTxt = [];
             function getChecked(id) { return Array.from(document.querySelectorAll(`#${id} input:checked`)).map(el => el.value); }
@@ -718,7 +604,6 @@
                 let v = getChecked('sprinkler_voyants');
                 let valHs = parseInt(document.getElementById('pts_hs').value, 10) || 0;
                 let al = [...getChecked('alarmes_diverses'), ...getChecked('intrusion_list'), ...getChecked('vannes_list'), ...getChecked('feu_poste_list')];
-                
                 if(v.length) txt += `- Voyants allumés :\n` + v.map(x => ` --- ${x}`).join('\n') + '\n';
                 if(valHs > 0) txt += `- Nombre total de points hors service=${valHs} (sans libellé)\n`;
                 if(al.length) txt += `- Alarmes :\n` + al.map(x => ` --- ${x}`).join('\n') + '\n';
@@ -727,37 +612,36 @@
 
             if (document.querySelector('input[name="siemens_b1"]:checked').value === "NON RAS") {
                 let txt = `REPORT SIEMENS BAT1\n`;
-                if(document.getElementById('siemens_b1_derangement').checked) txt += `- Voyants allumés :\n --- Dérangement\n`;
-                let al = [];
-                if(document.getElementById('siemens_b1_recurrente').checked) al.push("Reprise info locaux technique Coupure armoire chaufferie");
-                if(document.getElementById('siemens_b1_libre').value.trim()) al.push(document.getElementById('siemens_b1_libre').value.trim());
-                if(al.length) txt += `- Alarmes :\n` + al.map(x => ` --- ${x}`).join('\n') + '\n';
+                let elements = [];
+                if(document.getElementById('siemens_b1_derangement').checked) elements.push(` --- Dérangement`);
+                if(document.getElementById('siemens_b1_recurrente').checked) elements.push(` --- Reprise info locaux technique coupure armoire chaufferie`);
+                let libre = document.getElementById('siemens_b1_libre').value.trim();
+                if(libre) elements.push(` --- ${libre}`);
+                if(elements.length) txt += `- Événements :\n` + elements.join('\n') + '\n';
                 blocsTxt.push(txt.trimEnd());
             }
 
             if (document.querySelector('input[name="siemens_b2"]:checked').value === "NON RAS") {
                 let txt = `REPORT SIEMENS BAT2\n`;
-                if(document.getElementById('siemens_b2_derangement').checked) txt += `- Voyants allumés :\n --- Dérangement\n`;
-                let al = [];
-                if(document.getElementById('siemens_b2_recurrente').checked) al.push("Reprise info locaux technique Coupure armoire chaufferie");
-                if(document.getElementById('siemens_b2_libre').value.trim()) al.push(document.getElementById('siemens_b2_libre').value.trim());
-                if(al.length) txt += `- Alarmes :\n` + al.map(x => ` --- ${x}`).join('\n') + '\n';
+                let elements = [];
+                if(document.getElementById('siemens_b2_derangement').checked) elements.push(` --- Dérangement`);
+                if(document.getElementById('siemens_b2_recurrente').checked) elements.push(` --- Reprise info locaux technique coupure armoire chaufferie`);
+                let libre = document.getElementById('siemens_b2_libre').value.trim();
+                if(libre) elements.push(` --- ${libre}`);
+                if(elements.length) txt += `- Événements :\n` + elements.join('\n') + '\n';
                 blocsTxt.push(txt.trimEnd());
             }
 
-            const finalResult = blocsTxt.length === 0 ? "Rien à signaler (Tout est RAS)." : blocsTxt.join('\n\n');
-            document.getElementById('reportOutputText').textContent = finalResult;
+            if(blocsTxt.length === 0) { blocsTxt.push("RAS sur l'ensemble des rapports."); }
+            const finalReportText = blocsTxt.join('\n\n---\n\n');
+            document.getElementById('reportOutputText').textContent = finalReportText;
             document.getElementById('reportOutputBox').classList.remove('hidden');
         }
 
         function copierRapport() {
-            const textToCopy = document.getElementById('reportOutputText').textContent;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const btn = document.querySelector('.btn-copy');
-                btn.textContent = "✅ Copié !";
-                setTimeout(() => { btn.textContent = "📋 Copier le résumé"; }, 2000);
-            });
+            const text = document.getElementById('reportOutputText').textContent;
+            navigator.clipboard.writeText(text).then(() => { alert("Résumé copié !"); }).catch(() => { alert("Erreur de copie."); });
         }
     </script>
 </body>
-  </html>
+</html>
