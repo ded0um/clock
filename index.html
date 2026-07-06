@@ -24,6 +24,12 @@
             overflow: hidden;
         }
 
+        /* --- HARMONISATION DES PUCES EN JAUNE --- */
+        input[type="checkbox"], input[type="radio"] {
+            accent-color: var(--yellow-led);
+            cursor: pointer;
+        }
+
         /* --- ZONE GAUCHE : HORLOGE (2/3) --- */
         .left-zone {
             flex: 2;
@@ -252,9 +258,13 @@
         .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #aaa; }
         .radio-group-row { display: flex; gap: 20px; font-size: 0.95rem; margin-bottom: 10px; }
         .checkbox-group { display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; }
+        
         .grid-checkbox { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; }
         .grid-checkbox label { background-color: #161616; padding: 6px; border-radius: 4px; border: 1px solid #222; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 4px; }
         
+        /* Séparation visuelle B1 / B2 dans les grilles */
+        .grid-separator { grid-column: 1 / -1; border-top: 1px dashed #444; margin: 8px 0; padding-top: 4px; font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+
         input[type="text"], input[type="number"] { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #333; background-color: #1c1c1c; color: #fff; box-sizing: border-box; }
         h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppercase; }
         
@@ -398,9 +408,36 @@
                             <input type="number" id="pts_hs" placeholder="Saisir manuellement (Masqué si 0)">
                         </div>
 
+                        <!-- ALARMES DIVERSES ET BLOCS DROPDOWN DIRECTEMENT SOUS LE TITRE -->
                         <div class="form-group">
                             <h4>Alarmes diverses</h4>
-                            <div class="checkbox-group" id="alarmes_diverses">
+                            
+                            <!-- SOUS-SECTION VANNE POSTE -->
+                            <div class="sub-section">
+                                <div class="sub-section-header" onclick="toggleSubSection(this)"><span>DEFAUT VANNE POSTE ...</span><span>▼</span></div>
+                                <div class="sub-section-content">
+                                    <div class="grid-checkbox" id="vannes_list"></div>
+                                </div>
+                            </div>
+
+                            <!-- SOUS-SECTION FEU POSTE -->
+                            <div class="sub-section">
+                                <div class="sub-section-header" onclick="toggleSubSection(this)"><span>FEU POSTE DE CONTROLE ...</span><span>▼</span></div>
+                                <div class="sub-section-content">
+                                    <div class="grid-checkbox" id="feu_poste_list"></div>
+                                </div>
+                            </div>
+
+                            <!-- SOUS-SECTION INTRUSION -->
+                            <div class="sub-section">
+                                <div class="sub-section-header" onclick="toggleSubSection(this)"><span>INTRUSION S/STATION ...</span><span>▼</span></div>
+                                <div class="sub-section-content">
+                                    <div class="grid-checkbox" id="intrusion_list"></div>
+                                </div>
+                            </div>
+
+                            <!-- RESTE DES CHECKBOXES ALARMES DIVERSES -->
+                            <div class="checkbox-group" id="alarmes_diverses" style="margin-top: 15px;">
                                 <label><input type="checkbox" value="Controleur passage d'eau local sprinkler"> Controleur passage d'eau local sprinkler</label>
                                 <label><input type="checkbox" value="Défaut général source B1"> Défaut général source B1</label>
                                 <label><input type="checkbox" value="Défaut général source B2"> Défaut général source B2</label>
@@ -428,30 +465,6 @@
                                 <label><input type="checkbox" value="Position clé non auto source B2"> Position clé non auto source B2</label>
                                 <label><input type="checkbox" value="Risque d'échecs source B1"> Risque d'échecs source B1</label>
                                 <label><input type="checkbox" value="Risque d'échecs source B2"> Risque d'échecs source B2</label>
-                            </div>
-                        </div>
-
-                        <!-- SOUS-SECTION VANNE POSTE -->
-                        <div class="sub-section">
-                            <div class="sub-section-header" onclick="toggleSubSection(this)"><span>DEFAUT VANNE POSTE ...</span><span>▼</span></div>
-                            <div class="sub-section-content">
-                                <div class="grid-checkbox" id="vannes_list"></div>
-                            </div>
-                        </div>
-
-                        <!-- SOUS-SECTION FEU POSTE -->
-                        <div class="sub-section">
-                            <div class="sub-section-header" onclick="toggleSubSection(this)"><span>FEU POSTE DE CONTROLE ...</span><span>▼</span></div>
-                            <div class="sub-section-content">
-                                <div class="grid-checkbox" id="feu_poste_list"></div>
-                            </div>
-                        </div>
-
-                        <!-- SOUS-SECTION INTRUSION -->
-                        <div class="sub-section">
-                            <div class="sub-section-header" onclick="toggleSubSection(this)"><span>INTRUSION S/STATION ...</span><span>▼</span></div>
-                            <div class="sub-section-content">
-                                <div class="grid-checkbox" id="intrusion_list"></div>
                             </div>
                         </div>
 
@@ -707,21 +720,30 @@
             else element.classList.add('hidden');
         }
 
-        // --- INJECTION ÉLÉMENTS FORMULAIRE (SPRINKLER) ---
+        // --- INJECTION ÉLÉMENTS FORMULAIRE AVEC LIGNE DE SÉPARATION B1 / B2 ---
         const vannesList = document.getElementById('vannes_list');
         const feuPosteList = document.getElementById('feu_poste_list');
         const intrusionList = document.getElementById('intrusion_list');
 
         function injecterPostes(conteneurHTML, prefixe) {
+            // BAT 1
             for(let i = 1; i <= 12; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} b1</label>`;
             conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} A air n13 bat1"> n13 air</label>`;
             for(let i = 14; i <= 18; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} b1</label>`;
+            
+            // Ligne de Séparation Visuelle
+            conteneurHTML.innerHTML += `<div class="grid-separator">Bâtiment 2</div>`;
+            
+            // BAT 2
             for(let i = 1; i <= 9; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat2"> n${i} b2</label>`;
         }
+        
         injecterPostes(vannesList, "Défaut vanne poste");
         injecterPostes(feuPosteList, "Feu poste de controle");
 
+        // Cas particulier Intrusion S/Station
         for(let i = 1; i <= 9; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="Intrusion s/station n${i} bat1"> n${i} b1</label>`;
+        intrusionList.innerHTML += `<div class="grid-separator">Bâtiment 2</div>`;
         for(let i = 1; i <= 4; i++) intrusionList.innerHTML += `<label><input type="checkbox" value="Intrusion s/station n${i} bat2"> n${i} b2</label>`;
 
         // --- COMPILATION DU RAPPORT ---
