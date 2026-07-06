@@ -34,13 +34,10 @@
             z-index: 10;
         }
 
-        .header-center {
-            display: flex;
-            align-items: center;
-            gap: 50px; /* Bel espace entre le parapluie et le rapport */
-        }
-
         .icon-btn {
+            position: absolute;
+            bottom: 25px;
+            right: 30px;
             background: none;
             border: none;
             color: #ffffff;
@@ -52,6 +49,7 @@
             justify-content: center;
             transition: opacity 0.2s, transform 0.2s;
             opacity: 0.8;
+            z-index: 20;
         }
 
         .icon-btn:hover { 
@@ -60,13 +58,21 @@
         }
         
         .icon-btn.active { 
-            color: var(--yellow-led);
+            color: #ffcc00;
             opacity: 1;
         }
 
-        /* --- ZONE CENTRALE (HORLOGE SEULE) --- */
+        /* --- ZONE CENTRALE --- */
         main {
             flex: 1;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+        }
+
+        .clock-zone {
+            position: relative;
+            flex: 2;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -88,29 +94,114 @@
             letter-spacing: -2px;
         }
 
-        /* --- LED JAUNE EN HAUT À DROITE --- */
+        /* --- TÂCHES DE LA NUIT --- */
+        .tasks-zone {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            justify-content: center;
+            align-items: stretch;
+            padding: 30px;
+            border-left: 1px solid #222;
+            overflow-y: auto;
+        }
+
+        .tasks-zone.has-tasks { display: flex; }
+
+        .night-tasks {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .night-task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .night-task-item:hover {
+            opacity: 0.8;
+            transform: scale(1.02);
+        }
+
+        .task-led {
+            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: #ffcc00;
+            box-shadow: 0 0 10px #ffcc00, inset 0 -1px 3px rgba(0,0,0,0.4);
+            animation: blink-animation 0.9s infinite alternate;
+        }
+
+        .tasks-collapse-btn {
+            align-self: flex-end;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            margin-bottom: 10px;
+            transition: color 0.2s;
+        }
+
+        .tasks-collapse-btn:hover { color: #fff; }
+
+        /* --- LED ROUGE (+ MINI LED JAUNE) EN HAUT À DROITE --- */
         .led-container {
             position: absolute;
             top: 20px;
             right: 40px;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
+            gap: 12px;
         }
 
-        .led-yellow {
-            width: 32px;
-            height: 32px;
+        .led-red {
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            background-color: #1a1a1a;
-            transition: all 0.3s ease;
+            background-color: transparent;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
         }
 
-        .led-yellow.blink {
-            background-color: var(--yellow-led);
-            box-shadow: 0 0 25px var(--yellow-led), inset 0 -2px 6px rgba(0,0,0,0.4);
+        .led-red.blink {
+            background-color: #ff2222;
+            box-shadow: 0 0 16px #ff2222, inset 0 -1px 4px rgba(0,0,0,0.4);
             animation: blink-animation 0.9s infinite alternate;
             cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .led-jaune-mini {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: transparent;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .led-jaune-mini.visible {
+            background-color: #ffcc00;
+            box-shadow: 0 0 16px #ffcc00, inset 0 -1px 4px rgba(0,0,0,0.4);
+            animation: blink-animation 0.9s infinite alternate;
+            cursor: pointer;
+            pointer-events: auto;
         }
 
         @keyframes blink-animation {
@@ -256,29 +347,25 @@
 </head>
 <body>
 
-    <!-- BARRE SUPÉRIEURE ÉPURÉE SANS ENGRENAGE -->
-    <header>
-        <div></div> 
-        
-        <div class="header-center">
-            <!-- Le parapluie appelle à nouveau ta fonction de météo initiale -->
-            <button class="icon-btn" onclick="toggleWeather()" title="Météo">☔</button>
-            <!-- Bouton d'ouverture/fermeture du volet des rapports -->
-            <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports">📝</button>
-        </div>
-        
-        <div></div> 
-    </header>
-
-    <!-- LED JAUNE EN HAUT À DROITE -->
-    <div class="led-container">
-        <div id="led-jaune" class="led-yellow" title="Cliquez pour valider les contrôles terrain"></div>
-    </div>
-
     <!-- ZONE CENTRALE (DATE & HEURE) -->
     <main>
-        <div class="date-display" id="date-label">Dimanche 5 Juillet 2026</div>
-        <div id="clock">00:00</div>
+        <div class="clock-zone">
+            <!-- BOUTON RAPPORT EN BAS À DROITE DE LA ZONE HORLOGE -->
+            <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports">📝</button>
+
+            <!-- LED ROUGE EN HAUT À DROITE DE LA ZONE HORLOGE -->
+            <div class="led-container">
+                <div id="led-rouge" class="led-red" title="Alerte de minuit"></div>
+                <div id="led-jaune-mini" class="led-jaune-mini" title="Tâches en attente (volet réduit) — cliquer pour l'afficher" onclick="deployerTaches()"></div>
+            </div>
+
+            <div class="date-display" id="date-label">Dimanche 5 Juillet 2026</div>
+            <div id="clock">00:00</div>
+        </div>
+        <div class="tasks-zone" id="tasks-zone">
+            <button class="tasks-collapse-btn" id="collapseTasksBtn" title="Réduire les tâches" onclick="retracterTaches()">▸</button>
+            <div class="night-tasks" id="night-tasks"></div>
+        </div>
     </main>
 
     <!-- VOLET DE DROITE (RAPPORTS) -->
@@ -468,18 +555,117 @@
     </div>
 
     <script>
-        // --- BASE DE TA FONCTION MÉTÉO (À adapter si tu as un script externe) ---
-        function toggleWeather() {
-            if (typeof afficherMeteo === "function") {
-                afficherMeteo();
+        // --- TÂCHES DE LA NUIT ---
+        const tachesDeNuit = [
+            { jours: [2], texte: "B1 : Contrôle des vannes de postes" },
+            { special: 'premierLundi', texte: "B1 : Contrôle des Portes Issues de secours" },
+            { special: 'premierLundi', texte: "Contrôle des DM" },
+            { special: 'mardiApresPremierLundi', texte: "B1 : Contrôle des compteurs paratonnerres" },
+            { special: 'mardiApresPremierLundi', texte: "B2 : Contrôle des compteurs paratonnerres" },
+            { special: 'mardiApresPremierLundi', texte: "B1 : Contrôle des douches et rinces oeils" },
+            { special: 'mercrediApresPremierLundi', texte: "B1 : Contrôle des calles et chandelles" },
+            { special: 'jeudiApresPremierLundi', texte: "B1 : Contrôle Éclairage entrepôt" },
+            { special: 'vendrediApresPremierLundi', texte: "B1 : Contrôle des BAES" }
+        ];
+        const tachesTerminees = {}; // index de tâche -> clé de la nuit de service déjà validée
+        let tachesRetractees = false; // volet des tâches réduit ou non
+
+        // Détermine à quelle "nuit de service" appartient l'instant donné
+        // (avant midi, on est encore rattaché à la nuit qui a commencé la veille)
+        function getNuitDeService(dateObj) {
+            const jourService = new Date(dateObj);
+            if (dateObj.getHours() < 12) {
+                jourService.setDate(jourService.getDate() - 1);
+            }
+            return jourService;
+        }
+
+        function getPremierLundi(dateObj) {
+            let d = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1);
+            while (d.getDay() !== 1) d.setDate(d.getDate() + 1);
+            return d;
+        }
+
+        function estMemeJour(a, b) {
+            return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+        }
+
+        // Vrai si dateObj tombe exactement N jours après le 1er lundi du mois
+        function estJourApresPremierLundi(dateObj, offsetJours) {
+            const premierLundi = getPremierLundi(dateObj);
+            const cible = new Date(premierLundi);
+            cible.setDate(cible.getDate() + offsetJours);
+            return estMemeJour(dateObj, cible);
+        }
+
+        function tacheEstActive(tache, serviceDate) {
+            if (tache.jours) return tache.jours.includes(serviceDate.getDay());
+            switch (tache.special) {
+                case 'premierLundi': return estMemeJour(serviceDate, getPremierLundi(serviceDate));
+                case 'mardiApresPremierLundi': return estJourApresPremierLundi(serviceDate, 1);
+                case 'mercrediApresPremierLundi': return estJourApresPremierLundi(serviceDate, 2);
+                case 'jeudiApresPremierLundi': return estJourApresPremierLundi(serviceDate, 3);
+                case 'vendrediApresPremierLundi': return estJourApresPremierLundi(serviceDate, 4);
+            }
+            return false;
+        }
+
+        function marquerTacheTerminee(index, cleNuit) {
+            tachesTerminees[index] = cleNuit;
+            afficherTachesDeNuit(new Date());
+        }
+
+        function retracterTaches() {
+            tachesRetractees = true;
+            afficherTachesDeNuit(new Date());
+        }
+
+        function deployerTaches() {
+            tachesRetractees = false;
+            afficherTachesDeNuit(new Date());
+        }
+
+        function afficherTachesDeNuit(dateObj) {
+            const container = document.getElementById('night-tasks');
+            const zone = document.getElementById('tasks-zone');
+            const miniLed = document.getElementById('led-jaune-mini');
+            const hours = dateObj.getHours();
+            const minutes = dateObj.getMinutes();
+
+            const dansLaFenetre = (hours >= 19) || (hours < 6) || (hours === 6 && minutes < 30);
+
+            if (!dansLaFenetre) {
+                container.innerHTML = '';
+                zone.classList.remove('has-tasks');
+                miniLed.classList.remove('visible');
+                return;
+            }
+
+            const nuitService = getNuitDeService(dateObj);
+            const cleNuit = nuitService.toDateString();
+
+            const tachesActives = tachesDeNuit
+                .map((t, index) => ({ t, index }))
+                .filter(({ t, index }) => tacheEstActive(t, nuitService) && tachesTerminees[index] !== cleNuit);
+
+            const html = tachesActives
+                .map(({ t, index }) => `<div class="night-task-item" onclick="marquerTacheTerminee(${index}, '${cleNuit}')"><span class="task-led"></span>${t.texte}</div>`)
+                .join('');
+
+            container.innerHTML = html;
+
+            const yADesTaches = tachesActives.length > 0;
+
+            if (tachesRetractees) {
+                zone.classList.remove('has-tasks');
+                miniLed.classList.toggle('visible', yADesTaches);
             } else {
-                console.log("Fonction météo déclenchée via le bouton parapluie.");
+                zone.classList.toggle('has-tasks', yADesTaches);
+                miniLed.classList.remove('visible');
             }
         }
 
         // --- GESTION HORLOGE & DATE ---
-        let controlesJaunesFaits = false;
-
         function updateClock() {
             const now = new Date();
             const hours = now.getHours();
@@ -494,53 +680,45 @@
             dateString = dateString.charAt(0).toUpperCase() + dateString.slice(1);
             document.getElementById('date-label').textContent = dateString;
 
-            if (hours === 0 && minutes === 0 && now.getSeconds() === 0) {
-                controlesJaunesFaits = false;
-            }
-
-            gestionLedJaune(now);
+            afficherTachesDeNuit(now);
+            gestionLedRouge(now);
         }
 
-        // LED JAUNE : Contrôles terrain
-        function gestionLedJaune(dateObj) {
-            const ledJaune = document.getElementById('led-jaune');
-            
-            if (controlesJaunesFaits) {
-                ledJaune.classList.remove('blink');
-                return;
+        // LED ROUGE : s'allume uniquement si la page était déjà ouverte à minuit pile,
+        // s'éteint au clic ou à 06h30
+        let ledRougeArmee = false;
+        let ledRougeEteinteAujourdhui = false;
+
+        function gestionLedRouge(dateObj) {
+            const ledRouge = document.getElementById('led-rouge');
+            const hours = dateObj.getHours();
+            const minutes = dateObj.getMinutes();
+
+            // À minuit pile (vu par la page en direct), on arme la LED pour la nuit
+            if (hours === 0 && minutes === 0) {
+                ledRougeArmee = true;
+                ledRougeEteinteAujourdhui = false;
             }
 
-            const dayOfWeek = dateObj.getDay(); 
-            const dayOfMonth = dateObj.getDate();
-
-            let estMardi = (dayOfWeek === 2);
-            let estPremierLundi = (dayOfWeek === 1 && dayOfMonth <= 7);
-            let estSemaineApresPremierLundi = false;
-
-            let tempDate = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1);
-            while (tempDate.getDay() !== 1) {
-                tempDate.setDate(tempDate.getDate() + 1);
-            }
-            const premierLundiDate = tempDate.getDate();
-            
-            const debutSemaineSuivante = premierLundiDate + 7;
-            const finSemaineSuivante = premierLundiDate + 13;
-
-            if (dayOfMonth >= debutSemaineSuivante && dayOfMonth <= finSemaineSuivante) {
-                estSemaineApresPremierLundi = true;
+            // À 06h30, la LED s'éteint et se désarme pour la nuit suivante
+            if (hours === 6 && minutes === 30) {
+                ledRougeEteinteAujourdhui = true;
+                ledRougeArmee = false;
             }
 
-            if (estMardi || estPremierLundi || estSemaineApresPremierLundi) {
-                ledJaune.classList.add('blink');
+            const dansLaPlageMinuitA0630 = (hours >= 0 && (hours < 6 || (hours === 6 && minutes < 30)));
+
+            if (ledRougeArmee && dansLaPlageMinuitA0630 && !ledRougeEteinteAujourdhui) {
+                ledRouge.classList.add('blink');
             } else {
-                ledJaune.classList.remove('blink');
+                ledRouge.classList.remove('blink');
             }
         }
 
-        // Clic sur la LED jaune pour l'éteindre
-        document.getElementById('led-jaune').addEventListener('click', function() {
+        // Clic sur la LED rouge pour l'éteindre
+        document.getElementById('led-rouge').addEventListener('click', function() {
             if (this.classList.contains('blink')) {
-                controlesJaunesFaits = true;
+                ledRougeEteinteAujourdhui = true;
                 this.classList.remove('blink');
             }
         });
