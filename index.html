@@ -812,7 +812,7 @@
                 if(document.getElementById('siemens_b1_recurrente').checked) elements.push(` --- Reprise info locaux technique coupure armoire chaufferie`);
                 let libre = document.getElementById('siemens_b1_libre').value.trim();
                 if(libre) elements.push(` --- ${libre}`);
-                if(elements.length) txt += `- Événements :\n` + elements.join('\n') + '\n';
+                if(elements.length) txt += `- Alarmes :\n` + elements.join('\n') + '\n';
                 blocsTxt.push(txt.trimEnd());
             }
 
@@ -823,7 +823,7 @@
                 if(document.getElementById('siemens_b2_recurrente').checked) elements.push(` --- Reprise info locaux technique coupure armoire chaufferie`);
                 let libre = document.getElementById('siemens_b2_libre').value.trim();
                 if(libre) elements.push(` --- ${libre}`);
-                if(elements.length) txt += `- Événements :\n` + elements.join('\n') + '\n';
+                if(elements.length) txt += `- Alarmes :\n` + elements.join('\n') + '\n';
                 blocsTxt.push(txt.trimEnd());
             }
 
