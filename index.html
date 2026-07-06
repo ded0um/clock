@@ -76,7 +76,7 @@
         .tasks-header-container {
             display: flex;
             align-items: center;
-            gap: 15px;
+            justify-content: space-between; /* Aligne le titre à gauche et la flèche à droite */
             margin-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
@@ -90,21 +90,21 @@
             letter-spacing: 1px;
         }
 
-        /* Bouton de rétractation placé DANS le volet des tâches */
+        /* Bouton de rétractation placé DANS la zone des tâches */
         .toggle-tasks-btn {
             background: none;
             border: none;
             color: #666;
             font-size: 1.3rem;
             cursor: pointer;
-            transition: color 0.2s, transform 0.2s;
-            padding: 0;
+            transition: color 0.2s;
+            padding: 5px;
             display: flex;
             align-items: center;
         }
         .toggle-tasks-btn:hover { color: #fff; }
 
-        /* Petit bouton flottant visible uniquement quand le volet est fermé */
+        /* Petit bouton flottant de secours */
         .toggle-tasks-floating-btn {
             position: absolute;
             top: 20px;
@@ -153,7 +153,7 @@
             flex-shrink: 0;
         }
 
-        /* --- CONTRÔLES ANCRÉS EN HAUT À DROITE À 20PX --- */
+        /* --- CONTRÔLES ANCRÉS EN HAUT À DROITE --- */
         .top-controls {
             position: absolute;
             top: 20px;
@@ -190,6 +190,7 @@
             background-color: var(--yellow-led);
             box-shadow: 0 0 15px var(--yellow-led);
             display: none;
+            cursor: pointer; /* Indique que la LED jaune est cliquable */
         }
 
         @keyframes blink-animation {
@@ -197,7 +198,7 @@
             to { opacity: 1; }
         }
 
-        /* Bouton Questionnaire rehaussé à 65px pour éviter la barre des tâches Windows */
+        /* Bouton Questionnaire rehaussé à 65px */
         .icon-btn {
             position: absolute;
             bottom: 65px;
@@ -264,11 +265,10 @@
 
     <!-- ZONE DE GAUCHE : HORLOGE + BOUTONS FIXES -->
     <div class="left-zone">
-        <!-- Bouton de secours externe apparaissant seulement si masqué -->
         <button class="toggle-tasks-floating-btn" id="toggleTasksFloatingBtn" title="Afficher les tâches">▶</button>
         
         <div class="top-controls">
-            <div id="led-yellow-alert" class="led-yellow-alert" title="Tâches actives en attente"></div>
+            <div id="led-yellow-alert" class="led-yellow-alert" title="Tâches actives en attente (Cliquer pour déployer)"></div>
             <div id="led-rouge" class="led-red" title="Alerte de minuit"></div>
         </div>
 
@@ -281,8 +281,8 @@
     <!-- ZONE DE DROITE : LISTE DES TÂCHES CONTEXTUELLES -->
     <div class="right-zone" id="tasksZone">
         <div class="tasks-header-container">
-            <button class="toggle-tasks-btn" id="toggleTasksBtn" title="Masquer les tâches">◀</button>
             <h2>Tâches</h2>
+            <button class="toggle-tasks-btn" id="toggleTasksBtn" title="Masquer les tâches">◀</button>
         </div>
         <div class="night-tasks" id="night-tasks"></div>
     </div>
@@ -411,7 +411,9 @@
 
         function marquerTacheTerminee(index, cleNuit) {
             tachesTerminees[index] = cleNuit;
-            afficherTachesDeNuit(new Date());
+            // Utilise la date simulée pour rafraîchir
+            const now = new Date(2026, 8, 8, 0, 0, 0); 
+            afficherTachesDeNuit(now);
         }
 
         function afficherTachesDeNuit(dateObj) {
@@ -474,7 +476,7 @@
             }
         }
 
-        // --- GESTION DE RETRACTATION ---
+        // --- GESTION DE RÉTRACTATION ---
         function basculerVoletTaches(ouvrir) {
             voletTachesOuvert = ouvrir;
             const tasksZone = document.getElementById('tasksZone');
@@ -492,10 +494,15 @@
 
         document.getElementById('toggleTasksBtn').addEventListener('click', () => basculerVoletTaches(false));
         document.getElementById('toggleTasksFloatingBtn').addEventListener('click', () => basculerVoletTaches(true));
+        
+        // Déploiement du volet lors du clic sur la LED jaune
+        document.getElementById('led-yellow-alert').addEventListener('click', () => basculerVoletTaches(true));
 
         // --- GESTION HORLOGE & DATE ---
         function updateClock() {
-            const now = new Date(2026,08,08,00,00,00); 
+            // DATE SIMULÉE POUR VOS TESTS
+            const now = new Date(2026, 8, 8, 0, 0, 0); 
+            
             const hours = now.getHours();
             const minutes = now.getMinutes();
             
