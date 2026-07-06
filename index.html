@@ -839,7 +839,7 @@
             }
 
             if(blocsTxt.length === 0) { blocsTxt.push("RAS sur l'ensemble des rapports."); }
-            const finalReportText = blocsTxt.join('\n\n---\n\n');
+            const finalReportText = blocsTxt.join('\n\n');
             document.getElementById('reportOutputText').textContent = finalReportText;
             document.getElementById('reportOutputBox').classList.remove('hidden');
         }
