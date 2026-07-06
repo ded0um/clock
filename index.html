@@ -508,7 +508,7 @@
         // (avant midi, on est encore rattaché à la nuit qui a commencé la veille)
         function getNuitDeService(dateObj) {
             const jourService = new Date(dateObj);
-            if (dateObj.getHours() < 12) {
+            if (dateObj.getHours() < 7) {
                 jourService.setDate(jourService.getDate() - 1);
             }
             return jourService;
@@ -575,7 +575,7 @@
 
         // --- GESTION HORLOGE & DATE ---
         function updateClock() {
-            const now = new Date(); // PRÉVISUALISATION FIGÉE : 07/07/2026 20:00
+            const now = new Date(2026,7,8,00,00,00); // PRÉVISUALISATION FIGÉE : 07/07/2026 20:00
             const hours = now.getHours();
             const minutes = now.getMinutes();
             
