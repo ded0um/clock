@@ -359,23 +359,24 @@
         }
 
         .left-zone {
-            padding-bottom: 0;
-            justify-content: flex-start;
-            padding-top: 10vh;
-        }
+    flex: 1 1 auto;   /* prend tout l'espace disponible restant */
+    padding-bottom: 0;
+    justify-content: center;   /* recentre l'horloge dans l'espace dispo */
+    padding-top: 0;
+}
         .date-display {
             font-size: clamp(1.2rem, 5vw, 2rem);
             margin-bottom: 5px;
         }
 
         .right-zone {
-            flex: 1;
-            width: 100%;
-            border-left: none;
-            border-top: 1px solid var(--border-color);
-            max-height: 40vh;
-            overflow-y: auto;
-        }
+    flex: 0 1 auto;   /* ne prend que la place nécessaire à son contenu */
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border-color);
+    max-height: 40vh;
+    overflow-y: auto;
+}
 
         #clock {
             font-size: clamp(5rem, 20vw, 10rem);
