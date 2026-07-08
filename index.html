@@ -194,7 +194,7 @@
         /* BOUTON REHAUSSÉ */
         .icon-btn {
             position: absolute;
-            bottom: bottom: calc(80px + env(safe-area-inset-bottom));
+            bottom: calc(80px + env(safe-area-inset-bottom));
             right: 30px;
             background: none;
             border: none;
@@ -319,11 +319,21 @@
         overflow-y: auto;
     }
     
-#clock {
+    #clock {
         /* On réduit la taille max et on ajuste la hauteur de ligne */
         font-size: clamp(5rem, 20vw, 10rem);
         line-height: 1; /* L'horloge prendra la place exacte de ses chiffres */
         letter-spacing: -5px;
+    }
+    .icon-btn {
+        position: fixed;
+        bottom: calc(20px + env(safe-area-inset-bottom));
+        right: 20px;
+        z-index: 50; /* Pour qu'il passe au-dessus des tâches */
+        background-color: rgba(30, 30, 30, 0.8); /* Petit fond gris foncé pour bien le voir par-dessus le texte */
+        border-radius: 50%;
+        width: 50px; /* On l'agrandit un peu pour le tactile */
+        height: 50px;
     }
 }
 
