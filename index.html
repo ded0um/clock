@@ -295,6 +295,41 @@
         .btn-copy:hover { background-color: #2a2a2a; }
         .hidden { display: none !important; }
 
+        /* --- EN-TÊTE DU VOLET --- */
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            border-bottom: none; /* Annule la bordure de l'ancien h2 */
+            padding-bottom: 0;
+        }
+
+        .close-panel-btn {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: color 0.2s, background-color 0.2s;
+        }
+
+        .close-panel-btn:hover {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
 @media (max-width: 768px) {
     body {
         flex-direction: column; /* Empile l'horloge et les tâches */
@@ -900,7 +935,14 @@
         function copierRapport() {
             const text = document.getElementById('reportOutputText').textContent;
             navigator.clipboard.writeText(text).then(() => { alert("Résumé copié !"); }).catch(() => { alert("Erreur de copie."); });
+            document.getElementById('questionnairePanel').classList.remove('open');
         }
+
+// Fermer le volet en cliquant sur la croix
+        document.getElementById('closePanelBtn').addEventListener('click', function() {
+            document.getElementById('questionnairePanel').classList.remove('open');
+        });
+        
     </script>
 </body>
 </html>
