@@ -291,34 +291,27 @@
         .btn-copy:hover { background-color: #2a2a2a; }
         .hidden { display: none !important; }
 
-@media (max-width: 600px) {
-    /* On force la colonne à prendre toute la place si elle est ouverte */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column; /* Empile l'horloge et les tâches */
+    }
+
+    .left-zone {
+        flex: 1; /* L'horloge prend la place disponible en haut */
+        padding-bottom: 20px;
+    }
+
     .right-zone {
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 100%;
-        height: 100dvh;
-        z-index: 20; /* Pour passer au-dessus de tout */
-        background-color: #000; /* Fond noir plein pour la lisibilité */
+        flex: 1; /* Les tâches s'affichent en dessous */
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+        max-height: 40vh; /* Limite la hauteur de la liste pour laisser voir l'horloge */
+        overflow-y: auto;
     }
-
-    /* On cache la colonne quand elle est "collapsed" */
-    .right-zone.collapsed {
-        display: none;
-    }
-
-    /* Augmenter la taille du texte pour une meilleure lecture mobile */
-    .night-task-item {
-        font-size: 1.2rem;
-        padding: 20px;
-    }
-    .toggle-tasks-btn {
-        font-size: 2rem; /* Plus gros */
-        padding: 20px;   /* Plus facile à viser */
-    }
-
     
+    #clock {
+        font-size: 8rem; /* Réduit un peu l'horloge pour qu'elle ne déborde pas */
+    }
 }
 
 
