@@ -856,37 +856,68 @@
             else element.classList.add('hidden');
         }
 
-        // --- INJECTION ÉLÉMENTS FORMULAIRE ---
+      // --- INJECTION ÉLÉMENTS FORMULAIRE ---
         const vannesList = document.getElementById('vannes_list');
         const feuPosteList = document.getElementById('feu_poste_list');
         const intrusionList = document.getElementById('intrusion_list');
 
         function injecterPostesEtBatiments(conteneurHTML, prefixe) {
-            for(let i = 1; i <= 12; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} b1</label>`;
-            conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} A air n13 bat1"> n13 air</label>`;
-            for(let i = 14; i <= 18; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} b1</label>`;
+            if (!conteneurHTML) return; // Sécurité si l'élément n'existe pas
             
-            conteneurHTML.innerHTML += `<div class="building-separator">--- Bâtiment 2 ---</div>`;
+            let html = `<div class="building-separator">--- Bâtiment 1 ---</div>`;
             
-            for(let i = 1; i <= 9; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="${prefixe} n${i} bat2"> n${i} b2</label>`;
+            // Bâtiment 1 : n1 à n12
+            for(let i = 1; i <= 12; i++) {
+                html += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} b1</label>`;
+            }
+            // Bâtiment 1 : n13 air
+            html += `<label><input type="checkbox" value="${prefixe} A air n13 bat1"> n13 air</label>`;
+            // Bâtiment 1 : n14 à n18
+            for(let i = 14; i <= 18; i++) {
+                html += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} b1</label>`;
+            }
+            
+            html += `<div class="building-separator">--- Bâtiment 2 ---</div>`;
+            
+            // Bâtiment 2 : n1 à n9
+            for(let i = 1; i <= 9; i++) {
+                html += `<label><input type="checkbox" value="${prefixe} n${i} bat2"> n${i} b2</label>`;
+            }
+            
+            // On injecte tout en une seule fois (meilleures performances et pas de bug d'affichage)
+            conteneurHTML.innerHTML = html;
         }
 
         function injecterIntrusions(conteneurHTML) {
-            for(let i = 1; i <= 9; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="Intrusion s/station n${i} bat1"> n${i} b1</label>`;
-            conteneurHTML.innerHTML += `<div class="building-separator">--- Bâtiment 2 ---</div>`;
-            for(let i = 1; i <= 4; i++) conteneurHTML.innerHTML += `<label><input type="checkbox" value="Intrusion s/station n${i} bat2"> n${i} b2</label>`;
+            if (!conteneurHTML) return;
+
+            let html = `<div class="building-separator">--- Bâtiment 1 ---</div>`;
+            
+            for(let i = 1; i <= 9; i++) {
+                html += `<label><input type="checkbox" value="Intrusion s/station n${i} bat1"> n${i} b1</label>`;
+            }
+            
+            html += `<div class="building-separator">--- Bâtiment 2 ---</div>`;
+            
+            for(let i = 1; i <= 4; i++) {
+                html += `<label><input type="checkbox" value="Intrusion s/station n${i} bat2"> n${i} b2</label>`;
+            }
+            
+            conteneurHTML.innerHTML = html;
         }
 
+        // Lancement des injections
         injecterPostesEtBatiments(vannesList, "Défaut vanne poste");
         injecterPostesEtBatiments(feuPosteList, "Feu poste de controle");
         injecterIntrusions(intrusionList);
+
 
         // --- COMPILATION DU RAPPORT ---
         function genererRapport() {
             let blocsTxt = [];
             function getChecked(id) { return Array.from(document.querySelectorAll(`#${id} input:checked`)).map(el => el.value); }
 
-            if (document.querySelector('input[name="ssi_b1"]:checked').value === "NON RAS") {
+            if (document.querySelector('input[name="ssi_b1"]:checked') && document.querySelector('input[name="ssi_b1"]:checked').value === "NON RAS") {
                 let txt = `REPORT SSI BAT1\n`;
                 let v = getChecked('ssi_b1_voyants'), z = getChecked('ssi_b1_zones');
                 if(v.length) txt += `- Voyants allumés :\n` + v.map(x => ` --- ${x}`).join('\n') + '\n';
@@ -894,7 +925,7 @@
                 blocsTxt.push(txt.trimEnd());
             }
 
-            if (document.querySelector('input[name="ssi_b2"]:checked').value === "NON RAS") {
+            if (document.querySelector('input[name="ssi_b2"]:checked') && document.querySelector('input[name="ssi_b2"]:checked').value === "NON RAS") {
                 let txt = `REPORT SSI BAT2\n`;
                 let v = getChecked('ssi_b2_voyants'), z = getChecked('ssi_b2_zones');
                 if(v.length) txt += `- Voyants allumés :\n` + v.map(x => ` --- ${x}`).join('\n') + '\n';
@@ -902,32 +933,32 @@
                 blocsTxt.push(txt.trimEnd());
             }
 
-            if (document.querySelector('input[name="siemens_b1"]:checked').value === "NON RAS") {
+            if (document.querySelector('input[name="siemens_b1"]:checked') && document.querySelector('input[name="siemens_b1"]:checked').value === "NON RAS") {
                 let txt = `REPORT SIEMENS BAT1\n`;
                 let elements = [];
-                if(document.getElementById('siemens_b1_derangement').checked) elements.push(` --- Dérangement`);
-                if(document.getElementById('siemens_b1_recurrente').checked) elements.push(` --- Reprise info locaux technique coupure armoire chaufferie`);
-                let libre = document.getElementById('siemens_b1_libre').value.trim();
+                if(document.getElementById('siemens_b1_derangement') && document.getElementById('siemens_b1_derangement').checked) elements.push(` --- Dérangement`);
+                if(document.getElementById('siemens_b1_recurrente') && document.getElementById('siemens_b1_recurrente').checked) elements.push(` --- Reprise info locaux technique coupure armoire chaufferie`);
+                let libre = document.getElementById('siemens_b1_libre') ? document.getElementById('siemens_b1_libre').value.trim() : "";
                 if(libre) elements.push(` --- ${libre}`);
                 if(elements.length) txt += `- Alarmes :\n` + elements.join('\n') + '\n';
                 blocsTxt.push(txt.trimEnd());
             }
 
-            if (document.querySelector('input[name="siemens_b2"]:checked').value === "NON RAS") {
+            if (document.querySelector('input[name="siemens_b2"]:checked') && document.querySelector('input[name="siemens_b2"]:checked').value === "NON RAS") {
                 let txt = `REPORT SIEMENS BAT2\n`;
                 let elements = [];
-                if(document.getElementById('siemens_b2_derangement').checked) elements.push(` --- Dérangement`);
-                if(document.getElementById('siemens_b2_recurrente').checked) elements.push(` --- Reprise info locaux technique coupure armoire chaufferie`);
-                let libre = document.getElementById('siemens_b2_libre').value.trim();
+                if(document.getElementById('siemens_b2_derangement') && document.getElementById('siemens_b2_derangement').checked) elements.push(` --- Dérangement`);
+                if(document.getElementById('siemens_b2_recurrente') && document.getElementById('siemens_b2_recurrente').checked) elements.push(` --- Reprise info locaux technique coupure armoire chaufferie`);
+                let libre = document.getElementById('siemens_b2_libre') ? document.getElementById('siemens_b2_libre').value.trim() : "";
                 if(libre) elements.push(` --- ${libre}`);
                 if(elements.length) txt += `- Alarmes :\n` + elements.join('\n') + '\n';
                 blocsTxt.push(txt.trimEnd());
             }
 
-            if (document.querySelector('input[name="sprinkler"]:checked').value === "NON RAS") {
+            if (document.querySelector('input[name="sprinkler"]:checked') && document.querySelector('input[name="sprinkler"]:checked').value === "NON RAS") {
                 let txt = `REPORT SPRINKLER\n`;
                 let v = getChecked('sprinkler_voyants');
-                let valHs = parseInt(document.getElementById('pts_hs').value, 10) || 0;
+                let valHs = document.getElementById('pts_hs') ? parseInt(document.getElementById('pts_hs').value, 10) || 0 : 0;
                 let al = [...getChecked('vannes_list'), ...getChecked('feu_poste_list'), ...getChecked('intrusion_list'), ...getChecked('alarmes_diverses')];
                 if(v.length) txt += `- Voyants allumés :\n` + v.map(x => ` --- ${x}`).join('\n') + '\n';
                 if(valHs > 0) txt += `- Nombre total de points hors service=${valHs} (sans libellé)\n`;
@@ -937,51 +968,32 @@
 
             if(blocsTxt.length === 0) { blocsTxt.push("RAS sur l'ensemble des rapports."); }
             const finalReportText = blocsTxt.join('\n\n');
-            document.getElementById('reportOutputText').textContent = finalReportText;
-            document.getElementById('reportOutputBox').classList.remove('hidden');
+            
+            const outputText = document.getElementById('reportOutputText');
+            const outputBox = document.getElementById('reportOutputBox');
+            
+            if (outputText && outputBox) {
+                outputText.textContent = finalReportText;
+                outputBox.classList.remove('hidden');
+            }
         }
 
         function copierRapport() {
-            const text = document.getElementById('reportOutputText').textContent;
-            navigator.clipboard.writeText(text).then(() => { alert("Résumé copié !"); }).catch(() => { alert("Erreur de copie."); });
-            document.getElementById('questionnairePanel').classList.remove('open');
+            const outputText = document.getElementById('reportOutputText');
+            if (outputText) {
+                const text = outputText.textContent;
+                navigator.clipboard.writeText(text).then(() => { alert("Résumé copié !"); }).catch(() => { alert("Erreur de copie."); });
+                document.getElementById('questionnairePanel').classList.remove('open');
+            }
         }
 
-// Fermer le volet en cliquant sur la croix
-        document.getElementById('closePanelBtn').addEventListener('click', function() {
-            document.getElementById('questionnairePanel').classList.remove('open');
-        });
-        function remplirListe(idB1, idB2, elementsB1, elementsB2) {
-    const container1 = document.getElementById(idB1);
-    const container2 = document.getElementById(idB2);
-    
-    // Fonction utilitaire pour créer les checkboxes
-    const creerHTML = (items) => items.map(item => 
-        `<label><input type="checkbox" value="${item}"> ${item}</label>`
-    ).join('');
-
-    if (container1) container1.innerHTML = creerHTML(elementsB1);
-    if (container2) container2.innerHTML = creerHTML(elementsB2);
-}
-window.onload = function() {
-    // 1. Remplissage des Vannes
-    remplirListe('vannes_list_b1', 'vannes_list_b2', 
-        ['Vanne 1', 'Vanne 2', 'Vanne 3'], // Tes noms pour B1
-        ['Vanne 4', 'Vanne 5', 'Vanne 6']  // Tes noms pour B2
-    );
-
-    // 2. Remplissage des Feux
-    remplirListe('feu_list_b1', 'feu_list_b2', 
-        ['Poste A', 'Poste B'], 
-        ['Poste C', 'Poste D']
-    );
-
-    // 3. Remplissage des Intrusions
-    remplirListe('intrusion_list_b1', 'intrusion_list_b2', 
-        ['S/Station Nord'], 
-        ['S/Station Sud']
-    );
-};
+        // Fermer le volet en cliquant sur la croix
+        const closeBtn = document.getElementById('closePanelBtn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                document.getElementById('questionnairePanel').classList.remove('open');
+            });
+        }
         
     </script>
 </body>
