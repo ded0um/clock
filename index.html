@@ -301,8 +301,14 @@
     }
 
     .left-zone {
-        flex: 1; /* L'horloge prend la place disponible en haut */
-        padding-bottom: 20px;
+        padding-bottom: 0; /* Réduit l'espace en bas pour remonter le tout */
+        justify-content: flex-start; /* Aligne vers le haut au lieu de centrer tout l'espace */
+        padding-top: 10vh; /* Ajoute un peu d'air en haut */
+    }
+    .date-display {
+        /* On augmente la taille minimale de la date */
+        font-size: clamp(1.2rem, 5vw, 2rem); 
+        margin-bottom: 5px;
     }
 
     .right-zone {
@@ -313,8 +319,11 @@
         overflow-y: auto;
     }
     
-    #clock {
-        font-size: 8rem; /* Réduit un peu l'horloge pour qu'elle ne déborde pas */
+#clock {
+        /* On réduit la taille max et on ajuste la hauteur de ligne */
+        font-size: clamp(5rem, 20vw, 10rem);
+        line-height: 1; /* L'horloge prendra la place exacte de ses chiffres */
+        letter-spacing: -5px;
     }
 }
 
