@@ -41,7 +41,7 @@
         cursor: pointer;
         user-select: none;
         caret-color: transparent;
-        width: 100dvh;
+        width: 100%;
     }
 
     .date-display {
@@ -228,7 +228,7 @@
         position: fixed;
         top: 0;
         right: -100dvh;
-        width: 100dvh;
+        width: 100%;
         height: 100dvh;
         background-color: var(--panel-bg);
         border-left: none;
@@ -307,14 +307,14 @@
 
     .grid-checkbox { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; }
 
-    input[type="text"], input[type="number"] { width: 100dvh; padding: 8px; border-radius: 4px; border: 1px solid #333; background-color: #1c1c1c; color: #fff; box-sizing: border-box; }
+    input[type="text"], input[type="number"] { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #333; background-color: #1c1c1c; color: #fff; box-sizing: border-box; }
     h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppercase; }
 
-    .btn-submit { background-color: #ffffff; color: #000000; border: none; padding: 12px; width: 100dvh; border-radius: 6px; font-size: 0.95rem; font-weight: bold; cursor: pointer; margin-top: 15px; transition: opacity 0.2s; }
+    .btn-submit { background-color: #ffffff; color: #000000; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 0.95rem; font-weight: bold; cursor: pointer; margin-top: 15px; transition: opacity 0.2s; }
     .btn-submit:hover { opacity: 0.9; }
     .report-result-box { margin-top: 20px; background-color: #000; border: 1px dashed #333; padding: 12px; border-radius: 6px; }
     .report-text { white-space: pre-wrap; font-family: monospace; font-size: 0.85rem; margin-bottom: 12px; max-height: 180px; overflow-y: auto; color: #ccc; }
-    .btn-copy { background-color: #222; color: #fff; border: 1px solid #333; padding: 8px; width: 100dvh; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    .btn-copy { background-color: #222; color: #fff; border: 1px solid #333; padding: 8px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; }
     .btn-copy:hover { background-color: #2a2a2a; }
     .hidden { display: none !important; }
 
@@ -370,16 +370,15 @@
         }
 
 .right-zone {
-    flex: 0 1 auto;
-    width: 100dvh;
-    border-left: none;
-    border-top: 1px solid var(--border-color);
-    max-height: 55vh;
-    padding: 20px 25px 30px;
-    box-sizing: border-box;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-}
+        flex: 0 1 auto;
+        width: 100%;       /* Au lieu de 100dvh */
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+        max-height: 55vh;
+        padding: 20px 25px 30px;
+        box-sizing: border-box; /* Crucial pour inclure le padding dans la largeur */
+        overflow-y: auto;
+    }
 
         #clock {
             font-size: clamp(5rem, 20vw, 10rem);
