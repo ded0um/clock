@@ -963,6 +963,26 @@
     if (container1) container1.innerHTML = creerHTML(elementsB1);
     if (container2) container2.innerHTML = creerHTML(elementsB2);
 }
+window.onload = function() {
+    // 1. Remplissage des Vannes
+    remplirListe('vannes_list_b1', 'vannes_list_b2', 
+        ['Vanne 1', 'Vanne 2', 'Vanne 3'], // Tes noms pour B1
+        ['Vanne 4', 'Vanne 5', 'Vanne 6']  // Tes noms pour B2
+    );
+
+    // 2. Remplissage des Feux
+    remplirListe('feu_list_b1', 'feu_list_b2', 
+        ['Poste A', 'Poste B'], 
+        ['Poste C', 'Poste D']
+    );
+
+    // 3. Remplissage des Intrusions
+    remplirListe('intrusion_list_b1', 'intrusion_list_b2', 
+        ['S/Station Nord'], 
+        ['S/Station Sud']
+    );
+};
+        
     </script>
 </body>
 </html>
