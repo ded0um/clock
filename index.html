@@ -19,9 +19,10 @@
             color: var(--text-color);
             margin: 0;
             padding: 0;
-            height: 100vh;
+            height: 100dvh;
             display: flex;
             overflow: hidden;
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         /* --- ZONE GAUCHE : HORLOGE (2/3) --- */
@@ -145,7 +146,7 @@
         /* --- CONTRÔLES ANCRÉS EN HAUT À DROITE DE L'HORLOGE --- */
         .top-controls {
             position: absolute;
-            top: 20px;
+            top: calc(20px + env(safe-area-inset-top));
             right: 20px;
             display: flex;
             align-items: center;
@@ -189,7 +190,7 @@
         /* BOUTON REHAUSSÉ */
         .icon-btn {
             position: absolute;
-            bottom: 80px;
+            bottom: bottom: calc(80px + env(safe-area-inset-bottom));
             right: 30px;
             background: none;
             border: none;
