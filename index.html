@@ -290,6 +290,39 @@
         .btn-copy { background-color: #222; color: #fff; border: 1px solid #333; padding: 8px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; }
         .btn-copy:hover { background-color: #2a2a2a; }
         .hidden { display: none !important; }
+
+@media (max-width: 600px) {
+    /* On force la colonne à prendre toute la place si elle est ouverte */
+    .right-zone {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100dvh;
+        z-index: 20; /* Pour passer au-dessus de tout */
+        background-color: #000; /* Fond noir plein pour la lisibilité */
+    }
+
+    /* On cache la colonne quand elle est "collapsed" */
+    .right-zone.collapsed {
+        display: none;
+    }
+
+    /* Augmenter la taille du texte pour une meilleure lecture mobile */
+    .night-task-item {
+        font-size: 1.2rem;
+        padding: 20px;
+    }
+    .toggle-tasks-btn {
+        font-size: 2rem; /* Plus gros */
+        padding: 20px;   /* Plus facile à viser */
+    }
+
+    
+}
+
+
+        
     </style>
 </head>
 <body>
