@@ -857,59 +857,53 @@
         }
 
       // --- INJECTION ÉLÉMENTS FORMULAIRE ---
-        const vannesList = document.getElementById('vannes_list');
-        const feuPosteList = document.getElementById('feu_poste_list');
-        const intrusionList = document.getElementById('intrusion_list');
+function injecterBat1(conteneur, prefixe) {
+    if (!conteneur) return;
+    let html = '';
+    for(let i = 1; i <= 12; i++) {
+        html += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} b1</label>`;
+    }
+    html += `<label><input type="checkbox" value="${prefixe} A air n13 bat1"> n13 air</label>`;
+    for(let i = 14; i <= 18; i++) {
+        html += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} b1</label>`;
+    }
+    conteneur.innerHTML = html;
+}
 
-        function injecterPostesEtBatiments(conteneurHTML, prefixe) {
-            if (!conteneurHTML) return; // Sécurité si l'élément n'existe pas
-            
-            let html = `<div class="building-separator">--- Bâtiment 1 ---</div>`;
-            
-            // Bâtiment 1 : n1 à n12
-            for(let i = 1; i <= 12; i++) {
-                html += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} b1</label>`;
-            }
-            // Bâtiment 1 : n13 air
-            html += `<label><input type="checkbox" value="${prefixe} A air n13 bat1"> n13 air</label>`;
-            // Bâtiment 1 : n14 à n18
-            for(let i = 14; i <= 18; i++) {
-                html += `<label><input type="checkbox" value="${prefixe} n${i} bat1"> n${i} b1</label>`;
-            }
-            
-            html += `<div class="building-separator">--- Bâtiment 2 ---</div>`;
-            
-            // Bâtiment 2 : n1 à n9
-            for(let i = 1; i <= 9; i++) {
-                html += `<label><input type="checkbox" value="${prefixe} n${i} bat2"> n${i} b2</label>`;
-            }
-            
-            // On injecte tout en une seule fois (meilleures performances et pas de bug d'affichage)
-            conteneurHTML.innerHTML = html;
-        }
+function injecterBat2(conteneur, prefixe) {
+    if (!conteneur) return;
+    let html = '';
+    for(let i = 1; i <= 9; i++) {
+        html += `<label><input type="checkbox" value="${prefixe} n${i} bat2"> n${i} b2</label>`;
+    }
+    conteneur.innerHTML = html;
+}
 
-        function injecterIntrusions(conteneurHTML) {
-            if (!conteneurHTML) return;
+function injecterIntrusionBat1(conteneur) {
+    if (!conteneur) return;
+    let html = '';
+    for(let i = 1; i <= 9; i++) {
+        html += `<label><input type="checkbox" value="Intrusion s/station n${i} bat1"> n${i} b1</label>`;
+    }
+    conteneur.innerHTML = html;
+}
 
-            let html = `<div class="building-separator">--- Bâtiment 1 ---</div>`;
-            
-            for(let i = 1; i <= 9; i++) {
-                html += `<label><input type="checkbox" value="Intrusion s/station n${i} bat1"> n${i} b1</label>`;
-            }
-            
-            html += `<div class="building-separator">--- Bâtiment 2 ---</div>`;
-            
-            for(let i = 1; i <= 4; i++) {
-                html += `<label><input type="checkbox" value="Intrusion s/station n${i} bat2"> n${i} b2</label>`;
-            }
-            
-            conteneurHTML.innerHTML = html;
-        }
+function injecterIntrusionBat2(conteneur) {
+    if (!conteneur) return;
+    let html = '';
+    for(let i = 1; i <= 4; i++) {
+        html += `<label><input type="checkbox" value="Intrusion s/station n${i} bat2"> n${i} b2</label>`;
+    }
+    conteneur.innerHTML = html;
+}
 
-        // Lancement des injections
-        injecterPostesEtBatiments(vannesList, "Défaut vanne poste");
-        injecterPostesEtBatiments(feuPosteList, "Feu poste de controle");
-        injecterIntrusions(intrusionList);
+// Lancement des injections
+injecterBat1(document.getElementById('vannes_list_b1'), "Défaut vanne poste");
+injecterBat2(document.getElementById('vannes_list_b2'), "Défaut vanne poste");
+injecterBat1(document.getElementById('feu_list_b1'), "Feu poste de controle");
+injecterBat2(document.getElementById('feu_list_b2'), "Feu poste de controle");
+injecterIntrusionBat1(document.getElementById('intrusion_list_b1'));
+injecterIntrusionBat2(document.getElementById('intrusion_list_b2'));
 
 
         // --- COMPILATION DU RAPPORT ---
@@ -959,7 +953,12 @@
                 let txt = `REPORT SPRINKLER\n`;
                 let v = getChecked('sprinkler_voyants');
                 let valHs = document.getElementById('pts_hs') ? parseInt(document.getElementById('pts_hs').value, 10) || 0 : 0;
-                let al = [...getChecked('vannes_list'), ...getChecked('feu_poste_list'), ...getChecked('intrusion_list'), ...getChecked('alarmes_diverses')];
+               let al = [
+    ...getChecked('vannes_list_b1'), ...getChecked('vannes_list_b2'),
+    ...getChecked('feu_list_b1'), ...getChecked('feu_list_b2'),
+    ...getChecked('intrusion_list_b1'), ...getChecked('intrusion_list_b2'),
+    ...getChecked('alarmes_diverses')
+];
                 if(v.length) txt += `- Voyants allumés :\n` + v.map(x => ` --- ${x}`).join('\n') + '\n';
                 if(valHs > 0) txt += `- Nombre total de points hors service=${valHs} (sans libellé)\n`;
                 if(al.length) txt += `- Alarmes / États :\n` + al.map(x => ` --- ${x}`).join('\n') + '\n';
