@@ -377,7 +377,7 @@
         max-height: 55vh;
         padding: 20px 25px 30px;
         box-sizing: border-box; /* Crucial pour inclure le padding dans la largeur */
-        overflow-y: auto;
+        overflow-y: hidden;
     }
 
         #clock {
@@ -395,6 +395,12 @@
             width: 50px;
             height: 50px;
         }
+.night-tasks {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: none; /* Cache la barre Firefox */
+}
+        
     }
 </style>
 </head>
