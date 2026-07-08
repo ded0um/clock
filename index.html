@@ -951,7 +951,18 @@
         document.getElementById('closePanelBtn').addEventListener('click', function() {
             document.getElementById('questionnairePanel').classList.remove('open');
         });
-        
+        function remplirListe(idB1, idB2, elementsB1, elementsB2) {
+    const container1 = document.getElementById(idB1);
+    const container2 = document.getElementById(idB2);
+    
+    // Fonction utilitaire pour créer les checkboxes
+    const creerHTML = (items) => items.map(item => 
+        `<label><input type="checkbox" value="${item}"> ${item}</label>`
+    ).join('');
+
+    if (container1) container1.innerHTML = creerHTML(elementsB1);
+    if (container2) container2.innerHTML = creerHTML(elementsB2);
+}
     </script>
 </body>
 </html>
