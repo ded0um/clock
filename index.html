@@ -26,16 +26,21 @@
     }
 /* Correction pour le panneau météo à gauche */
 #weatherPanel {
+    position: fixed; /* Très important pour ne pas décaler les autres éléments */
+    top: 0;
     left: 0;
-    right: auto;
-    border-left: none;
+    width: 420px; /* Ou 100% sur mobile */
+    height: 100dvh;
+    background-color: var(--panel-bg);
     border-right: 1px solid var(--border-color);
-    transform: translateX(-100%); /* Départ hors écran à gauche */
-    z-index: 20;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.7);
+    transform: translateX(-100%);
+    transition: transform 0.4s cubic-bezier(0.05, 0.74, 0.2, 1);
+    z-index: 1000; /* Assure qu'il est au-dessus de tout */
 }
 
 #weatherPanel.open {
-    transform: translateX(0); /* Arrivée à gauche */
+    transform: translateX(0);
 }
 
 /* Style des cartes météo */
@@ -64,6 +69,7 @@
         user-select: none;
         caret-color: transparent;
         width: 100%;
+        position: relative;
     }
 
     .date-display {
