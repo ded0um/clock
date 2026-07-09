@@ -24,8 +24,18 @@
         overflow: hidden;
         padding-bottom: env(safe-area-inset-bottom);
     }
-/* Pour que le panneau météo s'ouvre à gauche */
-#weatherPanel.open { transform: translateX(0); }
+/* Correction pour le panneau météo à gauche */
+#weatherPanel {
+    left: 0;
+    right: auto;
+    border-left: none;
+    border-right: 1px solid var(--border-color);
+    transform: translateX(-100%); /* Départ hors écran à gauche */
+}
+
+#weatherPanel.open {
+    transform: translateX(0); /* Arrivée à gauche */
+}
 
 /* Style des cartes météo */
 .weather-card {
