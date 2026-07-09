@@ -409,6 +409,17 @@
 <body>
 
     <!-- ZONE DE GAUCHE : HORLOGE + BOUTONS FIXES -->
+    <div class="side-panel" id="weatherPanel" style="left: 0; right: auto; transform: translateX(-100%);">
+        <div class="panel-content">
+            <div class="panel-header">
+                <h2>MÉTÉO (12H)</h2>
+                <button id="closeWeatherBtn" class="close-panel-btn" title="Fermer">✖</button>
+            </div>
+            <div id="weather-list" style="display: flex; flex-direction: column; gap: 10px;">
+                Chargement météo...
+            </div>
+        </div>
+    </div>
     <div class="left-zone" id="mainClickZone">
         
         <div class="top-controls">
@@ -618,17 +629,7 @@
             </div>
         </div>
     </div>
-<div class="side-panel" id="weatherPanel" style="left: 0; right: auto; transform: translateX(-100%);">
-        <div class="panel-content">
-            <div class="panel-header">
-                <h2>MÉTÉO (12H)</h2>
-                <button id="closeWeatherBtn" class="close-panel-btn" title="Fermer">✖</button>
-            </div>
-            <div id="weather-list" style="display: flex; flex-direction: column; gap: 10px;">
-                Chargement météo...
-            </div>
-        </div>
-    </div>
+
     <script>
         // --- CONFIGURATION TÂCHES ---
         const tachesDeNuit = [
