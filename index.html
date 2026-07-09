@@ -353,7 +353,7 @@
         color: #fff;
         background-color: rgba(255, 255, 255, 0.1);
     }
-#weatherPanel.open { transform: translateX(0); }
+
     @media (max-width: 768px) {
         body {
             flex-direction: column;
@@ -409,17 +409,6 @@
 <body>
 
     <!-- ZONE DE GAUCHE : HORLOGE + BOUTONS FIXES -->
-    <div class="side-panel" id="weatherPanel" style="left: 0; right: auto; transform: translateX(-100%);">
-        <div class="panel-content">
-            <div class="panel-header">
-                <h2>MÉTÉO (12H)</h2>
-                <button id="closeWeatherBtn" class="close-panel-btn" title="Fermer">✖</button>
-            </div>
-            <div id="weather-list" style="display: flex; flex-direction: column; gap: 10px;">
-                Chargement météo...
-            </div>
-        </div>
-    </div>
     <div class="left-zone" id="mainClickZone">
         
         <div class="top-controls">
@@ -432,11 +421,7 @@
         
         <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports">📝</button>
     </div>
-<div class="left-zone" id="mainClickZone">
-    <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports">📝</button>
-    
-    <button class="icon-btn" id="toggleWeatherBtn" title="Météo heure par heure" style="right: 80px;">🌤️</button>
-</div>
+
     <!-- ZONE DE DROITE : LISTE DES TÂCHES CONTEXTUELLES -->
     <div class="right-zone" id="tasksZone">
         <div class="tasks-header-container">
@@ -1038,14 +1023,7 @@ injecterIntrusionBat2(document.getElementById('intrusion_list_b2'));
                 document.getElementById('questionnairePanel').classList.remove('open');
             });
         }
-        document.getElementById('toggleWeatherBtn').addEventListener('click', () => {
-    document.getElementById('weatherPanel').classList.add('open');
-    fetchWeather(); // Appel de votre fonction de récupération API
-});
-
-document.getElementById('closeWeatherBtn').addEventListener('click', () => {
-    document.getElementById('weatherPanel').classList.remove('open');
-});
+        
     </script>
 </body>
 </html>
