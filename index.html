@@ -24,7 +24,18 @@
         overflow: hidden;
         padding-bottom: env(safe-area-inset-bottom);
     }
+/* Pour que le panneau météo s'ouvre à gauche */
+#weatherPanel.open { transform: translateX(0); }
 
+/* Style des cartes météo */
+.weather-card {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: #1a1a1a;
+    border-radius: 6px;
+    border: 1px solid #333;
+}
     /* --- ZONE GAUCHE : HORLOGE --- */
     .left-zone {
         flex: 1 1 auto;
@@ -1034,7 +1045,44 @@ injecterIntrusionBat2(document.getElementById('intrusion_list_b2'));
                 document.getElementById('questionnairePanel').classList.remove('open');
             });
         }
-        
+        // Configuration de votre lieu (exemple: Flesselles)
+const LAT = 49.95;
+const LON = 2.27;
+
+async function fetchWeather() {
+    try {
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&hourly=temperature_2m,precipitation_probability&forecast_hours=12`);
+        const data = await response.json();
+        const container = document.getElementById('weather-list');
+        container.innerHTML = '';
+
+        for (let i = 0; i < 12; i++) {
+            const time = new Date(data.hourly.time[i]).getHours() + "h";
+            const temp = data.hourly.temperature_2m[i];
+            const precip = data.hourly.precipitation_probability[i];
+            
+            container.innerHTML += `
+                <div class="weather-card">
+                    <span>${time}</span>
+                    <span>${temp}°C</span>
+                    <span>💧 ${precip}%</span>
+                </div>
+            `;
+        }
+    } catch (e) {
+        document.getElementById('weather-list').innerHTML = "Erreur de chargement";
+    }
+}
+
+// Gestion des clics
+document.getElementById('toggleWeatherBtn').addEventListener('click', () => {
+    document.getElementById('weatherPanel').classList.add('open');
+    fetchWeather();
+});
+
+document.getElementById('closeWeatherBtn').addEventListener('click', () => {
+    document.getElementById('weatherPanel').classList.remove('open');
+});
     </script>
 </body>
 </html>
