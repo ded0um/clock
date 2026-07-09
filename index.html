@@ -430,7 +430,95 @@
     overflow-y: auto;
     scrollbar-width: none; /* Cache la barre Firefox */
 }
-        
+      .weather-panel{
+
+    position:fixed;
+
+    top:0;
+
+    left:-340px;
+
+    width:320px;
+
+    height:100%;
+
+    background:#1b1b1b;
+
+    color:white;
+
+    transition:left .35s ease;
+
+    z-index:1500;
+
+    overflow-y:auto;
+
+    box-shadow:5px 0 15px rgba(0,0,0,.4);
+
+}
+
+.weather-panel.open{
+
+    left:0;
+
+}
+
+.weather-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:15px;
+
+    background:#2a2a2a;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+}
+
+.weather-hour{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:12px;
+
+    border-bottom:1px solid #444;
+
+}
+
+.weather-hour span{
+
+    font-size:15px;
+
+}
+
+.weather-hour:hover{
+
+    background:#333;
+
+}
+
+#closeWeatherBtn{
+
+    background:none;
+
+    border:none;
+
+    color:white;
+
+    font-size:22px;
+
+    cursor:pointer;
+
+}  
     }
 </style>
 </head>
@@ -456,7 +544,7 @@
 
         <div class="date-display" id="date-label">Chargement...</div>
         <div id="clock">00:00</div>
-        
+        <button id="toggleWeatherBtn" class="floating-btn">☁</button>
         <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports">📝</button>
         <button class="icon-btn" id="toggleWeatherBtn" title="Météo heure par heure" style="right: 80px;">🌤️</button>
     </div>
@@ -469,7 +557,21 @@
         </div>
         <div class="night-tasks" id="night-tasks"></div>
     </div>
+<div id="weatherPanel" class="weather-panel">
 
+    <div class="weather-header">
+        <span>Météo - 12 prochaines heures</span>
+
+        <button id="closeWeatherBtn">✕</button>
+    </div>
+
+    <div id="weatherContent">
+
+        Chargement...
+
+    </div>
+
+</div>
     <!-- VOLET COULISSANT DE RAPPORT -->
     <div class="side-panel" id="questionnairePanel">
         <div class="panel-content">
@@ -889,7 +991,26 @@
         document.addEventListener('visibilitychange', () => { 
             if (document.visibilityState === 'visible') requestWakeLock(); 
         });
+const weatherPanel=document.getElementById("weatherPanel");
 
+const weatherBtn=document.getElementById("toggleWeatherBtn");
+
+const weatherClose=document.getElementById("closeWeatherBtn");
+        weatherBtn.addEventListener("click",(e)=>{
+
+    e.stopPropagation();
+
+    weatherPanel.classList.toggle("open");
+
+    chargerMeteo();
+
+});
+
+weatherClose.addEventListener("click",()=>{
+
+    weatherPanel.classList.remove("open");
+
+});
         // --- GESTION FORMULAIRE DROP-DOWN ---
         const panel = document.getElementById('questionnairePanel');
         const toggleBtn = document.getElementById('togglePanelBtn');
@@ -1106,6 +1227,102 @@ document.getElementById('toggleWeatherBtn').addEventListener('click', () => {
 document.getElementById('closeWeatherBtn').addEventListener('click', () => {
     document.getElementById('weatherPanel').classList.remove('open');
 });
+        const weatherIcons={
+
+0:"☀️",
+
+1:"🌤️",
+
+2:"⛅",
+
+3:"☁️",
+
+45:"🌫️",
+
+48:"🌫️",
+
+51:"🌦️",
+
+53:"🌦️",
+
+55:"🌧️",
+
+61:"🌧️",
+
+63:"🌧️",
+
+65:"🌧️",
+
+71:"🌨️",
+
+73:"❄️",
+
+75:"❄️",
+
+80:"🌦️",
+
+81:"🌧️",
+
+82:"⛈️",
+
+95:"⛈️"
+
+};
+
+async function chargerMeteo(){
+
+navigator.geolocation.getCurrentPosition(async(pos)=>{
+
+const lat=pos.coords.latitude;
+
+const lon=pos.coords.longitude;
+
+const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weather_code,precipitation_probability,wind_speed_10m&forecast_days=1`;
+
+const rep=await fetch(url);
+
+const data=await rep.json();
+
+const now=new Date();
+
+const heureActuelle=now.getHours();
+
+let html="";
+
+for(let i=heureActuelle;i<heureActuelle+12;i++){
+
+html+=`
+
+<div class="weather-hour">
+
+<span>${data.hourly.time[i].substring(11,16)}</span>
+
+<span>${weatherIcons[data.hourly.weather_code[i]] || "❔"}</span>
+
+<span>${data.hourly.temperature_2m[i]}°C</span>
+
+<span>🌧 ${data.hourly.precipitation_probability[i]}%</span>
+
+<span>💨 ${Math.round(data.hourly.wind_speed_10m[i])} km/h</span>
+
+</div>
+
+`;
+
+}
+
+document.getElementById("weatherContent").innerHTML=html;
+
+});
+
+}
+        setInterval(()=>{
+
+if(weatherPanel.classList.contains("open"))
+
+chargerMeteo();
+
+},900000);
     </script>
 </body>
 </html>
