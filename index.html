@@ -407,7 +407,17 @@
 </style>
 </head>
 <body>
-
+<div class="side-panel" id="weatherPanel" style="left: 0; right: auto; transform: translateX(-100%);">
+    <div class="panel-content">
+        <div class="panel-header">
+            <h2>MÉTÉO (12H)</h2>
+            <button id="closeWeatherBtn" class="close-panel-btn">✖</button>
+        </div>
+        <div id="weather-list" style="display: flex; flex-direction: column; gap: 10px;">
+            Chargement météo...
+        </div>
+    </div>
+</div>
     <!-- ZONE DE GAUCHE : HORLOGE + BOUTONS FIXES -->
     <div class="left-zone" id="mainClickZone">
         
@@ -420,6 +430,7 @@
         <div id="clock">00:00</div>
         
         <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports">📝</button>
+        <button class="icon-btn" id="toggleWeatherBtn" title="Météo heure par heure" style="right: 80px;">🌤️</button>
     </div>
 
     <!-- ZONE DE DROITE : LISTE DES TÂCHES CONTEXTUELLES -->
