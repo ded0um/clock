@@ -1074,10 +1074,9 @@ async function fetchWeather() {
     }
 }
 
-// Gestion des clics
 document.getElementById('toggleWeatherBtn').addEventListener('click', () => {
     document.getElementById('weatherPanel').classList.add('open');
-    fetchWeather();
+    fetchWeather(); // Appel de votre fonction de récupération API
 });
 
 document.getElementById('closeWeatherBtn').addEventListener('click', () => {
