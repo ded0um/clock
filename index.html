@@ -971,8 +971,9 @@ function afficherMeteo(data) {
     const now = new Date();
     const { time, temperature_2m: temps, weathercode: codes, precipitation_probability: pluies, wind_speed_10m: vents } = data.hourly;
 
-    let indexActuel = time.findIndex(t => new Date(t) >= now);
-    if (indexActuel === -1) indexActuel = 0;
+    // Le créneau "actuel" est celui de l'heure en cours (ex: 21h28 -> créneau 21h00), pas le prochain
+    let indexFutur = time.findIndex(t => new Date(t) > now);
+    let indexActuel = indexFutur === -1 ? time.length - 1 : Math.max(0, indexFutur - 1);
     // On démarre 1h avant le créneau actuel
     let start = Math.max(0, indexActuel - 1);
 
