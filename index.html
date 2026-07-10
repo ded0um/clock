@@ -363,6 +363,27 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
 .report-text { white-space: pre-wrap; font-family: monospace; font-size: 0.85rem; margin-bottom: 12px; max-height: 180px; overflow-y: auto; color: #ccc; }
 .btn-copy { background-color: #222; color: #fff; border: 1px solid #333; padding: 8px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; }
 .btn-copy:hover { background-color: #2a2a2a; }
+.icon-btn svg, .toggle-tasks-btn svg, .close-panel-btn svg {
+    width: 26px;
+    height: 26px;
+    stroke: currentColor;
+    fill: none;
+    display: block;
+}
+.weather-hour-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke: #e8e8e8;
+    fill: none;
+}
+.weather-hour-rain svg, .weather-hour-wind svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    vertical-align: middle;
+    margin-right: 2px;
+}
 .hidden { display: none !important; }
 
 /* --- EN-TÊTE DU VOLET --- */
@@ -477,7 +498,7 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
     <div class="panel-content">
         <div class="panel-header">
             <h2>MÉTÉO — 12H</h2>
-            <button id="closeWeatherBtn" class="close-panel-btn" title="Fermer">◀</button>
+            <button id="closeWeatherBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg></button>
         </div>
         <div id="weatherHourlyList">Chargement...</div>
     </div>
@@ -494,15 +515,15 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
     </div>
     <div class="date-display" id="date-label">Chargement...</div>
     <div id="clock">00:00</div>
-    <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports">📝</button>
-    <button class="icon-btn icon-btn-secondary" id="toggleWeatherBtn" title="Météo">🌤️</button>
+    <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 3h6v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V3z"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg></button>
+    <button class="icon-btn icon-btn-secondary" id="toggleWeatherBtn" title="Météo"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="8" r="3.2"/><line x1="16" y1="2.3" x2="16" y2="1"/><line x1="21" y1="8" x2="22.3" y2="8"/><line x1="19.6" y1="4.4" x2="20.5" y2="3.5"/><path d="M6 19a4 4 0 0 1-.6-7.95A5 5 0 0 1 15 9.5"/><path d="M6 19h11a3.5 3.5 0 0 0 .3-6.98"/></svg></button>
 </div>
 
 <!-- ZONE DE DROITE : LISTE DES TÂCHES CONTEXTUELLES -->
 <div class="right-zone" id="tasksZone">
     <div class="tasks-header-container">
         <h2>Tâches</h2>
-        <button class="toggle-tasks-btn" id="toggleTasksBtn" title="Masquer les tâches">▶</button>
+        <button class="toggle-tasks-btn" id="toggleTasksBtn" title="Masquer les tâches"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button>
     </div>
     <div class="night-tasks" id="night-tasks"></div>
 </div>
@@ -512,7 +533,7 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
     <div class="panel-content">
         <div class="panel-header">
             <h2>ÉTAT DES REPORTS</h2>
-            <button id="closePanelBtn" class="close-panel-btn" title="Fermer et revenir à l'horloge">▶</button>
+            <button id="closePanelBtn" class="close-panel-btn" title="Fermer et revenir à l'horloge"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button>
         </div>
 
         <!-- REPORT SSI BAT1 -->
@@ -920,6 +941,7 @@ const weatherPanel = document.getElementById('weatherPanel');
 const toggleWeatherBtn = document.getElementById('toggleWeatherBtn');
 const closeWeatherBtn = document.getElementById('closeWeatherBtn');
 let meteoDejaChargee = false;
+let dernieresDonneesMeteo = null;
 
 toggleWeatherBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -937,12 +959,48 @@ closeWeatherBtn.addEventListener('click', (e) => {
 });
 weatherPanel.addEventListener('click', (e) => e.stopPropagation());
 
-const meteoIcones = {
-    0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',
-    51:'🌦️',53:'🌦️',55:'🌦️',61:'🌧️',63:'🌧️',65:'🌧️',
-    71:'🌨️',73:'🌨️',75:'🌨️',80:'🌦️',81:'🌧️',82:'⛈️',
-    95:'⛈️',96:'⛈️',99:'⛈️'
+const iconsMeteo = {
+    sun: '<svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.5" y1="4.5" x2="6.2" y2="6.2"/><line x1="17.8" y1="17.8" x2="19.5" y2="19.5"/><line x1="4.5" y1="19.5" x2="6.2" y2="17.8"/><line x1="17.8" y1="6.2" x2="19.5" y2="4.5"/></svg>',
+    moon: '<svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>',
+    cloud: '<svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4 4 0 0 1-.5-7.97A5 5 0 0 1 16 8.5a3.7 3.7 0 0 1 1 7.3"/><path d="M7 18h9.3"/></svg>',
+    cloudSun: '<svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="7" r="2.6"/><line x1="16" y1="2" x2="16" y2="1"/><line x1="21" y1="7" x2="22.2" y2="7"/><line x1="19.3" y1="4" x2="20.1" y2="3.2"/><path d="M6 19a4 4 0 0 1-.6-7.95A5 5 0 0 1 15 9.4"/><path d="M6 19h11.3a3.5 3.5 0 0 0 .3-6.98"/></svg>',
+    cloudMoon: '<svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 8.3A4.3 4.3 0 1 1 14.8 3a3.4 3.4 0 0 0 4.2 5.3z"/><path d="M6 19a4 4 0 0 1-.6-7.95A5 5 0 0 1 15 9.4"/><path d="M6 19h11.3a3.5 3.5 0 0 0 .3-6.98"/></svg>',
+    cloudDrizzle: '<svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15a4 4 0 0 1-.5-7.97A5 5 0 0 1 15 5.5a3.7 3.7 0 0 1 1 7.3"/><path d="M6 15h9.3"/><line x1="8" y1="18.5" x2="8" y2="19.5"/><line x1="12" y1="18.5" x2="12" y2="19.5"/><line x1="16" y1="18.5" x2="16" y2="19.5"/><line x1="8" y1="21.5" x2="8" y2="22"/><line x1="16" y1="21.5" x2="16" y2="22"/></svg>',
+    cloudRain: '<svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14a4 4 0 0 1-.5-7.97A5 5 0 0 1 15 4.5a3.7 3.7 0 0 1 1 7.3"/><path d="M6 14h9.3"/><line x1="7.5" y1="17" x2="6.5" y2="20"/><line x1="12" y1="17" x2="11" y2="20"/><line x1="16.5" y1="17" x2="15.5" y2="20"/></svg>',
+    cloudSnow: '<svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14a4 4 0 0 1-.5-7.97A5 5 0 0 1 15 4.5a3.7 3.7 0 0 1 1 7.3"/><path d="M6 14h9.3"/><line x1="8" y1="18" x2="8" y2="21"/><line x1="6.7" y1="18.7" x2="9.3" y2="20.3"/><line x1="9.3" y1="18.7" x2="6.7" y2="20.3"/><line x1="15" y1="18" x2="15" y2="21"/><line x1="13.7" y1="18.7" x2="16.3" y2="20.3"/><line x1="16.3" y1="18.7" x2="13.7" y2="20.3"/></svg>',
+    cloudLightning: '<svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13a4 4 0 0 1-.5-7.97A5 5 0 0 1 15 3.5a3.7 3.7 0 0 1 1 7.3"/><path d="M6 13h9.3"/><polyline points="12.5 15.5 9.5 20 12 20 10.5 23.5"/></svg>',
+    fog: '<svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="9" ry="6"/><line x1="6" y1="9" x2="10" y2="9" transform="rotate(20 8 9)"/><line x1="9" y1="12" x2="15" y2="12" transform="rotate(20 12 12)"/><line x1="7" y1="15" x2="13" y2="15" transform="rotate(20 10 15)"/></svg>'
 };
+
+function getWeatherIcon(code, estJour) {
+    switch (code) {
+        case 0: return estJour ? iconsMeteo.sun : iconsMeteo.moon;
+        case 1:
+        case 2: return estJour ? iconsMeteo.cloudSun : iconsMeteo.cloudMoon;
+        case 3: return iconsMeteo.cloud;
+        case 45:
+        case 48: return iconsMeteo.fog;
+        case 51:
+        case 53:
+        case 55: return iconsMeteo.cloudDrizzle;
+        case 61:
+        case 63:
+        case 65:
+        case 80:
+        case 81:
+        case 82: return iconsMeteo.cloudRain;
+        case 71:
+        case 73:
+        case 75: return iconsMeteo.cloudSnow;
+        case 95:
+        case 96:
+        case 99: return iconsMeteo.cloudLightning;
+        default: return iconsMeteo.cloud;
+    }
+}
+
+const iconGoutte = '<svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 7 6 11.5A6 6 0 0 1 6 14.5C6 10 12 3 12 3z"/></svg>';
+const iconVent = '<svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a2.5 2.5 0 1 0-2.2-3.7"/><path d="M3 13h15a2.5 2.5 0 1 1-2.2 3.7"/><path d="M3 18h9"/></svg>';
 
 function chargerMeteo() {
     // Lieu fixe : Poulainville (W7VP+GRX)
@@ -959,6 +1017,7 @@ function fetchMeteo(lat, lon) {
         })
         .then(data => {
             if (data.error) throw new Error(data.reason || 'Erreur API');
+            dernieresDonneesMeteo = data;
             afficherMeteo(data);
         })
         .catch(err => {
@@ -979,20 +1038,32 @@ function afficherMeteo(data) {
 
     let html = '';
     for (let i = start; i < start + 13 && i < time.length; i++) {
-        const heure = new Date(time[i]).toLocaleTimeString('fr-FR', { hour: '2-digit' });
+        const dateHeure = new Date(time[i]);
+        const heure = dateHeure.toLocaleTimeString('fr-FR', { hour: '2-digit' });
         const estActuel = i === indexActuel;
+        const estJour = dateHeure.getHours() >= 7 && dateHeure.getHours() < 21;
         const pluie = (pluies && pluies[i] !== undefined) ? `${pluies[i]}%` : '—';
-        const vent = (vents && vents[i] !== undefined) ? `${Math.round(vents[i])} km/h` : '—';
+        const vent = (vents && vents[i] !== undefined) ? `${Math.round(vents[i])}` : '—';
         html += `<div class="weather-hour-item${estActuel ? ' current-hour' : ''}">
             <span class="weather-hour-time">${heure}</span>
-            <span class="weather-hour-icon">${meteoIcones[codes[i]] || '🌡️'}</span>
+            <span class="weather-hour-icon">${getWeatherIcon(codes[i], estJour)}</span>
             <span class="weather-hour-temp">${Math.round(temps[i])}°C</span>
-            <span class="weather-hour-rain">💧${pluie}</span>
-            <span class="weather-hour-wind">💨${vent}</span>
+            <span class="weather-hour-rain">${iconGoutte}${pluie}</span>
+            <span class="weather-hour-wind">${iconVent}${vent}</span>
         </div>`;
     }
     list.innerHTML = html;
 }
+
+// Rafraîchit juste la mise en évidence du créneau actuel, chaque minute (sans re-télécharger)
+setInterval(() => {
+    if (dernieresDonneesMeteo) afficherMeteo(dernieresDonneesMeteo);
+}, 60 * 1000);
+
+// Recharge les données fraîches toutes les 30 minutes (si la météo a déjà été ouverte au moins une fois)
+setInterval(() => {
+    if (meteoDejaChargee) chargerMeteo();
+}, 30 * 60 * 1000);
 
 // --- GESTION FORMULAIRE DROP-DOWN ---
 const panel = document.getElementById('questionnairePanel');
