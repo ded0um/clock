@@ -340,8 +340,8 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 12px;
     width: 100%;
-    max-width: 480px;
-    max-height: 80vh;
+    max-width: 860px;
+    max-height: 85vh;
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -352,6 +352,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    flex-shrink: 0;
 }
 .alarm-modal-header h2 {
     margin: 0;
@@ -359,6 +360,28 @@ body {
     color: #888;
     text-transform: uppercase;
     letter-spacing: 1px;
+}
+.alarm-modal-columns {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+    min-height: 0;
+}
+.alarm-col-search, .alarm-col-selection {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+.alarm-col-search { border-right: 1px solid var(--border-color); padding-right: 20px; }
+.alarm-col-title {
+    font-size: 0.75rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    flex-shrink: 0;
 }
 .alarm-search-input {
     width: 100%;
@@ -370,6 +393,7 @@ body {
     font-size: 1rem;
     margin-bottom: 15px;
     box-sizing: border-box;
+    flex-shrink: 0;
 }
 .alarm-results-list {
     overflow-y: auto;
@@ -386,18 +410,73 @@ body {
 }
 .alarm-result-item:hover, .alarm-result-item.selected { background-color: #1c1c1c; color: #fff; }
 .alarm-no-result { color: #666; font-size: 0.9rem; padding: 10px 8px; }
-.alarm-answer-box {
-    display: none;
-    margin-top: 15px;
-    padding: 15px;
+
+.alarm-multi-results {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+.alarm-multi-empty { color: #555; font-size: 0.85rem; padding: 10px 0; }
+.alarm-multi-item {
     background: #141414;
     border: 1px solid #2a2a2a;
     border-radius: 8px;
+    padding: 12px 14px;
+    position: relative;
     flex-shrink: 0;
 }
-.alarm-answer-box.show { display: block; }
-.alarm-answer-title { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-.alarm-answer-lieu { font-size: 1.3rem; font-weight: bold; color: var(--yellow-led); }
+.alarm-multi-nom {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 4px;
+    padding-right: 24px;
+}
+.alarm-multi-zone {
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 8px;
+}
+.alarm-multi-lieu {
+    font-size: 0.95rem;
+    color: var(--yellow-led);
+    font-weight: bold;
+    line-height: 1.4;
+}
+.alarm-multi-remove {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+}
+.alarm-multi-remove:hover { color: #fff; }
+.alarm-multi-remove svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
+
+@media (max-width: 768px) {
+    .alarm-modal-box { max-height: 90vh; padding: 15px; }
+    .alarm-modal-columns { flex-direction: column; gap: 0; overflow: hidden; }
+    .alarm-col-search {
+        border-right: none;
+        padding-right: 0;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 12px;
+        margin-bottom: 12px;
+        flex: 1 1 35%;
+        min-height: 0;
+    }
+    .alarm-results-list { flex: 1; min-height: 0; max-height: none; }
+    .alarm-col-selection { flex: 1 1 65%; min-height: 0; }
+    .alarm-multi-results { flex: 1; min-height: 0; overflow-y: auto; max-height: none; }
+}
 
 .panel-content { flex: 1; overflow-y: auto; padding: 25px; }
 .panel-content h2 { font-size: 1.2rem; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; color: #888; }
@@ -442,8 +521,9 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
 .btn-submit:hover { opacity: 0.9; }
 .report-result-box { margin-top: 20px; background-color: #000; border: 1px dashed #333; padding: 12px; border-radius: 6px; }
 .report-text { white-space: pre-wrap; font-family: monospace; font-size: 0.85rem; margin-bottom: 12px; max-height: 180px; overflow-y: auto; color: #ccc; }
-.btn-copy { background-color: #222; color: #fff; border: 1px solid #333; padding: 8px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; }
+.btn-copy { background-color: #222; color: #fff; border: 1px solid #333; padding: 8px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; transition: background-color 0.2s, color 0.2s, border-color 0.2s; }
 .btn-copy:hover { background-color: #2a2a2a; }
+.btn-copy:disabled { background-color: rgba(76, 175, 80, 0.15); color: #6fdc7c; border-color: rgba(76, 175, 80, 0.4); cursor: default; }
 .icon-btn svg, .toggle-tasks-btn svg, .close-panel-btn svg {
     width: 26px;
     height: 26px;
@@ -782,7 +862,7 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
         <button class="btn-submit" onclick="genererRapport()">Générer</button>
         <div id="reportOutputBox" class="report-result-box hidden">
             <div class="report-text" id="reportOutputText"></div>
-            <button class="btn-copy" onclick="copierRapport()">📋 Copier</button>
+            <button class="btn-copy" id="btnCopierRapport" onclick="copierRapport()">📋 Copier</button>
         </div>
     </div>
 </div>
@@ -794,12 +874,17 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
             <h2>Levée de doute</h2>
             <button id="closeAlarmSearchBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
         </div>
-        <input type="text" id="alarmSearchInput" class="alarm-search-input" placeholder="Nom de l'alarme (ex: feu poste 3 bat 1)" autocomplete="off">
-        <div class="alarm-answer-box" id="alarmAnswerBox">
-            <div class="alarm-answer-title">Lieu de levée de doute</div>
-            <div class="alarm-answer-lieu" id="alarmAnswerLieu"></div>
+        <div class="alarm-modal-columns">
+            <div class="alarm-col-search">
+                <div class="alarm-col-title">Rechercher une alarme</div>
+                <input type="text" id="alarmSearchInput" class="alarm-search-input" placeholder="Nom de l'alarme (ex: feu poste 3 bat 1)" autocomplete="off">
+                <div class="alarm-results-list" id="alarmResultsList"></div>
+            </div>
+            <div class="alarm-col-selection">
+                <div class="alarm-col-title">Alarmes en cours</div>
+                <div class="alarm-multi-results" id="alarmMultiResults"></div>
+            </div>
         </div>
-        <div class="alarm-results-list" id="alarmResultsList"></div>
     </div>
 </div>
 
@@ -1036,105 +1121,102 @@ document.addEventListener('visibilitychange', () => {
 
 // --- BASE DE DONNÉES ALARMES / LEVÉE DE DOUTE ---
 const donneesAlarmes = [
-    // BATIMENT 1
-    { alarme: "FEU POSTE DE CONTROLE N°15 BAT 1", lieu: "DBS / SPI2 (Bureaux, WC)" },
-    { alarme: "FEU POSTE DE CONTROLE N°1 BAT 1", lieu: "DBS / SPI2 (Cellule 1)" },
-    { alarme: "DEFAUT VANNE POSTE N°1 BAT 1", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°2 BAT 1", lieu: "DBS" },
-    { alarme: "DEFAUT VANNE POSTE N°2 BAT 1", lieu: "DBS" },
-    { alarme: "DEFAUT VANNE POSTE N°15 BAT 1", lieu: "DBS" },
-    { alarme: "INTRUSION S/STATION N°1 BAT 1", lieu: "DBS" },
-    { alarme: "PASSAGE D'EAU RIA S/STATION N°1 BAT 1", lieu: "DBS / SPI2 (Cellule 1,2,3)" },
-    { alarme: "FEU POSTE DE CONTROLE N°3 BAT 1", lieu: "DBS / SPI2 (Cellule 2)" },
-    { alarme: "DEFAUT VANNE POSTE N°3 BAT 1", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°4 BAT 1", lieu: "DBS" },
-    { alarme: "DEFAUT VANNE POSTE N°4 BAT 1", lieu: "DBS" },
-    { alarme: "INTRUSION S/STATION N°2 BAT 1", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°5 BAT 1", lieu: "DBS / SPI2 (Cellule 3)" },
-    { alarme: "DEFAUT VANNE POSTE N°5 BAT 1", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°6 BAT 1", lieu: "DBS" },
-    { alarme: "DEFAUT VANNE POSTE N°6 BAT 1", lieu: "DBS" },
-    { alarme: "INTRUSION S/STATION N°3 BAT 1", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°7 BAT 1", lieu: "DBS / SPI2 (Cellule 4)" },
-    { alarme: "DEFAUT VANNE POSTE N°7 BAT 1", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°8 BAT 1", lieu: "DBS" },
-    { alarme: "DEFAUT VANNE POSTE N°8 BAT 1", lieu: "DBS" },
-    { alarme: "INTRUSION S/STATION N°4 BAT 1", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°9 BAT 1", lieu: "DBS / SPI2 (Cellule 5)" },
-    { alarme: "DEFAUT VANNE POSTE N°9 BAT 1", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°10 BAT 1", lieu: "DBS" },
-    { alarme: "DEFAUT VANNE POSTE N°10 BAT 1", lieu: "DBS" },
-    { alarme: "INTRUSION S/STATION N°5 BAT 1", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°11 BAT 1", lieu: "DBS / SPI2 (Cellule 6)" },
-    { alarme: "DEFAUT VANNE POSTE N°11 BAT 1", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°12 BAT 1", lieu: "DBS" },
-    { alarme: "DEFAUT VANNE POSTE N°12 BAT 1", lieu: "DBS" },
-    { alarme: "INTRUSION S/STATION N°6 BAT 1", lieu: "DBS" },
-    { alarme: "PASSAGE D'EAU RIA S/STATION N°6 BAT 1", lieu: "DBS / SPI2 (Cellule 4,5,6,H&D)" },
-    { alarme: "FEU POSTE DE CONTROLE A AIR N°13 BAT 1", lieu: "Extérieur (Local Palettes)" },
-    { alarme: "DEFAUT VANNES POSTE A AIR N°13 BAT 1", lieu: "Extérieur" },
-    { alarme: "DEFAUT MANQUE D'AIR POSTE N°13 BAT 1", lieu: "Extérieur" },
-    { alarme: "DEFAUT TEMPERATURE S/STATION N°7 BAT 1", lieu: "Extérieur" },
-    { alarme: "INTRUSION S/STATION N°7 BAT 1", lieu: "Extérieur" },
-    { alarme: "FEU POSTE DE CONTROLE N°14 BAT 1", lieu: "DBS (Cellule D)" },
-    { alarme: "DEFAUT VANNE POSTE N°14 BAT 1", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°16 BAT 1", lieu: "DBS (racks)" },
-    { alarme: "DEFAUT VANNE POSTE N°16 BAT 1", lieu: "DBS" },
-    { alarme: "INTRUSION S/STATION N°8 BAT 1", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°17 BAT 1", lieu: "DBS (racks) (Cellule H)" },
-    { alarme: "DEFAUT VANNE POSTE N°17 BAT 1", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°18 BAT 1", lieu: "DBS" },
-    { alarme: "DEFAUT VANNE POSTE N°18 BAT 1", lieu: "DBS" },
-    { alarme: "INTRUSION S/STATION N°9 BAT 1", lieu: "DBS" },
-    // BATIMENT 2
-    { alarme: "FEU POSTE DE CONTROLE N°9 BAT 2", lieu: "DBS / SPI2 (Bureaux, WC)" },
-    { alarme: "FEU POSTE DE CONTROLE N°1 BAT 2", lieu: "DBS / SPI2 (Cellule 7)" },
-    { alarme: "DEFAUT VANNE POSTE N°1 BAT 2", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°2 BAT 2", lieu: "DBS" },
-    { alarme: "DEFAUT VANNE POSTE N°2 BAT 2", lieu: "DBS" },
-    { alarme: "DEFAUT VANNE POSTE N°9 BAT 2", lieu: "DBS" },
-    { alarme: "INTRUSION S/STATION N°1 BAT 2", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°3 BAT 2", lieu: "DBS / SPI2 (Cellule 8)" },
-    { alarme: "DEFAUT VANNE POSTE N°3 BAT 2", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°4 BAT 2", lieu: "DBS" },
-    { alarme: "DEFAUT VANNE POSTE N°4 BAT 2", lieu: "DBS" },
-    { alarme: "INTRUSION S/STATION N°2 BAT 2", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°5 BAT 2", lieu: "DBS / SPI2 (Cellule 9)" },
-    { alarme: "DEFAUT VANNE POSTE N°5 BAT 2", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°6 BAT 2", lieu: "DBS" },
-    { alarme: "DEFAUT VANNE POSTE N°6 BAT 2", lieu: "DBS" },
-    { alarme: "INTRUSION S/STATION N°3 BAT 2", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°7 BAT 2", lieu: "DBS / SPI2 (Cellule 0)" },
-    { alarme: "DEFAUT VANNE POSTE N°7 BAT 2", lieu: "DBS" },
-    { alarme: "FEU POSTE DE CONTROLE N°8 BAT 2", lieu: "DBS" },
-    { alarme: "DEFAUT VANNE POSTE N°8 BAT 2", lieu: "DBS" },
-    { alarme: "INTRUSION S/STATION N°4 BAT 2", lieu: "DBS" },
-    { alarme: "PASSAGE D'EAU RIA S/STATION N°4 BAT 2", lieu: "DBS / SPI2 (Tout le B2)" },
-    // LOCAL SPRINKLER
-    { alarme: "MARCHE POMPE SOURCE B1", lieu: "DBS B1 & B2 / SPI2 B1 & B2" },
-    { alarme: "POSITION CLE NON AUTO SOURCE B1", lieu: "LOCAL SPRINKLER" },
-    { alarme: "DEFAUT GENERAL SOURCE B1", lieu: "LOCAL SPRINKLER" },
-    { alarme: "NON DEMARRAGE SOURCE B1", lieu: "LOCAL SPRINKLER" },
-    { alarme: "RISQUE D'ECHECS SOURCE B1", lieu: "LOCAL SPRINKLER" },
-    { alarme: "DEFAUT VANNES ASPI OU REFOUL SOURCE B1", lieu: "LOCAL SPRINKLER" },
-    { alarme: "MARCHE POMPE SOURCE B2", lieu: "DBS B1 & B2 / SPI2 B1 & B2" },
-    { alarme: "POSITION CLE NON AUTO SOURCE B2", lieu: "LOCAL SPRINKLER" },
-    { alarme: "DEFAUT GENERAL SOURCE B2", lieu: "LOCAL SPRINKLER" },
-    { alarme: "NON DEMARRAGE SOURCE B2", lieu: "LOCAL SPRINKLER" },
-    { alarme: "RISQUE D'ECHECS SOURCE B2", lieu: "LOCAL SPRINKLER" },
-    { alarme: "DEFAUT VANNES ASPI OU REFOUL SOURCE B2", lieu: "LOCAL SPRINKLER" },
-    { alarme: "DEFAUT VANNE BI-PASS RESERVE B1/B2", lieu: "LOCAL SPRINKLER" },
-    { alarme: "DEFAUT NIVEAU RESERVE SOURCE B1", lieu: "LOCAL SPRINKLER" },
-    { alarme: "DEFAUT NIVEAU RESERVE SOURCE B2", lieu: "LOCAL SPRINKLER" },
-    { alarme: "DEFAUT VANNE RESERVE SOURCE B2", lieu: "LOCAL SPRINKLER" },
-    { alarme: "DEFAUT VANNE RESERVE SOURCE B1", lieu: "LOCAL SPRINKLER" },
-    { alarme: "DEFAUT VANNE PRISES POMPIERS", lieu: "LOCAL SPRINKLER" },
-    { alarme: "CONTROLEUR PASSAGE D'EAU LOCAL SPRINKLER", lieu: "LOCAL SPRINKLER" },
-    { alarme: "INTRUSION LOCAL SPRINKLER", lieu: "LOCAL SPRINKLER" },
-    { alarme: "DEFAUT TEMPERATURE LOCAL SPRINKLER", lieu: "LOCAL SPRINKLER" },
-    { alarme: "DEFAUT SYNTHESE ARMOIRE DE REPARTITION", lieu: "LOCAL SPRINKLER" },
-    { alarme: "DEFAUT SYNTHESE POMPE JOCKEY", lieu: "LOCAL SPRINKLER" },
-    { alarme: "POSITION CLE ESSAIS AEROTHERMES", lieu: "LOCAL SPRINKLER" }
+    { alarme: "CONTROLEUR PASSAGE D'EAU LOCAL SPRINKLER", zone: "Alarmes Feu Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "DEFAUT GENERAL SOURCE B1", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "DEFAUT GENERAL SOURCE B2", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "DEFAUT MANQUE D'AIR POSTE N°13 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "EXTERIEUR : Local Palettes" },
+    { alarme: "DEFAUT NIVEAU RESERVE SOURCE B1", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "DEFAUT NIVEAU RESERVE SOURCE B2", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "DEFAUT SYNTHESE ARMOIRE DE REPARTITION", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "DEFAUT SYNTHESE POMPE JOCKEY", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "DEFAUT TEMPERATURE LOCAL SPRINKLER", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "DEFAUT TEMPERATURE S/STATION N°7 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "EXTERIEUR : Local Palettes" },
+    { alarme: "DEFAUT VANNE BI-PASS RESERVE B1/B2", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "DEFAUT VANNE POSTE N°1 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 1 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°1 BAT 2", zone: "Alarmes Techniques Bât. 2", lieu: "BATIMENT 2 : Cellule 7 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°10 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 5 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°11 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 6 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°12 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 6 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°14 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule D — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°15 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 1 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°16 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule D — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°17 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule H — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°18 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule H — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°2 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 1 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°2 BAT 2", zone: "Alarmes Techniques Bât. 2", lieu: "BATIMENT 2 : Cellule 7 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°3 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 2 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°3 BAT 2", zone: "Alarmes Techniques Bât. 2", lieu: "BATIMENT 2 : Cellule 8 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°4 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 2 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°4 BAT 2", zone: "Alarmes Techniques Bât. 2", lieu: "BATIMENT 2 : Cellule 8 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°5 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 3 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°5 BAT 2", zone: "Alarmes Techniques Bât. 2", lieu: "BATIMENT 2 : Cellule 9 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°6 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 3 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°6 BAT 2", zone: "Alarmes Techniques Bât. 2", lieu: "BATIMENT 2 : Cellule 9 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°7 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 4 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°7 BAT 2", zone: "Alarmes Techniques Bât. 2", lieu: "BATIMENT 2 : Cellule 0 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°8 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 4 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°8 BAT 2", zone: "Alarmes Techniques Bât. 2", lieu: "BATIMENT 2 : Cellule 0 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°9 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 5 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE POSTE N°9 BAT 2", zone: "Alarmes Techniques Bât. 2", lieu: "BATIMENT 2 : Cellule 7 — Vanne de poste" },
+    { alarme: "DEFAUT VANNE PRISES POMPIERS", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "DEFAUT VANNE RESERVE SOURCE B1", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "DEFAUT VANNE RESERVE SOURCE B2", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "DEFAUT VANNES ASPI OU REFOUL SOURCE B1", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "DEFAUT VANNES ASPI OU REFOUL SOURCE B2", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "DEFAUT VANNES POSTE A AIR N°13 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "EXTERIEUR : Local Palettes — Vanne de poste" },
+    { alarme: "FEU POSTE DE CONTROLE A AIR N°13 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "EXTERIEUR : Local Palettes" },
+    { alarme: "FEU POSTE DE CONTROLE N°1 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 1 (Mezza + Sous Mezza)" },
+    { alarme: "FEU POSTE DE CONTROLE N°1 BAT 2", zone: "Alarmes Feu Bât. 2", lieu: "BATIMENT 2 : Cellule 7 (Mezza + Sous Mezza)" },
+    { alarme: "FEU POSTE DE CONTROLE N°10 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 5 (Côté stockage)" },
+    { alarme: "FEU POSTE DE CONTROLE N°11 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 6 (Mezza + Sous Mezza)" },
+    { alarme: "FEU POSTE DE CONTROLE N°12 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 6 (Côté stockage)" },
+    { alarme: "FEU POSTE DE CONTROLE N°14 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule D (Réseau plafond)" },
+    { alarme: "FEU POSTE DE CONTROLE N°15 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Bureaux, WC, ..." },
+    { alarme: "FEU POSTE DE CONTROLE N°16 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule D (Réseau racks)" },
+    { alarme: "FEU POSTE DE CONTROLE N°17 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule H (Réseau racks)" },
+    { alarme: "FEU POSTE DE CONTROLE N°18 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule H (Réseau plafond)" },
+    { alarme: "FEU POSTE DE CONTROLE N°2 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 1 (Côté stockage)" },
+    { alarme: "FEU POSTE DE CONTROLE N°2 BAT 2", zone: "Alarmes Feu Bât. 2", lieu: "BATIMENT 2 : Cellule 7 (Côté stockage)" },
+    { alarme: "FEU POSTE DE CONTROLE N°3 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 2 (Mezza + Sous Mezza)" },
+    { alarme: "FEU POSTE DE CONTROLE N°3 BAT 2", zone: "Alarmes Feu Bât. 2", lieu: "BATIMENT 2 : Cellule 8 (Mezza + Sous Mezza)" },
+    { alarme: "FEU POSTE DE CONTROLE N°4 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 2 (Côté stockage)" },
+    { alarme: "FEU POSTE DE CONTROLE N°4 BAT 2", zone: "Alarmes Feu Bât. 2", lieu: "BATIMENT 2 : Cellule 8 (Côté stockage)" },
+    { alarme: "FEU POSTE DE CONTROLE N°5 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 3 (Mezza + Sous Mezza)" },
+    { alarme: "FEU POSTE DE CONTROLE N°5 BAT 2", zone: "Alarmes Feu Bât. 2", lieu: "BATIMENT 2 : Cellule 9 (Mezza + Sous Mezza)" },
+    { alarme: "FEU POSTE DE CONTROLE N°6 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 3 (Côté stockage)" },
+    { alarme: "FEU POSTE DE CONTROLE N°6 BAT 2", zone: "Alarmes Feu Bât. 2", lieu: "BATIMENT 2 : Cellule 9 (Côté stockage)" },
+    { alarme: "FEU POSTE DE CONTROLE N°7 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 4 (Mezza + Sous Mezza)" },
+    { alarme: "FEU POSTE DE CONTROLE N°7 BAT 2", zone: "Alarmes Feu Bât. 2", lieu: "BATIMENT 2 : Cellule 0 (Mezza + Sous Mezza)" },
+    { alarme: "FEU POSTE DE CONTROLE N°8 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 4 (Côté stockage)" },
+    { alarme: "FEU POSTE DE CONTROLE N°8 BAT 2", zone: "Alarmes Feu Bât. 2", lieu: "BATIMENT 2 : Cellule 0 (Côté stockage)" },
+    { alarme: "FEU POSTE DE CONTROLE N°9 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 5 (Mezza + Sous Mezza)" },
+    { alarme: "FEU POSTE DE CONTROLE N°9 BAT 2", zone: "Alarmes Feu Bât. 2", lieu: "BATIMENT 2 : Bureaux, WC, ..." },
+    { alarme: "INTRUSION LOCAL SPRINKLER", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "INTRUSION S/STATION N°1 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 1 — S/station" },
+    { alarme: "INTRUSION S/STATION N°1 BAT 2", zone: "Alarmes Techniques Bât. 2", lieu: "BATIMENT 2 : Cellule 7 — S/station" },
+    { alarme: "INTRUSION S/STATION N°2 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 2 — S/station" },
+    { alarme: "INTRUSION S/STATION N°2 BAT 2", zone: "Alarmes Techniques Bât. 2", lieu: "BATIMENT 2 : Cellule 8 — S/station" },
+    { alarme: "INTRUSION S/STATION N°3 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 3 — S/station" },
+    { alarme: "INTRUSION S/STATION N°3 BAT 2", zone: "Alarmes Techniques Bât. 2", lieu: "BATIMENT 2 : Cellule 9 — S/station" },
+    { alarme: "INTRUSION S/STATION N°4 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 4 — S/station" },
+    { alarme: "INTRUSION S/STATION N°4 BAT 2", zone: "Alarmes Techniques Bât. 2", lieu: "BATIMENT 2 : Cellule 0 — S/station" },
+    { alarme: "INTRUSION S/STATION N°5 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 5 — S/station" },
+    { alarme: "INTRUSION S/STATION N°6 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule 6 — S/station" },
+    { alarme: "INTRUSION S/STATION N°7 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "EXTERIEUR : Local Palettes — S/station" },
+    { alarme: "INTRUSION S/STATION N°8 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule D — S/station" },
+    { alarme: "INTRUSION S/STATION N°9 BAT 1", zone: "Alarmes Techniques Bât. 1", lieu: "BATIMENT 1 : Cellule H — S/station" },
+    { alarme: "MARCHE POMPE SOURCE B1", zone: "Alarmes Feu Sprinklers", lieu: "BATIMENT 1 et 2 : Tout" },
+    { alarme: "MARCHE POMPE SOURCE B2", zone: "Alarmes Feu Sprinklers", lieu: "BATIMENT 1 et 2 : Tout" },
+    { alarme: "NON DEMARRAGE SOURCE B1", zone: "Défaut technique critique", lieu: "LOCAL SPRINKLER" },
+    { alarme: "NON DEMARRAGE SOURCE B2", zone: "Défaut technique critique", lieu: "LOCAL SPRINKLER" },
+    { alarme: "PASSAGE D'EAU RIA S/STATION N°1 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 1, 2, 3 (Réseau RIA rdc + étage)" },
+    { alarme: "PASSAGE D'EAU RIA S/STATION N°4 BAT 2", zone: "Alarmes Feu Bât. 2", lieu: "BATIMENT 2 : Tout le B2 (Réseau RIA rdc + étage)" },
+    { alarme: "PASSAGE D'EAU RIA S/STATION N°6 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 4, 5, 6, D et H (Réseau RIA rdc + étage)" },
+    { alarme: "POSITION CLE ESSAIS AEROTHERMES", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "POSITION CLE NON AUTO SOURCE B1", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "POSITION CLE NON AUTO SOURCE B2", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "RISQUE D'ECHECS SOURCE B1", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" },
+    { alarme: "RISQUE D'ECHECS SOURCE B2", zone: "Alarmes Techniques Sprinklers", lieu: "LOCAL SPRINKLER" }
 ];
 
 function normaliserTexte(txt) {
@@ -1147,14 +1229,16 @@ const toggleAlarmSearchBtn = document.getElementById('toggleAlarmSearchBtn');
 const closeAlarmSearchBtn = document.getElementById('closeAlarmSearchBtn');
 const alarmSearchInput = document.getElementById('alarmSearchInput');
 const alarmResultsList = document.getElementById('alarmResultsList');
-const alarmAnswerBox = document.getElementById('alarmAnswerBox');
-const alarmAnswerLieu = document.getElementById('alarmAnswerLieu');
+const alarmMultiResults = document.getElementById('alarmMultiResults');
+
+let alarmesSelectionnees = [];
 
 function ouvrirRechercheAlarme() {
     alarmModalOverlay.classList.add('open');
-    alarmAnswerBox.classList.remove('show');
+    alarmesSelectionnees = [];
     alarmSearchInput.value = '';
     afficherResultatsAlarmes('');
+    afficherSelectionAlarmes();
     setTimeout(() => alarmSearchInput.focus(), 50);
 }
 
@@ -1176,23 +1260,52 @@ function afficherResultatsAlarmes(requete) {
         alarmResultsList.innerHTML = '<div class="alarm-no-result">Aucune alarme trouvée.</div>';
         return;
     }
-    alarmResultsList.innerHTML = resultats.slice(0, 40).map((item, i) =>
-        `<div class="alarm-result-item" data-lieu="${item.lieu.replace(/"/g, '&quot;')}">${item.alarme}</div>`
-    ).join('');
+    alarmResultsList.innerHTML = resultats.slice(0, 40).map(item => {
+        const dejaSelectionnee = alarmesSelectionnees.some(a => a.alarme === item.alarme);
+        return `<div class="alarm-result-item${dejaSelectionnee ? ' selected' : ''}" data-alarme="${item.alarme.replace(/"/g, '&quot;')}">${item.alarme}</div>`;
+    }).join('');
+}
+
+function afficherSelectionAlarmes() {
+    if (alarmesSelectionnees.length === 0) {
+        alarmMultiResults.innerHTML = '<div class="alarm-multi-empty">Aucune alarme sélectionnée pour l\'instant.</div>';
+        return;
+    }
+    alarmMultiResults.innerHTML = alarmesSelectionnees.map((item, i) => `
+        <div class="alarm-multi-item">
+            <button class="alarm-multi-remove" data-index="${i}" title="Retirer"><svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+            <div class="alarm-multi-nom">${item.alarme}</div>
+            <div class="alarm-multi-zone">(${item.zone})</div>
+            <div class="alarm-multi-lieu">Localisation : ${item.lieu}</div>
+        </div>`).join('');
 }
 
 alarmResultsList.addEventListener('click', (e) => {
     const item = e.target.closest('.alarm-result-item');
-    if (!item || !item.dataset.lieu) return;
-    alarmAnswerLieu.textContent = item.dataset.lieu;
-    alarmAnswerBox.classList.add('show');
-    document.querySelectorAll('.alarm-result-item').forEach(el => el.classList.remove('selected'));
-    item.classList.add('selected');
+    if (!item || !item.dataset.alarme) return;
+    const nomAlarme = item.dataset.alarme;
+    const indexExistant = alarmesSelectionnees.findIndex(a => a.alarme === nomAlarme);
+    if (indexExistant !== -1) {
+        alarmesSelectionnees.splice(indexExistant, 1);
+    } else {
+        const donnee = donneesAlarmes.find(a => a.alarme === nomAlarme);
+        if (donnee) alarmesSelectionnees.push(donnee);
+    }
+    afficherSelectionAlarmes();
+    afficherResultatsAlarmes(alarmSearchInput.value);
+});
+
+alarmMultiResults.addEventListener('click', (e) => {
+    const btn = e.target.closest('.alarm-multi-remove');
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.index, 10);
+    alarmesSelectionnees.splice(idx, 1);
+    afficherSelectionAlarmes();
+    afficherResultatsAlarmes(alarmSearchInput.value);
 });
 
 alarmSearchInput.addEventListener('input', (e) => {
     afficherResultatsAlarmes(e.target.value);
-    alarmAnswerBox.classList.remove('show');
 });
 
 toggleAlarmSearchBtn.addEventListener('click', (e) => {
@@ -1207,6 +1320,7 @@ alarmModalOverlay.addEventListener('click', (e) => {
     if (e.target === alarmModalOverlay) fermerRechercheAlarme();
 });
 alarmModalBox.addEventListener('click', (e) => e.stopPropagation());
+
 
 // --- GESTION VOLET MÉTÉO ---
 const weatherPanel = document.getElementById('weatherPanel');
@@ -1500,8 +1614,23 @@ function genererRapport() {
 
 function copierRapport() {
     const outputText = document.getElementById('reportOutputText');
+    const btn = document.getElementById('btnCopierRapport');
     if (!outputText) return;
-    navigator.clipboard.writeText(outputText.textContent).catch(() => {});
+    navigator.clipboard.writeText(outputText.textContent).then(() => {
+        if (!btn) return;
+        const texteOriginal = btn.textContent;
+        btn.textContent = '✓ Copié !';
+        btn.disabled = true;
+        setTimeout(() => {
+            btn.textContent = texteOriginal;
+            btn.disabled = false;
+        }, 1500);
+    }).catch(() => {
+        if (!btn) return;
+        const texteOriginal = btn.textContent;
+        btn.textContent = 'Échec de la copie';
+        setTimeout(() => { btn.textContent = texteOriginal; }, 1500);
+    });
 }
 </script>
 </body>
