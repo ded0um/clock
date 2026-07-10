@@ -787,6 +787,22 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
     </div>
 </div>
 
+<!-- FENÊTRE DE RECHERCHE D'ALARMES -->
+<div class="alarm-modal-overlay" id="alarmModalOverlay">
+    <div class="alarm-modal-box" id="alarmModalBox">
+        <div class="alarm-modal-header">
+            <h2>Levée de doute</h2>
+            <button id="closeAlarmSearchBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+        </div>
+        <input type="text" id="alarmSearchInput" class="alarm-search-input" placeholder="Nom de l'alarme (ex: feu poste 3 bat 1)" autocomplete="off">
+        <div class="alarm-answer-box" id="alarmAnswerBox">
+            <div class="alarm-answer-title">Lieu de levée de doute</div>
+            <div class="alarm-answer-lieu" id="alarmAnswerLieu"></div>
+        </div>
+        <div class="alarm-results-list" id="alarmResultsList"></div>
+    </div>
+</div>
+
 <script>
 // --- CONFIGURATION TÂCHES ---
 const tachesDeNuit = [
@@ -1488,21 +1504,5 @@ function copierRapport() {
     navigator.clipboard.writeText(outputText.textContent).catch(() => {});
 }
 </script>
-<!-- FENÊTRE DE RECHERCHE D'ALARMES -->
-<div class="alarm-modal-overlay" id="alarmModalOverlay">
-    <div class="alarm-modal-box" id="alarmModalBox">
-        <div class="alarm-modal-header">
-            <h2>Levée de doute</h2>
-            <button id="closeAlarmSearchBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
-        </div>
-        <input type="text" id="alarmSearchInput" class="alarm-search-input" placeholder="Nom de l'alarme (ex: feu poste 3 bat 1)" autocomplete="off">
-        <div class="alarm-answer-box" id="alarmAnswerBox">
-            <div class="alarm-answer-title">Lieu de levée de doute</div>
-            <div class="alarm-answer-lieu" id="alarmAnswerLieu"></div>
-        </div>
-        <div class="alarm-results-list" id="alarmResultsList"></div>
-    </div>
-</div>
-
 </body>
 </html>
