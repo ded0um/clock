@@ -476,6 +476,77 @@ body {
 .alarm-multi-remove:hover { color: #fff; }
 .alarm-multi-remove svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
 
+.choice-modal-box { max-width: 480px; }
+.choice-buttons { display: flex; flex-direction: column; gap: 12px; padding: 5px 0; }
+.choice-btn {
+    background: #161616;
+    border: 1px solid #262626;
+    border-radius: 10px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #eee;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+.choice-btn:hover { background: #1c1c1c; border-color: #383838; }
+.choice-btn svg { width: 30px; height: 30px; stroke: var(--yellow-led); fill: none; flex-shrink: 0; }
+
+.ssi-choice-grid { display: flex; flex-direction: column; gap: 12px; }
+.ssi-big-btn {
+    background: #161616;
+    border: 1px solid #262626;
+    border-radius: 10px;
+    padding: 20px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #eee;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+.ssi-big-btn:hover { background: #1c1c1c; border-color: #383838; }
+
+.ssi-zone-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 18px; }
+.ssi-zone-btn {
+    background: #161616;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    padding: 14px 12px;
+    color: #ccc;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+.ssi-zone-btn:hover { background: #1c1c1c; border-color: #383838; color: #fff; }
+.ssi-zone-btn.disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+.ssi-zone-num { display: block; color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+
+.ssi-back-btn {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 8px 0;
+}
+.ssi-back-btn:hover { color: #fff; }
+
+.ssi-result-box {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+.ssi-result-zone { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+.ssi-result-designation { font-size: 1.3rem; font-weight: bold; color: var(--yellow-led); line-height: 1.4; }
+
 .alarm-mobile-tabs { display: none; }
 
 @media (max-width: 768px) {
@@ -944,6 +1015,58 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
     </div>
 </div>
 
+<!-- FENÊTRE DE CHOIX DU TYPE D'ALARME -->
+<div class="alarm-modal-overlay" id="alarmChoiceOverlay">
+    <div class="alarm-modal-box choice-modal-box" id="alarmChoiceBox">
+        <div class="alarm-modal-header">
+            <h2>Type d'alarme</h2>
+            <button id="closeChoiceBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+        </div>
+        <div class="choice-buttons">
+            <button class="choice-btn" id="choiceSprinklerBtn">
+                <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14a4 4 0 0 1-.5-7.97A5 5 0 0 1 15 4.5a3.7 3.7 0 0 1 1 7.3"/><path d="M6 14h9.3"/><line x1="7.5" y1="17" x2="6.5" y2="20"/><line x1="12" y1="17" x2="11" y2="20"/><line x1="16.5" y1="17" x2="15.5" y2="20"/></svg>
+                <span>Alarme Sprinkler / Report d'alarmes</span>
+            </button>
+            <button class="choice-btn" id="choiceSsiBtn">
+                <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 4v16"/><path d="M4 9h5"/></svg>
+                <span>Alarme Report SSI</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- FENÊTRE REPORT SSI (Bâtiment puis Zone) -->
+<div class="alarm-modal-overlay" id="ssiModalOverlay">
+    <div class="alarm-modal-box choice-modal-box" id="ssiModalBox">
+        <div class="alarm-modal-header">
+            <h2>Report SSI</h2>
+            <button id="closeSsiBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+        </div>
+
+        <div id="ssiStepBatiment">
+            <div class="alarm-col-title">Choisir le bâtiment</div>
+            <div class="ssi-choice-grid">
+                <button class="ssi-big-btn" data-bat="1">Bâtiment 1</button>
+                <button class="ssi-big-btn" data-bat="2">Bâtiment 2</button>
+            </div>
+        </div>
+
+        <div id="ssiStepZone" class="hidden">
+            <div class="alarm-col-title">Choisir la zone en alarme — Bâtiment <span id="ssiZoneBatLabel"></span></div>
+            <div class="ssi-zone-grid" id="ssiZoneGrid"></div>
+            <button class="ssi-back-btn" id="ssiBackToBatBtn">← Changer de bâtiment</button>
+        </div>
+
+        <div id="ssiStepResult" class="hidden">
+            <div class="ssi-result-box">
+                <div class="ssi-result-zone" id="ssiResultZone"></div>
+                <div class="ssi-result-designation" id="ssiResultDesignation"></div>
+            </div>
+            <button class="ssi-back-btn" id="ssiBackToZoneBtn">← Choisir une autre zone</button>
+        </div>
+    </div>
+</div>
+
 <!-- FENÊTRE DE RECHERCHE D'ALARMES -->
 <div class="alarm-modal-overlay" id="alarmModalOverlay">
     <div class="alarm-modal-box" id="alarmModalBox">
@@ -1348,14 +1471,15 @@ function fermerRechercheAlarme() {
 
 function afficherResultatsAlarmes(requete) {
     const q = normaliserTexte(requete.trim());
-    const motsClés = q.split(/\s+/).filter(Boolean);
-    let resultats = donneesAlarmes;
-    if (motsClés.length > 0) {
-        resultats = donneesAlarmes.filter(item => {
-            const nomNormalise = normaliserTexte(item.alarme);
-            return motsClés.every(mot => nomNormalise.includes(mot));
-        });
+    if (q.length === 0) {
+        alarmResultsList.innerHTML = '<div class="alarm-no-result">Commencez à taper pour rechercher une alarme.</div>';
+        return;
     }
+    const motsClés = q.split(/\s+/).filter(Boolean);
+    const resultats = donneesAlarmes.filter(item => {
+        const nomNormalise = normaliserTexte(item.alarme);
+        return motsClés.every(mot => nomNormalise.includes(mot));
+    });
     if (resultats.length === 0) {
         alarmResultsList.innerHTML = '<div class="alarm-no-result">Aucune alarme trouvée.</div>';
         return;
@@ -1410,10 +1534,134 @@ alarmSearchInput.addEventListener('input', (e) => {
     afficherResultatsAlarmes(e.target.value);
 });
 
+// --- FENÊTRE DE CHOIX DU TYPE D'ALARME ---
+const alarmChoiceOverlay = document.getElementById('alarmChoiceOverlay');
+const alarmChoiceBox = document.getElementById('alarmChoiceBox');
+const closeChoiceBtn = document.getElementById('closeChoiceBtn');
+const choiceSprinklerBtn = document.getElementById('choiceSprinklerBtn');
+const choiceSsiBtn = document.getElementById('choiceSsiBtn');
+
+function ouvrirChoixAlarme() {
+    alarmChoiceOverlay.classList.add('open');
+    toggleAlarmSearchBtn.classList.add('active');
+}
+function fermerChoixAlarme() {
+    alarmChoiceOverlay.classList.remove('open');
+    toggleAlarmSearchBtn.classList.remove('active');
+}
+
 toggleAlarmSearchBtn.addEventListener('click', (e) => {
     e.stopPropagation();
+    ouvrirChoixAlarme();
+});
+closeChoiceBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fermerChoixAlarme();
+});
+alarmChoiceOverlay.addEventListener('click', (e) => {
+    if (e.target === alarmChoiceOverlay) fermerChoixAlarme();
+});
+alarmChoiceBox.addEventListener('click', (e) => e.stopPropagation());
+
+choiceSprinklerBtn.addEventListener('click', () => {
+    alarmChoiceOverlay.classList.remove('open');
     ouvrirRechercheAlarme();
 });
+choiceSsiBtn.addEventListener('click', () => {
+    alarmChoiceOverlay.classList.remove('open');
+    ouvrirSSI();
+});
+
+// --- REPORT SSI (Bâtiment puis Zone) ---
+const donneesSSI = {
+    1: {
+        1: "BRIS DE GLACE - BUREAUX",
+        2: "BRIS DE GLACE - CELLULES 1-2-3",
+        3: "BRIS DE GLACE - CELLULES 4-5-6",
+        4: "BRIS DE GLACE MEZZANINE",
+        5: "BRIS DE GLACE - MEZZANINE CELLULES 2-3",
+        6: "BUNGALOW SERVEUR (CELLULE 1)",
+        7: null,
+        8: null
+    },
+    2: {
+        1: "BRIS DE GLACE - BUREAUX",
+        2: "BRIS DE GLACE - CELLULES 7-8",
+        3: "BRIS DE GLACE - CELLULES 9-0",
+        4: "BRIS DE GLACE MEZZANINE",
+        5: null,
+        6: null,
+        7: null,
+        8: null
+    }
+};
+
+const ssiModalOverlay = document.getElementById('ssiModalOverlay');
+const ssiModalBox = document.getElementById('ssiModalBox');
+const closeSsiBtn = document.getElementById('closeSsiBtn');
+const ssiStepBatiment = document.getElementById('ssiStepBatiment');
+const ssiStepZone = document.getElementById('ssiStepZone');
+const ssiStepResult = document.getElementById('ssiStepResult');
+const ssiZoneGrid = document.getElementById('ssiZoneGrid');
+const ssiZoneBatLabel = document.getElementById('ssiZoneBatLabel');
+const ssiResultZone = document.getElementById('ssiResultZone');
+const ssiResultDesignation = document.getElementById('ssiResultDesignation');
+
+let ssiBatimentChoisi = null;
+
+function ouvrirSSI() {
+    ssiModalOverlay.classList.add('open');
+    toggleAlarmSearchBtn.classList.add('active');
+    afficherEtapeSSI('batiment');
+}
+function fermerSSI() {
+    ssiModalOverlay.classList.remove('open');
+    toggleAlarmSearchBtn.classList.remove('active');
+}
+function afficherEtapeSSI(etape) {
+    ssiStepBatiment.classList.toggle('hidden', etape !== 'batiment');
+    ssiStepZone.classList.toggle('hidden', etape !== 'zone');
+    ssiStepResult.classList.toggle('hidden', etape !== 'resultat');
+}
+function genererGrilleZonesSSI() {
+    const zones = donneesSSI[ssiBatimentChoisi];
+    ssiZoneGrid.innerHTML = Object.keys(zones).map(num => {
+        const designation = zones[num];
+        const indisponible = !designation;
+        return `<button class="ssi-zone-btn${indisponible ? ' disabled' : ''}" data-zone="${num}">
+            <span class="ssi-zone-num">Zone ${num}</span>${designation ? designation : 'Non utilisée'}
+        </button>`;
+    }).join('');
+}
+
+document.querySelectorAll('.ssi-big-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        ssiBatimentChoisi = btn.dataset.bat;
+        ssiZoneBatLabel.textContent = ssiBatimentChoisi;
+        genererGrilleZonesSSI();
+        afficherEtapeSSI('zone');
+    });
+});
+ssiZoneGrid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.ssi-zone-btn');
+    if (!btn || btn.classList.contains('disabled')) return;
+    const num = btn.dataset.zone;
+    const designation = donneesSSI[ssiBatimentChoisi][num];
+    ssiResultZone.textContent = `REPORT SSI BÂTIMENT ${ssiBatimentChoisi} — ZONE ${num}`;
+    ssiResultDesignation.textContent = designation;
+    afficherEtapeSSI('resultat');
+});
+document.getElementById('ssiBackToBatBtn').addEventListener('click', () => afficherEtapeSSI('batiment'));
+document.getElementById('ssiBackToZoneBtn').addEventListener('click', () => afficherEtapeSSI('zone'));
+closeSsiBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fermerSSI();
+});
+ssiModalOverlay.addEventListener('click', (e) => {
+    if (e.target === ssiModalOverlay) fermerSSI();
+});
+ssiModalBox.addEventListener('click', (e) => e.stopPropagation());
+
 closeAlarmSearchBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     fermerRechercheAlarme();
