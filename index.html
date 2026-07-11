@@ -461,6 +461,8 @@ body {
 .alarm-multi-remove:hover { color: #fff; }
 .alarm-multi-remove svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
 
+.alarm-mobile-tabs { display: none; }
+
 @media (max-width: 768px) {
     .alarm-modal-overlay { padding: 0; }
     .alarm-modal-box {
@@ -476,24 +478,65 @@ body {
         flex-direction: column;
         min-height: 0;
     }
+    .alarm-mobile-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 15px;
+        flex-shrink: 0;
+    }
+    .alarm-tab-btn {
+        flex: 1;
+        background: #161616;
+        border: 1px solid #262626;
+        color: #888;
+        padding: 10px 8px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+    .alarm-tab-btn.active {
+        background: rgba(255, 204, 0, 0.12);
+        border-color: rgba(255, 204, 0, 0.4);
+        color: var(--yellow-led);
+    }
+    .alarm-tab-badge {
+        background: var(--yellow-led);
+        color: #000;
+        font-size: 0.7rem;
+        font-weight: bold;
+        border-radius: 999px;
+        min-width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 5px;
+    }
     .alarm-modal-columns {
         flex-direction: column;
         gap: 0;
         overflow: hidden;
         min-height: 0;
+        flex: 1;
     }
-    .alarm-col-search {
-        border-right: none;
-        padding-right: 0;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 12px;
-        margin-bottom: 12px;
-        flex: 4 1 0;
+    .alarm-col-search, .alarm-col-selection {
+        flex: 1;
         min-height: 0;
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        border: none;
+        padding: 0;
+        margin: 0;
     }
+    .alarm-col-search.mobile-hidden, .alarm-col-selection.mobile-hidden { display: none; }
+    .alarm-col-title { display: none; }
     .alarm-multi-results { flex: 1; min-height: 0; overflow-y: auto; max-height: none; }
 }
 
@@ -893,13 +936,17 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
             <h2>Levée de doute</h2>
             <button id="closeAlarmSearchBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
         </div>
+        <div class="alarm-mobile-tabs">
+            <button class="alarm-tab-btn active" id="tabRechercheBtn" data-tab="recherche">Rechercher</button>
+            <button class="alarm-tab-btn" id="tabSelectionBtn" data-tab="selection">Alarmes en cours<span class="alarm-tab-badge hidden" id="alarmTabBadge">0</span></button>
+        </div>
         <div class="alarm-modal-columns">
-            <div class="alarm-col-search">
+            <div class="alarm-col-search" id="alarmColSearch">
                 <div class="alarm-col-title">Rechercher une alarme</div>
                 <input type="text" id="alarmSearchInput" class="alarm-search-input" placeholder="Nom de l'alarme (ex: feu poste 3 bat 1)" autocomplete="off">
                 <div class="alarm-results-list" id="alarmResultsList"></div>
             </div>
-            <div class="alarm-col-selection">
+            <div class="alarm-col-selection" id="alarmColSelection">
                 <div class="alarm-col-title">Alarmes en cours</div>
                 <div class="alarm-multi-results" id="alarmMultiResults"></div>
             </div>
@@ -1249,14 +1296,31 @@ const closeAlarmSearchBtn = document.getElementById('closeAlarmSearchBtn');
 const alarmSearchInput = document.getElementById('alarmSearchInput');
 const alarmResultsList = document.getElementById('alarmResultsList');
 const alarmMultiResults = document.getElementById('alarmMultiResults');
+const tabRechercheBtn = document.getElementById('tabRechercheBtn');
+const tabSelectionBtn = document.getElementById('tabSelectionBtn');
+const alarmTabBadge = document.getElementById('alarmTabBadge');
+const alarmColSearch = document.getElementById('alarmColSearch');
+const alarmColSelection = document.getElementById('alarmColSelection');
 
 let alarmesSelectionnees = [];
+
+function basculerOngletAlarme(onglet) {
+    const surRecherche = onglet === 'recherche';
+    tabRechercheBtn.classList.toggle('active', surRecherche);
+    tabSelectionBtn.classList.toggle('active', !surRecherche);
+    alarmColSearch.classList.toggle('mobile-hidden', !surRecherche);
+    alarmColSelection.classList.toggle('mobile-hidden', surRecherche);
+}
+
+tabRechercheBtn.addEventListener('click', () => basculerOngletAlarme('recherche'));
+tabSelectionBtn.addEventListener('click', () => basculerOngletAlarme('selection'));
 
 function ouvrirRechercheAlarme() {
     alarmModalOverlay.classList.add('open');
     toggleAlarmSearchBtn.classList.add('active');
     alarmesSelectionnees = [];
     alarmSearchInput.value = '';
+    basculerOngletAlarme('recherche');
     afficherResultatsAlarmes('');
     afficherSelectionAlarmes();
     setTimeout(() => alarmSearchInput.focus(), 50);
@@ -1288,6 +1352,8 @@ function afficherResultatsAlarmes(requete) {
 }
 
 function afficherSelectionAlarmes() {
+    alarmTabBadge.textContent = alarmesSelectionnees.length;
+    alarmTabBadge.classList.toggle('hidden', alarmesSelectionnees.length === 0);
     if (alarmesSelectionnees.length === 0) {
         alarmMultiResults.innerHTML = '<div class="alarm-multi-empty">Aucune alarme sélectionnée pour l\'instant.</div>';
         return;
