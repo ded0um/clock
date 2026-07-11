@@ -462,19 +462,38 @@ body {
 .alarm-multi-remove svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
 
 @media (max-width: 768px) {
-    .alarm-modal-box { max-height: 90vh; padding: 15px; }
-    .alarm-modal-columns { flex-direction: column; gap: 0; overflow: hidden; }
+    .alarm-modal-overlay { padding: 0; }
+    .alarm-modal-box {
+        width: 100%;
+        max-width: none;
+        height: 100dvh;
+        max-height: 100dvh;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+    .alarm-modal-columns {
+        flex-direction: column;
+        gap: 0;
+        overflow: hidden;
+        min-height: 0;
+    }
     .alarm-col-search {
         border-right: none;
         padding-right: 0;
         border-bottom: 1px solid var(--border-color);
         padding-bottom: 12px;
         margin-bottom: 12px;
-        flex: 1 1 35%;
+        flex: 4 1 0;
         min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
     }
-    .alarm-results-list { flex: 1; min-height: 0; max-height: none; }
-    .alarm-col-selection { flex: 1 1 65%; min-height: 0; }
     .alarm-multi-results { flex: 1; min-height: 0; overflow-y: auto; max-height: none; }
 }
 
@@ -1235,6 +1254,7 @@ let alarmesSelectionnees = [];
 
 function ouvrirRechercheAlarme() {
     alarmModalOverlay.classList.add('open');
+    toggleAlarmSearchBtn.classList.add('active');
     alarmesSelectionnees = [];
     alarmSearchInput.value = '';
     afficherResultatsAlarmes('');
@@ -1244,6 +1264,7 @@ function ouvrirRechercheAlarme() {
 
 function fermerRechercheAlarme() {
     alarmModalOverlay.classList.remove('open');
+    toggleAlarmSearchBtn.classList.remove('active');
 }
 
 function afficherResultatsAlarmes(requete) {
