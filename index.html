@@ -286,11 +286,26 @@ body {
     }
 }
 
+.weather-panel .panel-content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 20px 20px 15px;
+}
+.weather-panel .panel-header { margin-bottom: 10px; flex-shrink: 0; }
+#weatherHourlyList {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
 .weather-hour-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 5px;
+    flex: 1;
+    min-height: 0;
+    padding: 2px 5px;
     border-bottom: 1px solid #1e1e1e;
     font-size: 0.95rem;
     gap: 8px;
@@ -307,11 +322,11 @@ body {
     color: var(--yellow-led);
     font-weight: bold;
 }
-.weather-hour-time { color: #888; width: 45px; flex-shrink: 0; }
-.weather-hour-icon { font-size: 1.4rem; width: 32px; text-align: center; flex-shrink: 0; }
-.weather-hour-temp { font-weight: bold; width: 45px; text-align: right; flex-shrink: 0; }
-.weather-hour-rain { color: #5ab4ff; font-size: 0.8rem; width: 42px; text-align: right; flex-shrink: 0; }
-.weather-hour-wind { color: #999; font-size: 0.8rem; width: 55px; text-align: right; flex-shrink: 0; }
+.weather-hour-time { color: #888; width: 42px; flex-shrink: 0; font-size: 0.85rem; }
+.weather-hour-icon { font-size: 1.4rem; width: 26px; text-align: center; flex-shrink: 0; }
+.weather-hour-temp { font-weight: bold; width: 40px; text-align: right; flex-shrink: 0; font-size: 0.9rem; }
+.weather-hour-rain { color: #5ab4ff; font-size: 0.75rem; width: 40px; text-align: right; flex-shrink: 0; }
+.weather-hour-wind { color: #999; font-size: 0.75rem; width: 52px; text-align: right; flex-shrink: 0; }
 
 .icon-btn.icon-btn-secondary { right: 90px; }
 @media (max-width: 768px) {
@@ -594,8 +609,8 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
     display: block;
 }
 .weather-hour-icon svg {
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
     stroke: #e8e8e8;
     fill: none;
 }
