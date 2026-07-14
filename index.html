@@ -92,7 +92,7 @@ body {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 25px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(255, 204, 0, 0.25);
     padding-bottom: 10px;
 }
 
@@ -211,6 +211,8 @@ body {
 :-ms-fullscreen #togglePanelBtn, :-ms-fullscreen #toggleWeatherBtn, :-ms-fullscreen #toggleAlarmSearchBtn { opacity: 0; visibility: hidden; pointer-events: none; }
 :fullscreen #togglePanelBtn, :fullscreen #toggleWeatherBtn, :fullscreen #toggleAlarmSearchBtn { opacity: 0; visibility: hidden; pointer-events: none; }
 
+body.jour-sans-boutons .icon-btn { opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+
 /* --- VOLET FORMULAIRE (mobile : overlay plein écran / desktop : push flex) --- */
 .side-panel {
     position: fixed;
@@ -245,7 +247,7 @@ body {
     .side-panel.open {
         flex: 0 0 420px;
         width: 420px;
-        border-left: 1px solid var(--border-color);
+        border-left: 1px solid rgba(255, 204, 0, 0.25);
         box-shadow: -10px 0 30px rgba(0,0,0,0.7);
     }
 }
@@ -281,7 +283,7 @@ body {
     .weather-panel.open {
         flex: 0 0 380px;
         width: 380px;
-        border-right: 1px solid var(--border-color);
+        border-right: 1px solid rgba(255, 204, 0, 0.25);
         box-shadow: 10px 0 30px rgba(0,0,0,0.7);
     }
 }
@@ -328,14 +330,14 @@ body {
 .weather-hour-rain { color: #5ab4ff; font-size: 0.75rem; width: 40px; text-align: right; flex-shrink: 0; }
 .weather-hour-wind { color: #999; font-size: 0.75rem; width: 52px; text-align: right; flex-shrink: 0; }
 
-.icon-btn.icon-btn-secondary { right: 90px; }
+.icon-btn.icon-btn-secondary { left: 30px; right: auto; }
 @media (max-width: 768px) {
-    .icon-btn.icon-btn-secondary { right: 80px; }
+    .icon-btn.icon-btn-secondary { left: 20px; right: auto; }
 }
 
-.icon-btn.icon-btn-tertiary { right: 150px; }
+.icon-btn.icon-btn-tertiary { right: 90px; }
 @media (max-width: 768px) {
-    .icon-btn.icon-btn-tertiary { right: 140px; }
+    .icon-btn.icon-btn-tertiary { right: 80px; }
 }
 
 .alarm-modal-overlay {
@@ -352,7 +354,7 @@ body {
 .alarm-modal-overlay.open { display: flex; }
 .alarm-modal-box {
     background: var(--panel-bg);
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(255, 204, 0, 0.25);
     border-radius: 12px;
     width: 100%;
     max-width: 860px;
@@ -367,6 +369,8 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 204, 0, 0.25);
     flex-shrink: 0;
 }
 .alarm-modal-header h2 {
@@ -375,7 +379,10 @@ body {
     color: #888;
     text-transform: uppercase;
     letter-spacing: 1px;
+    flex: 1;
+    text-align: center;
 }
+.alarm-modal-header .close-panel-btn { flex-shrink: 0; }
 .alarm-modal-columns {
     display: flex;
     gap: 20px;
@@ -493,7 +500,7 @@ body {
     text-align: left;
     transition: background-color 0.15s, border-color 0.15s;
 }
-.choice-btn:hover { background: #1c1c1c; border-color: #383838; }
+.choice-btn:hover { background: #1c1c1c; border-color: rgba(255, 204, 0, 0.4); }
 .choice-btn svg { width: 30px; height: 30px; stroke: var(--yellow-led); fill: none; flex-shrink: 0; }
 
 .ssi-choice-grid { display: flex; flex-direction: column; gap: 12px; }
@@ -508,7 +515,7 @@ body {
     cursor: pointer;
     transition: background-color 0.15s, border-color 0.15s;
 }
-.ssi-big-btn:hover { background: #1c1c1c; border-color: #383838; }
+.ssi-big-btn:hover { background: #1c1c1c; border-color: rgba(255, 204, 0, 0.4); }
 
 .ssi-zone-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 18px; }
 .ssi-zone-btn {
@@ -526,6 +533,17 @@ body {
 .ssi-zone-btn:hover { background: #1c1c1c; border-color: #383838; color: #fff; }
 .ssi-zone-btn.disabled { opacity: 0.3; cursor: default; pointer-events: none; }
 .ssi-zone-num { display: block; color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+.ssi-zone-btn-simple {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 20px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+.ssi-zone-indispo { font-size: 0.7rem; font-weight: normal; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
 
 .ssi-back-btn {
     background: none;
@@ -627,9 +645,9 @@ body {
 }
 
 .panel-content { flex: 1; overflow-y: auto; padding: 25px; }
-.panel-content h2 { font-size: 1.2rem; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; color: #888; }
+.panel-content h2 { font-size: 1.2rem; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 204, 0, 0.25); padding-bottom: 10px; color: #888; }
 .section { background-color: #161616; border-radius: 6px; margin-bottom: 12px; overflow: hidden; border: 1px solid #222; }
-.section-header { background-color: #1f1f1f; padding: 12px 15px; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; color: #fff; }
+.section-header { background-color: #1f1f1f; padding: 12px 15px; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; color: #fff; border-left: 3px solid rgba(255, 204, 0, 0.5); }
 .section-content { display: none; padding: 15px; background-color: #111111; }
 .section-content.active { display: block; }
 .sub-section { background-color: #141414; border: 1px solid #222; border-radius: 4px; margin: 10px 0; overflow: hidden; }
@@ -701,7 +719,7 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(255, 204, 0, 0.25);
     padding-bottom: 10px;
 }
 .panel-header h2 {
@@ -824,9 +842,9 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
     </div>
     <div class="date-display" id="date-label">Chargement...</div>
     <div id="clock">00:00</div>
-    <button class="icon-btn" id="togglePanelBtn" title="Renseigner les rapports"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 3h6v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V3z"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg></button>
+    <button class="icon-btn" id="togglePanelBtn" title="Prise de service"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 3h6v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V3z"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg></button>
     <button class="icon-btn icon-btn-secondary" id="toggleWeatherBtn" title="Météo"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="8" r="3.2"/><line x1="16" y1="2.3" x2="16" y2="1"/><line x1="21" y1="8" x2="22.3" y2="8"/><line x1="19.6" y1="4.4" x2="20.5" y2="3.5"/><path d="M6 19a4 4 0 0 1-.6-7.95A5 5 0 0 1 15 9.5"/><path d="M6 19h11a3.5 3.5 0 0 0 .3-6.98"/></svg></button>
-    <button class="icon-btn icon-btn-tertiary" id="toggleAlarmSearchBtn" title="Rechercher une alarme"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.2" y1="16.2" x2="21" y2="21"/></svg></button>
+    <button class="icon-btn icon-btn-tertiary" id="toggleAlarmSearchBtn" title="Support Alarme"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9 15.5H3z"/><line x1="12" y1="9.5" x2="12" y2="13.5"/><line x1="12" y1="16.2" x2="12" y2="16.25"/></svg></button>
 </div>
 
 <!-- ZONE DE DROITE : LISTE DES TÂCHES CONTEXTUELLES -->
@@ -1024,8 +1042,8 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
         </div>
         <div class="choice-buttons">
             <button class="choice-btn" id="choiceSprinklerBtn">
-                <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14a4 4 0 0 1-.5-7.97A5 5 0 0 1 15 4.5a3.7 3.7 0 0 1 1 7.3"/><path d="M6 14h9.3"/><line x1="7.5" y1="17" x2="6.5" y2="20"/><line x1="12" y1="17" x2="11" y2="20"/><line x1="16.5" y1="17" x2="15.5" y2="20"/></svg>
-                <span>Alarme Sprinkler / Report d'alarmes</span>
+                <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a5 5 0 0 0-5 5v3.2c0 .8-.3 1.5-.8 2.1L5 15h14l-1.2-1.7c-.5-.6-.8-1.3-.8-2.1V8a5 5 0 0 0-5-5z"/><path d="M9.5 19a2.5 2.5 0 0 0 5 0"/></svg>
+                <span>Alarme Sprinkler</span>
             </button>
             <button class="choice-btn" id="choiceSsiBtn">
                 <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 4v16"/><path d="M4 9h5"/></svg>
@@ -1039,7 +1057,8 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
 <div class="alarm-modal-overlay" id="ssiModalOverlay">
     <div class="alarm-modal-box choice-modal-box" id="ssiModalBox">
         <div class="alarm-modal-header">
-            <h2>Report SSI</h2>
+            <button id="ssiRetourChoixBtn" class="close-panel-btn" title="Retour"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg></button>
+            <h2>Alarme SSI</h2>
             <button id="closeSsiBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
         </div>
 
@@ -1071,7 +1090,8 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
 <div class="alarm-modal-overlay" id="alarmModalOverlay">
     <div class="alarm-modal-box" id="alarmModalBox">
         <div class="alarm-modal-header">
-            <h2>Levée de doute</h2>
+            <button id="sprinklerRetourChoixBtn" class="close-panel-btn" title="Retour"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg></button>
+            <h2>Alarme Sprinkler</h2>
             <button id="closeAlarmSearchBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
         </div>
         <div class="alarm-mobile-tabs">
@@ -1080,7 +1100,7 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
         </div>
         <div class="alarm-modal-columns">
             <div class="alarm-col-search" id="alarmColSearch">
-                <div class="alarm-col-title">Rechercher une alarme</div>
+                <div class="alarm-col-title">Support Alarme</div>
                 <input type="text" id="alarmSearchInput" class="alarm-search-input" placeholder="Nom de l'alarme (ex: feu poste 3 bat 1)" autocomplete="off">
                 <div class="alarm-results-list" id="alarmResultsList"></div>
             </div>
@@ -1244,10 +1264,19 @@ function updateClock() {
 
     afficherTachesDeNuit(now);
     gestionLedRouge(now);
+    gererVisibiliteBoutons(now);
 }
 
 let ledRougeArmee = false;
 let ledRougeEteinteAujourdhui = false;
+
+// Masque tous les boutons de 07h00 à 18h50 : seule l'horloge et la date restent visibles
+function gererVisibiliteBoutons(dateObj) {
+    const hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
+    const enJournee = hours >= 7 && (hours < 18 || (hours === 18 && minutes < 50));
+    document.body.classList.toggle('jour-sans-boutons', enJournee);
+}
 
 function gestionLedRouge(dateObj) {
     const ledRouge = document.getElementById('led-rouge');
@@ -1552,7 +1581,15 @@ function fermerChoixAlarme() {
 
 toggleAlarmSearchBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    ouvrirChoixAlarme();
+    if (alarmChoiceOverlay.classList.contains('open')) {
+        fermerChoixAlarme();
+    } else if (alarmModalOverlay.classList.contains('open')) {
+        fermerRechercheAlarme();
+    } else if (ssiModalOverlay.classList.contains('open')) {
+        fermerSSI();
+    } else {
+        ouvrirChoixAlarme();
+    }
 });
 closeChoiceBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -1628,8 +1665,8 @@ function genererGrilleZonesSSI() {
     ssiZoneGrid.innerHTML = Object.keys(zones).map(num => {
         const designation = zones[num];
         const indisponible = !designation;
-        return `<button class="ssi-zone-btn${indisponible ? ' disabled' : ''}" data-zone="${num}">
-            <span class="ssi-zone-num">Zone ${num}</span>${designation ? designation : 'Non utilisée'}
+        return `<button class="ssi-zone-btn ssi-zone-btn-simple${indisponible ? ' disabled' : ''}" data-zone="${num}">
+            Zone ${num}${indisponible ? '<span class="ssi-zone-indispo">Non utilisée</span>' : ''}
         </button>`;
     }).join('');
 }
@@ -1647,7 +1684,7 @@ ssiZoneGrid.addEventListener('click', (e) => {
     if (!btn || btn.classList.contains('disabled')) return;
     const num = btn.dataset.zone;
     const designation = donneesSSI[ssiBatimentChoisi][num];
-    ssiResultZone.textContent = `REPORT SSI BÂTIMENT ${ssiBatimentChoisi} — ZONE ${num}`;
+    ssiResultZone.textContent = `ALARME SSI — BÂTIMENT ${ssiBatimentChoisi} — ZONE ${num}`;
     ssiResultDesignation.textContent = designation;
     afficherEtapeSSI('resultat');
 });
@@ -1657,6 +1694,11 @@ closeSsiBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     fermerSSI();
 });
+document.getElementById('ssiRetourChoixBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    ssiModalOverlay.classList.remove('open');
+    ouvrirChoixAlarme();
+});
 ssiModalOverlay.addEventListener('click', (e) => {
     if (e.target === ssiModalOverlay) fermerSSI();
 });
@@ -1665,6 +1707,11 @@ ssiModalBox.addEventListener('click', (e) => e.stopPropagation());
 closeAlarmSearchBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     fermerRechercheAlarme();
+});
+document.getElementById('sprinklerRetourChoixBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    alarmModalOverlay.classList.remove('open');
+    ouvrirChoixAlarme();
 });
 alarmModalOverlay.addEventListener('click', (e) => {
     if (e.target === alarmModalOverlay) fermerRechercheAlarme();
