@@ -10,7 +10,7 @@
     --panel-bg: #111111;
     --border-color: #222222;
     --text-color: #ffffff;
-    --yellow-led: #ffcc00;
+    --yellow-led: #ff8c00;
 }
 
 body {
@@ -48,7 +48,7 @@ body {
     font-size: clamp(1rem, 4vw, 3rem);
     color: #888888;
     margin-bottom: 10px;
-    pointer-events: none;
+    pointer-events: auto;
     white-space: nowrap;
     padding: 0 10px;
 }
@@ -149,34 +149,6 @@ body {
     z-index: 10;
 }
 
-.led-red {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: transparent;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-}
-
-.led-red.blink {
-    background-color: #ff2222;
-    box-shadow: 0 0 20px #ff2222, inset 0 -2px 6px rgba(0,0,0,0.4);
-    animation: blink-animation 0.9s infinite alternate;
-    cursor: pointer;
-    pointer-events: auto;
-}
-
-.led-yellow-alert {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: var(--yellow-led);
-    box-shadow: 0 0 15px var(--yellow-led);
-    display: none;
-    cursor: pointer;
-}
-
 .leds-sheet-container {
     display: flex;
     align-items: center;
@@ -190,6 +162,9 @@ body {
     box-shadow: none;
     cursor: pointer;
     flex-shrink: 0;
+}
+.led-dynamic.led-clignote {
+    animation: blink-animation 0.9s infinite alternate;
 }
 
 @keyframes blink-animation {
@@ -849,11 +824,6 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
 <!-- ZONE DE GAUCHE : HORLOGE + BOUTONS FIXES -->
 <div class="left-zone" id="mainClickZone">
     <div class="top-controls">
-        <div id="led-yellow-alert" class="led-yellow-alert" title="Tâches actives en attente (Cliquer pour déployer)"></div>
-        <div id="led-rouge" class="led-red" title="Il est minuit ! Pensez à :
-- changer la date des tampons,
-- faire la mise à jour TMS,
-- effectuer le comptage."></div>
         <div id="leds-sheet-container" class="leds-sheet-container"></div>
     </div>
     <div class="date-display" id="date-label">Chargement...</div>
@@ -1128,29 +1098,52 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
     </div>
 </div>
 
+<!-- FENÊTRE DE CONNEXION ADMIN (cachée, appui 8s sur "h") -->
+<div class="alarm-modal-overlay" id="adminLoginOverlay">
+    <div class="alarm-modal-box choice-modal-box" id="adminLoginBox">
+        <div class="alarm-modal-header">
+            <h2>Accès admin</h2>
+            <button id="closeAdminLoginBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+        </div>
+        <input type="password" id="adminPasswordInput" class="alarm-search-input" placeholder="Mot de passe" autocomplete="off">
+        <div id="adminLoginError" class="ssi-zone-indispo hidden" style="text-align:center; margin-bottom:12px;">Mot de passe incorrect</div>
+        <button class="btn-submit" id="adminLoginSubmitBtn" style="margin-top:0;">Valider</button>
+    </div>
+</div>
+
+<!-- FENÊTRE PANNEAU ADMIN -->
+<div class="alarm-modal-overlay" id="adminPanelOverlay">
+    <div class="alarm-modal-box choice-modal-box" id="adminPanelBox">
+        <div class="alarm-modal-header">
+            <h2>Admin</h2>
+            <button id="closeAdminPanelBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+        </div>
+
+        <div class="alarm-col-title">Raccourcis</div>
+        <div id="adminLiensListe" class="alarm-multi-results" style="max-height: 160px; margin-bottom: 20px;"></div>
+
+        <div class="alarm-col-title">Forcer l'horloge</div>
+        <div style="display:flex; gap:10px;">
+            <input type="date" id="forceDateInput" class="alarm-search-input" style="width:auto; flex:1; min-width:0;">
+            <input type="time" id="forceTimeInput" class="alarm-search-input" style="width:auto; flex:1; min-width:0;">
+        </div>
+        <div style="display:flex; gap:10px; margin-top:5px;">
+            <button class="btn-submit" id="forceClockSubmitBtn" style="margin-top:0; flex:1;">Forcer</button>
+            <button class="ssi-back-btn" id="forceClockResetBtn">↺ Réinitialiser</button>
+        </div>
+    </div>
+</div>
+
 <script>
-// --- CONFIGURATION TÂCHES ---
-const tachesDeNuit = [
-    { jours: [2], texte: "B1 : Contrôle des vannes de postes" },
-    { special: 'premierLundi', texte: "B1 : Contrôle des Portes Issues de secours" },
-    { special: 'premierLundi', texte: "B1 : Contrôle des DM" },
-    { special: 'mardiApresPremierLundi', texte: "B1 : Contrôle des compteurs paratonnerres" },
-    { special: 'mardiApresPremierLundi', texte: "B2 : Contrôle des compteurs paratonnerres" },
-    { special: 'mardiApresPremierLundi', texte: "B1 : Contrôle des douches et rinces oeils" },
-    { special: 'mercrediApresPremierLundi', texte: "B1 : Contrôle des calles et chandelles" },
-    { special: 'jeudiApresPremierLundi', texte: "B1 : Contrôle Éclairage entrepôt" },
-    { special: 'vendrediApresPremierLundi', texte: "B1 : Contrôle des BAES" }
-];
-
-const tachesTerminees = {};
-let voletTachesOuvert = true;
-let nbTachesActivesGlobal = 0;
-
-function getNuitDeService(dateObj) {
-    const jourService = new Date(dateObj);
-    if (dateObj.getHours() < 7) { jourService.setDate(jourService.getDate() - 1); }
-    return jourService;
+// --- HORLOGE (potentiellement forcée depuis le panneau admin) ---
+let decalageHorlogeMs = 0;
+function obtenirMaintenant() {
+    return new Date(Date.now() + decalageHorlogeMs);
 }
+
+const tachesSheetTerminees = {};
+let voletTachesOuvert = true;
+let entreesActivesCourantes = [];
 
 function getPremierLundi(dateObj) {
     let d = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1);
@@ -1169,11 +1162,11 @@ function estJourApresPremierLundi(dateObj, offsetJours) {
     return estMemeJour(dateObj, cible);
 }
 
-// --- LEDS DYNAMIQUES PILOTÉES PAR UN GOOGLE SHEET (CSV publié) ---
+// --- LEDS & TÂCHES PILOTÉES PAR UN GOOGLE SHEET (CSV publié) ---
 const URL_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0r83fOH8sBa5pZxUyvBYwyII0BRYj0D2WZOD6u_tpxuOJlS4NzQgsF6_JEBaBV7cLUw5Fb9H2ycTe/pub?gid=0&single=true&output=csv';
 const COULEURS_LED_NOMS = {
-    'BLEU': '#3b82f6', 'ROUGE': '#ff2222', 'JAUNE': '#ffcc00', 'VERT': '#22c55e',
-    'ORANGE': '#ff8c00', 'VIOLET': '#a855f7', 'MAUVE': '#a855f7', 'ROSE': '#ec4899',
+    'BLEU': '#3b82f6', 'ROUGE': '#ff2222', 'JAUNE': '#ffe600', 'VERT': '#22c55e',
+    'ORANGE': '#ff8c00', 'VIOLET': '#a855f7', 'ROSE': '#ec4899',
     'BLANC': '#ffffff', 'GRIS': '#9ca3af', 'CYAN': '#22d3ee', 'TURQUOISE': '#14b8a6',
     'MARRON': '#92400e', 'NOIR': '#444444'
 };
@@ -1272,103 +1265,87 @@ function calculerEntreesActivesSheet(dateObj) {
     );
 }
 
-function majLedsSheet(dateObj) {
-    const conteneur = document.getElementById('leds-sheet-container');
-    if (!conteneur) return;
-    const actives = calculerEntreesActivesSheet(dateObj);
-    conteneur.innerHTML = actives.map(entree => {
-        const couleurHex = COULEURS_LED_NOMS[entree.couleur.toUpperCase()] || '#999999';
-        const titre = entree.message.replace(/"/g, '&quot;');
-        return `<div class="led-dynamic" style="background-color:${couleurHex}; box-shadow:0 0 15px ${couleurHex};" title="${titre}"></div>`;
-    }).join('');
+// Clé unique d'une occurrence de tâche, pour suivre sa validation (elle réapparaîtra à la prochaine occurrence)
+function cleTacheSheet(entree, dateObj) {
+    return `${entree.message}|${entree.date}|${entree.heureDebut}|${dateObj.toDateString()}`;
 }
 
-chargerDonneesSheet();
-setInterval(chargerDonneesSheet, 10 * 60 * 1000);
-
-function tacheEstActive(tache, serviceDate) {
-    if (tache.jours) return tache.jours.includes(serviceDate.getDay());
-    switch (tache.special) {
-        case 'premierLundi': return estMemeJour(serviceDate, getPremierLundi(serviceDate));
-        case 'mardiApresPremierLundi': return estJourApresPremierLundi(serviceDate, 1);
-        case 'mercrediApresPremierLundi': return estJourApresPremierLundi(serviceDate, 2);
-        case 'jeudiApresPremierLundi': return estJourApresPremierLundi(serviceDate, 3);
-        case 'vendrediApresPremierLundi': return estJourApresPremierLundi(serviceDate, 4);
-    }
-    return false;
+function entreesActivesNonTerminees(dateObj) {
+    return calculerEntreesActivesSheet(dateObj).filter(e => !tachesSheetTerminees[cleTacheSheet(e, dateObj)]);
 }
 
-function marquerTacheTerminee(index, cleNuit) {
-    tachesTerminees[index] = cleNuit;
-    const now = new Date();
-    afficherTachesDeNuit(now);
-}
-
-function afficherTachesDeNuit(dateObj) {
+// --- Panneau tâches (rempli à partir du Sheet) ---
+function genererTachesPanelDepuisSheet(dateObj) {
     const container = document.getElementById('night-tasks');
     const tasksZone = document.getElementById('tasksZone');
-    const hours = dateObj.getHours();
-    const minutes = dateObj.getMinutes();
-    const dansLaFenetre = (hours >= 19) || (hours < 6) || (hours === 6 && minutes < 30);
+    const actives = entreesActivesNonTerminees(dateObj);
+    entreesActivesCourantes = actives;
 
-    if (!dansLaFenetre) {
+    if (actives.length === 0) {
         container.innerHTML = '';
         tasksZone.classList.add('collapsed');
-        nbTachesActivesGlobal = 0;
-        majLedJauneAlerte();
         return;
     }
 
-    const nuitService = getNuitDeService(dateObj);
-    const cleNuit = nuitService.toDateString();
-
-    const tâchesFiltrées = tachesDeNuit
-        .map((t, index) => ({ t, index }))
-        .filter(({ t, index }) => tacheEstActive(t, nuitService) && tachesTerminees[index] !== cleNuit);
-
-    nbTachesActivesGlobal = tâchesFiltrées.length;
-
-    if (nbTachesActivesGlobal === 0) {
-        tasksZone.classList.add('collapsed');
-    } else {
-        if (voletTachesOuvert) {
-            tasksZone.classList.remove('collapsed');
-        } else {
-            tasksZone.classList.add('collapsed');
-        }
-    }
-
-    const html = tâchesFiltrées
-        .map(({ t, index }) => `
-            <div class="night-task-item" onclick="marquerTacheTerminee(${index}, '${cleNuit}')">
-                <div class="task-led"></div>
-                <span>${t.texte}</span>
-            </div>
-        `).join('');
-
-    container.innerHTML = html;
-    majLedJauneAlerte();
-}
-
-function majLedJauneAlerte() {
-    const ledJaune = document.getElementById('led-yellow-alert');
-    if (!voletTachesOuvert && nbTachesActivesGlobal > 0) {
-        ledJaune.style.display = 'block';
-    } else {
-        ledJaune.style.display = 'none';
-    }
-}
-
-// --- GESTION DE RÉTRACTATION ---
-function basculerVoletTaches(ouvrir) {
-    voletTachesOuvert = ouvrir;
-    const tasksZone = document.getElementById('tasksZone');
     if (voletTachesOuvert) {
         tasksZone.classList.remove('collapsed');
     } else {
         tasksZone.classList.add('collapsed');
     }
-    majLedJauneAlerte();
+
+    container.innerHTML = actives.map((e, i) => {
+        const couleurHex = COULEURS_LED_NOMS[e.couleur.toUpperCase()] || '#999999';
+        const texte = e.message.replace(/</g, '&lt;').replace(/\n/g, '<br>');
+        return `
+            <div class="night-task-item" data-index="${i}">
+                <div class="task-led" style="background-color:${couleurHex}; box-shadow:0 0 8px ${couleurHex};"></div>
+                <span>${texte}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+document.getElementById('night-tasks').addEventListener('click', (e) => {
+    const item = e.target.closest('.night-task-item');
+    if (!item) return;
+    const idx = parseInt(item.dataset.index, 10);
+    const entree = entreesActivesCourantes[idx];
+    if (!entree) return;
+    const maintenant = obtenirMaintenant();
+    tachesSheetTerminees[cleTacheSheet(entree, maintenant)] = true;
+    genererTachesPanelDepuisSheet(maintenant);
+    majLedsSheet(maintenant);
+});
+
+// --- LEDs (une par couleur active, cliquer déploie le panneau tâches) ---
+function majLedsSheet(dateObj) {
+    const conteneur = document.getElementById('leds-sheet-container');
+    if (!conteneur) return;
+    if (voletTachesOuvert) { conteneur.innerHTML = ''; return; }
+    const actives = entreesActivesNonTerminees(dateObj);
+    const couleursDistinctes = [...new Set(actives.map(e => e.couleur.toUpperCase()))];
+    conteneur.innerHTML = couleursDistinctes.map(nomCouleur => {
+        const hex = COULEURS_LED_NOMS[nomCouleur] || '#999999';
+        const clignote = nomCouleur === 'ROUGE' ? ' led-clignote' : '';
+        return `<div class="led-dynamic${clignote}" style="background-color:${hex}; box-shadow:0 0 15px ${hex};" title="Cliquer pour voir les tâches (${nomCouleur.toLowerCase()})"></div>`;
+    }).join('');
+}
+
+document.getElementById('leds-sheet-container').addEventListener('click', (e) => {
+    if (!e.target.closest('.led-dynamic')) return;
+    e.stopPropagation();
+    basculerVoletTaches(true);
+});
+
+chargerDonneesSheet();
+setInterval(chargerDonneesSheet, 10 * 60 * 1000);
+
+// --- GESTION DE RÉTRACTATION ---
+function basculerVoletTaches(ouvrir) {
+    voletTachesOuvert = ouvrir;
+    const maintenant = obtenirMaintenant();
+    genererTachesPanelDepuisSheet(maintenant);
+    majLedsSheet(maintenant);
 }
 
 document.getElementById('toggleTasksBtn').addEventListener('click', (e) => {
@@ -1376,14 +1353,9 @@ document.getElementById('toggleTasksBtn').addEventListener('click', (e) => {
     basculerVoletTaches(false);
 });
 
-document.getElementById('led-yellow-alert').addEventListener('click', (e) => {
-    e.stopPropagation();
-    basculerVoletTaches(true);
-});
-
 // --- GESTION HORLOGE & DATE ---
 function updateClock() {
-    const now = new Date();
+    const now = obtenirMaintenant();
     const hours = now.getHours();
     const minutes = now.getMinutes();
     const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
@@ -1395,14 +1367,10 @@ function updateClock() {
     dateString = dateString.charAt(0).toUpperCase() + dateString.slice(1);
     document.getElementById('date-label').textContent = dateString;
 
-    afficherTachesDeNuit(now);
-    gestionLedRouge(now);
+    genererTachesPanelDepuisSheet(now);
     gererVisibiliteBoutons(now);
     majLedsSheet(now);
 }
-
-let ledRougeArmee = false;
-let ledRougeEteinteAujourdhui = false;
 
 // Masque tous les boutons de 07h00 à 18h50 : seule l'horloge et la date restent visibles
 function gererVisibiliteBoutons(dateObj) {
@@ -1411,37 +1379,6 @@ function gererVisibiliteBoutons(dateObj) {
     const enJournee = hours >= 7 && (hours < 18 || (hours === 18 && minutes < 50));
     document.body.classList.toggle('jour-sans-boutons', enJournee);
 }
-
-function gestionLedRouge(dateObj) {
-    const ledRouge = document.getElementById('led-rouge');
-    const hours = dateObj.getHours();
-    const minutes = dateObj.getMinutes();
-
-    if (hours === 0 && minutes === 0) {
-        ledRougeArmee = true;
-        ledRougeEteinteAujourdhui = false;
-    }
-    if (hours === 6 && minutes === 30) {
-        ledRougeEteinteAujourdhui = true;
-        ledRougeArmee = false;
-    }
-
-    const dansLaPlageMinuitA0630 = (hours >= 0 && (hours < 6 || (hours === 6 && minutes < 30)));
-
-    if (ledRougeArmee && dansLaPlageMinuitA0630 && !ledRougeEteinteAujourdhui) {
-        ledRouge.classList.add('blink');
-    } else {
-        ledRouge.classList.remove('blink');
-    }
-}
-
-document.getElementById('led-rouge').addEventListener('click', function(e) {
-    e.stopPropagation();
-    if (this.classList.contains('blink')) {
-        ledRougeEteinteAujourdhui = true;
-        this.classList.remove('blink');
-    }
-});
 
 setInterval(updateClock, 1000);
 updateClock();
@@ -2163,6 +2100,129 @@ function copierRapport() {
         setTimeout(() => { btn.textContent = texteOriginal; }, 1500);
     });
 }
+
+// --- PANNEAU ADMIN CACHÉ (appui 8s sur "h") ---
+const MOT_DE_PASSE_ADMIN = 'Dedoum0154';
+// À remplacer par l'URL CSV publiée de la Feuille 3 (Fichier > Partager > Publier sur le web > choisir "Feuille 3" > CSV)
+const URL_SHEET3_CSV = https://docs.google.com/spreadsheets/d/e/2PACX-1vT0r83fOH8sBa5pZxUyvBYwyII0BRYj0D2WZOD6u_tpxuOJlS4NzQgsF6_JEBaBV7cLUw5Fb9H2ycTe/pub?gid=2061938972&single=true&output=csv;
+
+const adminLoginOverlay = document.getElementById('adminLoginOverlay');
+const adminLoginBox = document.getElementById('adminLoginBox');
+const adminPasswordInput = document.getElementById('adminPasswordInput');
+const adminLoginError = document.getElementById('adminLoginError');
+const adminPanelOverlay = document.getElementById('adminPanelOverlay');
+const adminPanelBox = document.getElementById('adminPanelBox');
+
+// Déclencheur discret : 5 taps rapides sur la date (moins de 3 secondes), fonctionne pareil sur PC et mobile
+let compteurTapsDate = 0;
+let timerResetTapsDate = null;
+const dateLabelEl = document.getElementById('date-label');
+dateLabelEl.addEventListener('click', (e) => {
+    e.stopPropagation();
+    compteurTapsDate++;
+    clearTimeout(timerResetTapsDate);
+    timerResetTapsDate = setTimeout(() => { compteurTapsDate = 0; }, 3000);
+    if (compteurTapsDate >= 5) {
+        compteurTapsDate = 0;
+        clearTimeout(timerResetTapsDate);
+        ouvrirLoginAdmin();
+    }
+});
+
+function ouvrirLoginAdmin() {
+    adminPasswordInput.value = '';
+    adminLoginError.classList.add('hidden');
+    adminLoginOverlay.classList.add('open');
+    setTimeout(() => adminPasswordInput.focus(), 50);
+}
+function fermerLoginAdmin() {
+    adminLoginOverlay.classList.remove('open');
+}
+document.getElementById('closeAdminLoginBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    fermerLoginAdmin();
+});
+adminLoginOverlay.addEventListener('click', (e) => {
+    if (e.target === adminLoginOverlay) fermerLoginAdmin();
+});
+adminLoginBox.addEventListener('click', (e) => e.stopPropagation());
+
+function tenterConnexionAdmin() {
+    if (adminPasswordInput.value === MOT_DE_PASSE_ADMIN) {
+        fermerLoginAdmin();
+        ouvrirPanelAdmin();
+    } else {
+        adminLoginError.classList.remove('hidden');
+    }
+}
+document.getElementById('adminLoginSubmitBtn').addEventListener('click', tenterConnexionAdmin);
+adminPasswordInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') tenterConnexionAdmin();
+});
+
+function ouvrirPanelAdmin() {
+    adminPanelOverlay.classList.add('open');
+    chargerLiensAdmin();
+    const maintenant = obtenirMaintenant();
+    const pad = n => String(n).padStart(2, '0');
+    document.getElementById('forceDateInput').value = `${maintenant.getFullYear()}-${pad(maintenant.getMonth() + 1)}-${pad(maintenant.getDate())}`;
+    document.getElementById('forceTimeInput').value = `${pad(maintenant.getHours())}:${pad(maintenant.getMinutes())}`;
+}
+function fermerPanelAdmin() {
+    adminPanelOverlay.classList.remove('open');
+}
+document.getElementById('closeAdminPanelBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    fermerPanelAdmin();
+});
+adminPanelOverlay.addEventListener('click', (e) => {
+    if (e.target === adminPanelOverlay) fermerPanelAdmin();
+});
+adminPanelBox.addEventListener('click', (e) => e.stopPropagation());
+
+function chargerLiensAdmin() {
+    const liste = document.getElementById('adminLiensListe');
+    liste.innerHTML = '<div class="alarm-multi-empty">Chargement...</div>';
+    fetch(URL_SHEET3_CSV)
+        .then(r => r.text())
+        .then(texte => {
+            const lignes = parserCSV(texte);
+            if (lignes.length < 2) { liste.innerHTML = '<div class="alarm-multi-empty">Aucun raccourci.</div>'; return; }
+            const entetes = lignes[0].map(h => h.trim().toUpperCase());
+            let idxNom = entetes.findIndex(h => h.includes('NOM') || h.includes('LABEL') || h.includes('TITRE'));
+            let idxUrl = entetes.findIndex(h => h.includes('URL') || h.includes('LIEN'));
+            if (idxNom === -1) idxNom = 0;
+            if (idxUrl === -1) idxUrl = entetes.length > 1 ? 1 : 0;
+            const liens = lignes.slice(1)
+                .filter(l => l[idxUrl] && l[idxUrl].trim() !== '')
+                .map(l => ({ nom: (l[idxNom] || l[idxUrl]).trim(), url: l[idxUrl].trim() }));
+            if (liens.length === 0) { liste.innerHTML = '<div class="alarm-multi-empty">Aucun raccourci.</div>'; return; }
+            liste.innerHTML = liens.map(l =>
+                `<a href="${l.url.replace(/"/g, '&quot;')}" target="_blank" rel="noopener" class="alarm-result-item" style="display:block; text-decoration:none;">${l.nom}</a>`
+            ).join('');
+        })
+        .catch(() => {
+            liste.innerHTML = '<div class="alarm-multi-empty">Impossible de charger les raccourcis.</div>';
+        });
+}
+setInterval(() => {
+    if (adminPanelOverlay.classList.contains('open')) chargerLiensAdmin();
+}, 10 * 60 * 1000);
+
+document.getElementById('forceClockSubmitBtn').addEventListener('click', () => {
+    const dateVal = document.getElementById('forceDateInput').value;
+    const heureVal = document.getElementById('forceTimeInput').value;
+    if (!dateVal || !heureVal) return;
+    const [an, mo, jo] = dateVal.split('-').map(Number);
+    const [h, m] = heureVal.split(':').map(Number);
+    const dateForcee = new Date(an, mo - 1, jo, h, m, 0);
+    decalageHorlogeMs = dateForcee.getTime() - Date.now();
+    updateClock();
+});
+document.getElementById('forceClockResetBtn').addEventListener('click', () => {
+    decalageHorlogeMs = 0;
+    updateClock();
+});
 </script>
 </body>
 </html>
