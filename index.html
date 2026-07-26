@@ -177,6 +177,21 @@ body {
     cursor: pointer;
 }
 
+.leds-sheet-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.led-dynamic {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: transparent;
+    box-shadow: none;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
 @keyframes blink-animation {
     from { opacity: 0.4; }
     to { opacity: 1; }
@@ -839,6 +854,7 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
 - changer la date des tampons,
 - faire la mise à jour TMS,
 - effectuer le comptage."></div>
+        <div id="leds-sheet-container" class="leds-sheet-container"></div>
     </div>
     <div class="date-display" id="date-label">Chargement...</div>
     <div id="clock">00:00</div>
@@ -1153,6 +1169,123 @@ function estJourApresPremierLundi(dateObj, offsetJours) {
     return estMemeJour(dateObj, cible);
 }
 
+// --- LEDS DYNAMIQUES PILOTÉES PAR UN GOOGLE SHEET (CSV publié) ---
+const URL_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0r83fOH8sBa5pZxUyvBYwyII0BRYj0D2WZOD6u_tpxuOJlS4NzQgsF6_JEBaBV7cLUw5Fb9H2ycTe/pub?gid=0&single=true&output=csv';
+const COULEURS_LED_NOMS = {
+    'BLEU': '#3b82f6', 'ROUGE': '#ff2222', 'JAUNE': '#ffcc00', 'VERT': '#22c55e',
+    'ORANGE': '#ff8c00', 'VIOLET': '#a855f7', 'MAUVE': '#a855f7', 'ROSE': '#ec4899',
+    'BLANC': '#ffffff', 'GRIS': '#9ca3af', 'CYAN': '#22d3ee', 'TURQUOISE': '#14b8a6',
+    'MARRON': '#92400e', 'NOIR': '#444444'
+};
+const JOURS_SEMAINE_INDEX = { 'DIMANCHE': 0, 'LUNDI': 1, 'MARDI': 2, 'MERCREDI': 3, 'JEUDI': 4, 'VENDREDI': 5, 'SAMEDI': 6 };
+
+let donneesSheet = [];
+
+// Parseur CSV robuste (gère les champs entre guillemets avec virgules et retours à la ligne)
+function parserCSV(texte) {
+    const lignes = [];
+    let ligne = [];
+    let champ = '';
+    let dansGuillemets = false;
+    for (let i = 0; i < texte.length; i++) {
+        const c = texte[i];
+        if (dansGuillemets) {
+            if (c === '"') {
+                if (texte[i + 1] === '"') { champ += '"'; i++; }
+                else { dansGuillemets = false; }
+            } else {
+                champ += c;
+            }
+        } else {
+            if (c === '"') { dansGuillemets = true; }
+            else if (c === ',') { ligne.push(champ); champ = ''; }
+            else if (c === '\r') { /* ignoré */ }
+            else if (c === '\n') { ligne.push(champ); champ = ''; lignes.push(ligne); ligne = []; }
+            else { champ += c; }
+        }
+    }
+    if (champ.length > 0 || ligne.length > 0) { ligne.push(champ); lignes.push(ligne); }
+    return lignes.filter(l => l.some(c => c.trim() !== ''));
+}
+
+function chargerDonneesSheet() {
+    fetch(URL_SHEET_CSV)
+        .then(r => r.text())
+        .then(texte => {
+            const lignes = parserCSV(texte);
+            if (lignes.length < 2) return;
+            const entetes = lignes[0].map(h => h.trim().toUpperCase());
+            const idxDate = entetes.indexOf('DATE');
+            const idxDebut = entetes.indexOf('HEURE DEBUT');
+            const idxFin = entetes.indexOf('HEURE FIN');
+            const idxMessage = entetes.indexOf('MESSAGE');
+            const idxCouleur = entetes.indexOf('COULEUR LED');
+            donneesSheet = lignes.slice(1)
+                .filter(l => l[idxDate] && l[idxDate].trim() !== '')
+                .map(l => ({
+                    date: (l[idxDate] || '').trim(),
+                    heureDebut: (l[idxDebut] || '00:00').trim(),
+                    heureFin: (l[idxFin] || '00:00').trim(),
+                    message: (l[idxMessage] || '').trim(),
+                    couleur: (l[idxCouleur] || '').trim()
+                }));
+        })
+        .catch(() => {});
+}
+
+function dateCritereEstActive(critere, aujourdhui) {
+    const val = critere.toUpperCase();
+    if (val === 'TOUS_LES_JOURS') return true;
+    if (JOURS_SEMAINE_INDEX.hasOwnProperty(val)) return aujourdhui.getDay() === JOURS_SEMAINE_INDEX[val];
+    if (val === 'PREMIER_LUNDI') return estMemeJour(aujourdhui, getPremierLundi(aujourdhui));
+    if (val === 'MARDI_APRES_PREMIER_LUNDI') return estJourApresPremierLundi(aujourdhui, 1);
+    if (val === 'MERCREDI_APRES_PREMIER_LUNDI') return estJourApresPremierLundi(aujourdhui, 2);
+    if (val === 'JEUDI_APRES_PREMIER_LUNDI') return estJourApresPremierLundi(aujourdhui, 3);
+    if (val === 'VENDREDI_APRES_PREMIER_LUNDI') return estJourApresPremierLundi(aujourdhui, 4);
+    const m = val.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (m) {
+        return aujourdhui.getDate() === parseInt(m[1], 10)
+            && (aujourdhui.getMonth() + 1) === parseInt(m[2], 10)
+            && aujourdhui.getFullYear() === parseInt(m[3], 10);
+    }
+    return false;
+}
+
+function heureVersMinutes(hhmm) {
+    const parties = hhmm.split(':');
+    const h = parseInt(parties[0], 10) || 0;
+    const m = parseInt(parties[1], 10) || 0;
+    return h * 60 + m;
+}
+
+function heureDansPlage(nowMin, debutMin, finMin) {
+    if (debutMin === finMin) return false;
+    if (finMin < debutMin) return nowMin >= debutMin || nowMin < finMin;
+    return nowMin >= debutMin && nowMin < finMin;
+}
+
+function calculerEntreesActivesSheet(dateObj) {
+    const nowMin = dateObj.getHours() * 60 + dateObj.getMinutes();
+    return donneesSheet.filter(ligne =>
+        dateCritereEstActive(ligne.date, dateObj)
+        && heureDansPlage(nowMin, heureVersMinutes(ligne.heureDebut), heureVersMinutes(ligne.heureFin))
+    );
+}
+
+function majLedsSheet(dateObj) {
+    const conteneur = document.getElementById('leds-sheet-container');
+    if (!conteneur) return;
+    const actives = calculerEntreesActivesSheet(dateObj);
+    conteneur.innerHTML = actives.map(entree => {
+        const couleurHex = COULEURS_LED_NOMS[entree.couleur.toUpperCase()] || '#999999';
+        const titre = entree.message.replace(/"/g, '&quot;');
+        return `<div class="led-dynamic" style="background-color:${couleurHex}; box-shadow:0 0 15px ${couleurHex};" title="${titre}"></div>`;
+    }).join('');
+}
+
+chargerDonneesSheet();
+setInterval(chargerDonneesSheet, 10 * 60 * 1000);
+
 function tacheEstActive(tache, serviceDate) {
     if (tache.jours) return tache.jours.includes(serviceDate.getDay());
     switch (tache.special) {
@@ -1250,7 +1383,7 @@ document.getElementById('led-yellow-alert').addEventListener('click', (e) => {
 
 // --- GESTION HORLOGE & DATE ---
 function updateClock() {
-    const now = new Date();
+    const now = new Date(2026, 8, 4);
     const hours = now.getHours();
     const minutes = now.getMinutes();
     const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
@@ -1265,6 +1398,7 @@ function updateClock() {
     afficherTachesDeNuit(now);
     gestionLedRouge(now);
     gererVisibiliteBoutons(now);
+    majLedsSheet(now);
 }
 
 let ledRougeArmee = false;
