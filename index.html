@@ -118,7 +118,7 @@ body {
     border-radius: 8px;
     padding: 12px 15px;
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.2s;
+    transition: background-color 0.2s;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -126,7 +126,6 @@ body {
 
 .night-task-item:hover {
     background-color: #1c1c1c;
-    transform: scale(1.01);
 }
 
 .task-led {
@@ -162,14 +161,6 @@ body {
     box-shadow: none;
     cursor: pointer;
     flex-shrink: 0;
-}
-.led-dynamic.led-clignote {
-    animation: blink-animation 0.9s infinite alternate;
-}
-
-@keyframes blink-animation {
-    from { opacity: 0.4; }
-    to { opacity: 1; }
 }
 
 /* BOUTON REHAUSSÉ */
@@ -432,6 +423,34 @@ body.jour-sans-boutons .icon-btn { opacity: 0 !important; visibility: hidden !im
     min-height: 0;
 }
 .alarm-multi-empty { color: #555; font-size: 0.85rem; padding: 10px 0; }
+
+.admin-liens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 18px 24px;
+    align-items: start;
+}
+.admin-section-bloc { min-width: 0; }
+.admin-section-titre {
+    font-size: 0.72rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 140, 0, 0.25);
+}
+.admin-lien-item {
+    display: block;
+    padding: 5px 0;
+    color: #ccc;
+    text-decoration: none;
+    font-size: 0.88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.admin-lien-item:hover { color: var(--yellow-led); }
 .alarm-multi-item {
     background: #141414;
     border: 1px solid #2a2a2a;
@@ -1120,7 +1139,7 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
         </div>
 
         <div class="alarm-col-title">Raccourcis</div>
-        <div id="adminLiensListe" class="alarm-multi-results" style="max-height: 160px; margin-bottom: 20px;"></div>
+        <div id="adminLiensListe" class="admin-liens-grid" style="margin-bottom: 20px;"></div>
 
         <div class="alarm-col-title">Forcer l'horloge</div>
         <div style="display:flex; gap:10px;">
@@ -1326,8 +1345,7 @@ function majLedsSheet(dateObj) {
     const couleursDistinctes = [...new Set(actives.map(e => e.couleur.toUpperCase()))];
     conteneur.innerHTML = couleursDistinctes.map(nomCouleur => {
         const hex = COULEURS_LED_NOMS[nomCouleur] || '#999999';
-        const clignote = nomCouleur === 'ROUGE' ? ' led-clignote' : '';
-        return `<div class="led-dynamic${clignote}" style="background-color:${hex}; box-shadow:0 0 15px ${hex};" title="Cliquer pour voir les tâches (${nomCouleur.toLowerCase()})"></div>`;
+        return `<div class="led-dynamic" style="background-color:${hex}; box-shadow:0 0 15px ${hex};" title="Cliquer pour voir les tâches (${nomCouleur.toLowerCase()})"></div>`;
     }).join('');
 }
 
@@ -2104,7 +2122,7 @@ function copierRapport() {
 // --- PANNEAU ADMIN CACHÉ (appui 8s sur "h") ---
 const MOT_DE_PASSE_ADMIN = 'Dedoum0154';
 // À remplacer par l'URL CSV publiée de la Feuille 3 (Fichier > Partager > Publier sur le web > choisir "Feuille 3" > CSV)
-const URL_SHEET3_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0r83fOH8sBa5pZxUyvBYwyII0BRYj0D2WZOD6u_tpxuOJlS4NzQgsF6_JEBaBV7cLUw5Fb9H2ycTe/pub?gid=2061938972&single=true&output=csv';
+const URL_SHEET3_CSV = 'REMPLACER_PAR_URL_CSV_FEUILLE_3';
 
 const adminLoginOverlay = document.getElementById('adminLoginOverlay');
 const adminLoginBox = document.getElementById('adminLoginBox');
@@ -2191,15 +2209,34 @@ function chargerLiensAdmin() {
             const entetes = lignes[0].map(h => h.trim().toUpperCase());
             let idxNom = entetes.findIndex(h => h.includes('NOM') || h.includes('LABEL') || h.includes('TITRE'));
             let idxUrl = entetes.findIndex(h => h.includes('URL') || h.includes('LIEN'));
+            let idxSection = entetes.findIndex(h => h.includes('SECTION') || h.includes('CATEGORIE') || h.includes('CATÉGORIE'));
             if (idxNom === -1) idxNom = 0;
             if (idxUrl === -1) idxUrl = entetes.length > 1 ? 1 : 0;
             const liens = lignes.slice(1)
                 .filter(l => l[idxUrl] && l[idxUrl].trim() !== '')
-                .map(l => ({ nom: (l[idxNom] || l[idxUrl]).trim(), url: l[idxUrl].trim() }));
+                .map(l => ({
+                    nom: (l[idxNom] || l[idxUrl]).trim(),
+                    url: l[idxUrl].trim(),
+                    section: idxSection !== -1 && l[idxSection] ? l[idxSection].trim() : 'Autres'
+                }));
             if (liens.length === 0) { liste.innerHTML = '<div class="alarm-multi-empty">Aucun raccourci.</div>'; return; }
-            liste.innerHTML = liens.map(l =>
-                `<a href="${l.url.replace(/"/g, '&quot;')}" target="_blank" rel="noopener" class="alarm-result-item" style="display:block; text-decoration:none;">${l.nom}</a>`
-            ).join('');
+
+            // Regroupement par section, sections triées alphabétiquement
+            const sections = {};
+            liens.forEach(l => {
+                if (!sections[l.section]) sections[l.section] = [];
+                sections[l.section].push(l);
+            });
+            const nomsSections = Object.keys(sections).sort((a, b) => a.localeCompare(b, 'fr'));
+
+            liste.innerHTML = nomsSections.map(nomSection => `
+                <div class="admin-section-bloc">
+                    <div class="admin-section-titre">${nomSection}</div>
+                    ${sections[nomSection].map(l =>
+                        `<a href="${l.url.replace(/"/g, '&quot;')}" target="_blank" rel="noopener" class="admin-lien-item" title="${l.nom.replace(/"/g, '&quot;')}">${l.nom}</a>`
+                    ).join('')}
+                </div>
+            `).join('');
         })
         .catch(() => {
             liste.innerHTML = '<div class="alarm-multi-empty">Impossible de charger les raccourcis.</div>';
