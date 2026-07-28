@@ -191,9 +191,9 @@ body {
 .icon-btn.active { color: var(--yellow-led); opacity: 1; }
 
 /* MASQUER LE BOUTON QUAND L'APPLICATION EST EN PLEIN ÉCRAN */
-:-webkit-full-screen #togglePanelBtn, :-webkit-full-screen #toggleWeatherBtn, :-webkit-full-screen #toggleAlarmSearchBtn { opacity: 0; visibility: hidden; pointer-events: none; }
-:-ms-fullscreen #togglePanelBtn, :-ms-fullscreen #toggleWeatherBtn, :-ms-fullscreen #toggleAlarmSearchBtn { opacity: 0; visibility: hidden; pointer-events: none; }
-:fullscreen #togglePanelBtn, :fullscreen #toggleWeatherBtn, :fullscreen #toggleAlarmSearchBtn { opacity: 0; visibility: hidden; pointer-events: none; }
+:-webkit-full-screen #togglePanelBtn, :-webkit-full-screen #toggleWeatherBtn, :-webkit-full-screen #toggleAlarmSearchBtn, :-webkit-full-screen #toggleCompteRenduBtn { opacity: 0; visibility: hidden; pointer-events: none; }
+:-ms-fullscreen #togglePanelBtn, :-ms-fullscreen #toggleWeatherBtn, :-ms-fullscreen #toggleAlarmSearchBtn, :-ms-fullscreen #toggleCompteRenduBtn { opacity: 0; visibility: hidden; pointer-events: none; }
+:fullscreen #togglePanelBtn, :fullscreen #toggleWeatherBtn, :fullscreen #toggleAlarmSearchBtn, :fullscreen #toggleCompteRenduBtn { opacity: 0; visibility: hidden; pointer-events: none; }
 
 body.jour-sans-boutons .icon-btn { opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
 
@@ -320,8 +320,10 @@ body.jour-sans-boutons .icon-btn { opacity: 0 !important; visibility: hidden !im
 }
 
 .icon-btn.icon-btn-tertiary { right: 90px; }
+.icon-btn.icon-btn-quaternary { right: 150px; }
 @media (max-width: 768px) {
     .icon-btn.icon-btn-tertiary { right: 80px; }
+    .icon-btn.icon-btn-quaternary { right: 140px; }
 }
 
 .alarm-modal-overlay {
@@ -426,6 +428,33 @@ body.jour-sans-boutons .icon-btn { opacity: 0 !important; visibility: hidden !im
     min-height: 0;
 }
 .alarm-multi-empty { color: #555; font-size: 0.85rem; padding: 10px 0; }
+
+.cr-ligne-item {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 10px 34px 10px 12px;
+    position: relative;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+.cr-ligne-heure { font-weight: bold; color: var(--text-color); margin-right: 6px; }
+.cr-ligne-texte.cr-alarme { color: #ff5555; }
+.cr-ligne-texte.cr-libre { color: #ddd; }
+.cr-ligne-remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+}
+.cr-ligne-remove:hover { color: #fff; }
+.cr-ligne-remove svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
 
 .admin-liens-grid {
     display: grid;
@@ -861,6 +890,7 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
     <button class="icon-btn" id="togglePanelBtn" title="Prise de service"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 3h6v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V3z"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg></button>
     <button class="icon-btn icon-btn-secondary" id="toggleWeatherBtn" title="Météo"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="8" r="3.2"/><line x1="16" y1="2.3" x2="16" y2="1"/><line x1="21" y1="8" x2="22.3" y2="8"/><line x1="19.6" y1="4.4" x2="20.5" y2="3.5"/><path d="M6 19a4 4 0 0 1-.6-7.95A5 5 0 0 1 15 9.5"/><path d="M6 19h11a3.5 3.5 0 0 0 .3-6.98"/></svg></button>
     <button class="icon-btn icon-btn-tertiary" id="toggleAlarmSearchBtn" title="Support Alarme"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9 15.5H3z"/><line x1="12" y1="9.5" x2="12" y2="13.5"/><line x1="12" y1="16.2" x2="12" y2="16.25"/></svg></button>
+    <button class="icon-btn icon-btn-quaternary" id="toggleCompteRenduBtn" title="Compte rendu"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13l3 3v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><path d="M8 4v6h7V4"/><line x1="7" y1="14" x2="17" y2="14"/><line x1="7" y1="17" x2="13" y2="17"/></svg></button>
 </div>
 
 <!-- ZONE DE DROITE : LISTE DES TÂCHES CONTEXTUELLES -->
@@ -1102,6 +1132,37 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
     </div>
 </div>
 
+<!-- FENÊTRE COMPTE RENDU -->
+<div class="alarm-modal-overlay" id="crModalOverlay">
+    <div class="alarm-modal-box" id="crModalBox">
+        <div class="alarm-modal-header">
+            <h2>Compte rendu</h2>
+            <button id="closeCrBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+        </div>
+        <div class="alarm-modal-columns">
+            <div class="alarm-col-search">
+                <div class="alarm-col-title">Ajouter un événement</div>
+                <input type="time" id="crHeureInput" class="alarm-search-input">
+
+                <input type="text" id="crAlarmeSearchInput" class="alarm-search-input" placeholder="Rechercher une alarme (optionnel)" autocomplete="off">
+                <div class="alarm-results-list" id="crAlarmeResultsList" style="max-height: 140px; flex: none; margin-bottom: 12px;"></div>
+
+                <div class="alarm-col-title">Ou texte libre</div>
+                <textarea id="crTexteLibre" class="alarm-search-input" style="resize: vertical; min-height: 70px; font-family: inherit;" placeholder="Votre texte..."></textarea>
+                <button class="btn-submit" id="crAjouterTexteBtn" style="margin-top: 8px;">+ Ajouter au compte rendu</button>
+            </div>
+            <div class="alarm-col-selection">
+                <div class="alarm-col-title">Compte rendu</div>
+                <div class="alarm-multi-results" id="crLignesListe"></div>
+                <div style="display:flex; gap:10px; margin-top: 12px;">
+                    <button class="btn-copy" id="crCopierBtn" style="flex:1;">📋 Copier le compte rendu</button>
+                    <button class="ssi-back-btn" id="crViderBtn">Vider</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- FENÊTRE DE RECHERCHE D'ALARMES -->
 <div class="alarm-modal-overlay" id="alarmModalOverlay">
     <div class="alarm-modal-box" id="alarmModalBox">
@@ -1287,17 +1348,35 @@ function heureDansPlage(nowMin, debutMin, finMin) {
     return nowMin >= debutMin && nowMin < finMin;
 }
 
-function calculerEntreesActivesSheet(dateObj) {
+// Pour une plage à cheval sur minuit (ex: 19:00-06:30), la portion "matin" (avant l'heure de fin)
+// doit être rattachée à la veille pour le calcul du jour (ex: MARDI 19h-06h30 doit rester actif
+// jusqu'à 06h30 le MERCREDI matin, en se basant sur le fait que MARDI était bien le jour de la veille).
+function dateReferencePourLigne(ligne, dateObj) {
+    const debutMin = heureVersMinutes(ligne.heureDebut);
+    const finMin = heureVersMinutes(ligne.heureFin);
     const nowMin = dateObj.getHours() * 60 + dateObj.getMinutes();
-    return donneesSheet.filter(ligne =>
-        dateCritereEstActive(ligne.date, dateObj)
-        && heureDansPlage(nowMin, heureVersMinutes(ligne.heureDebut), heureVersMinutes(ligne.heureFin))
-    );
+    if (finMin < debutMin && nowMin < finMin) {
+        const veille = new Date(dateObj);
+        veille.setDate(veille.getDate() - 1);
+        return veille;
+    }
+    return dateObj;
+}
+
+function ligneEstActiveMaintenant(ligne, dateObj) {
+    const nowMin = dateObj.getHours() * 60 + dateObj.getMinutes();
+    if (!heureDansPlage(nowMin, heureVersMinutes(ligne.heureDebut), heureVersMinutes(ligne.heureFin))) return false;
+    return dateCritereEstActive(ligne.date, dateReferencePourLigne(ligne, dateObj));
+}
+
+function calculerEntreesActivesSheet(dateObj) {
+    return donneesSheet.filter(ligne => ligneEstActiveMaintenant(ligne, dateObj));
 }
 
 // Clé unique d'une occurrence de tâche, pour suivre sa validation (elle réapparaîtra à la prochaine occurrence)
 function cleTacheSheet(entree, dateObj) {
-    return `${entree.message}|${entree.date}|${entree.heureDebut}|${dateObj.toDateString()}`;
+    const dateRef = dateReferencePourLigne(entree, dateObj);
+    return `${entree.message}|${entree.date}|${entree.heureDebut}|${dateRef.toDateString()}`;
 }
 
 function entreesActivesNonTerminees(dateObj) {
@@ -1506,8 +1585,8 @@ const donneesAlarmes = [
     { alarme: "FEU POSTE DE CONTROLE N°14 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule D (Réseau plafond)" },
     { alarme: "FEU POSTE DE CONTROLE N°15 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Bureaux, WC, ..." },
     { alarme: "FEU POSTE DE CONTROLE N°16 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule D (Réseau racks)" },
-    { alarme: "FEU POSTE DE CONTROLE N°17 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule H (Réseau racks)" },
-    { alarme: "FEU POSTE DE CONTROLE N°18 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule H (Réseau plafond)" },
+    { alarme: "FEU POSTE DE CONTROLE N°17 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule H (Réseau plafond)" },
+    { alarme: "FEU POSTE DE CONTROLE N°18 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule H (Réseau racks)" },
     { alarme: "FEU POSTE DE CONTROLE N°2 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 1 (Côté stockage)" },
     { alarme: "FEU POSTE DE CONTROLE N°2 BAT 2", zone: "Alarmes Feu Bât. 2", lieu: "BATIMENT 2 : Cellule 7 (Côté stockage)" },
     { alarme: "FEU POSTE DE CONTROLE N°3 BAT 1", zone: "Alarmes Feu Bât. 1", lieu: "BATIMENT 1 : Cellule 2 (Mezza + Sous Mezza)" },
@@ -1664,6 +1743,151 @@ alarmSearchInput.addEventListener('input', (e) => {
 });
 
 // --- FENÊTRE DE CHOIX DU TYPE D'ALARME ---
+// --- COMPTE RENDU ---
+const crModalOverlay = document.getElementById('crModalOverlay');
+const crModalBox = document.getElementById('crModalBox');
+const toggleCompteRenduBtn = document.getElementById('toggleCompteRenduBtn');
+const closeCrBtn = document.getElementById('closeCrBtn');
+const crHeureInput = document.getElementById('crHeureInput');
+const crAlarmeSearchInput = document.getElementById('crAlarmeSearchInput');
+const crAlarmeResultsList = document.getElementById('crAlarmeResultsList');
+const crTexteLibre = document.getElementById('crTexteLibre');
+const crAjouterTexteBtn = document.getElementById('crAjouterTexteBtn');
+const crLignesListe = document.getElementById('crLignesListe');
+const crCopierBtn = document.getElementById('crCopierBtn');
+const crViderBtn = document.getElementById('crViderBtn');
+
+let lignesCompteRendu = [];
+
+function ouvrirCompteRendu() {
+    crModalOverlay.classList.add('open');
+    toggleCompteRenduBtn.classList.add('active');
+    const maintenant = obtenirMaintenant();
+    crHeureInput.value = `${String(maintenant.getHours()).padStart(2, '0')}:${String(maintenant.getMinutes()).padStart(2, '0')}`;
+    crAlarmeSearchInput.value = '';
+    crTexteLibre.value = '';
+    afficherResultatsAlarmesCr('');
+    afficherLignesCompteRendu();
+}
+function fermerCompteRendu() {
+    crModalOverlay.classList.remove('open');
+    toggleCompteRenduBtn.classList.remove('active');
+}
+toggleCompteRenduBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (crModalOverlay.classList.contains('open')) fermerCompteRendu();
+    else ouvrirCompteRendu();
+});
+closeCrBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fermerCompteRendu();
+});
+crModalOverlay.addEventListener('click', (e) => {
+    if (e.target === crModalOverlay) fermerCompteRendu();
+});
+crModalBox.addEventListener('click', (e) => e.stopPropagation());
+
+function afficherResultatsAlarmesCr(requete) {
+    const q = normaliserTexte(requete.trim());
+    if (q.length === 0) {
+        crAlarmeResultsList.innerHTML = '<div class="alarm-no-result">Tapez pour rechercher une alarme.</div>';
+        return;
+    }
+    const motsClés = q.split(/\s+/).filter(Boolean);
+    const resultats = donneesAlarmes.filter(item => {
+        const nomNormalise = normaliserTexte(item.alarme);
+        return motsClés.every(mot => nomNormalise.includes(mot));
+    });
+    if (resultats.length === 0) {
+        crAlarmeResultsList.innerHTML = '<div class="alarm-no-result">Aucune alarme trouvée.</div>';
+        return;
+    }
+    crAlarmeResultsList.innerHTML = resultats.slice(0, 30).map(item =>
+        `<div class="alarm-result-item" data-alarme="${item.alarme.replace(/"/g, '&quot;')}">${item.alarme}</div>`
+    ).join('');
+}
+crAlarmeSearchInput.addEventListener('input', (e) => afficherResultatsAlarmesCr(e.target.value));
+
+function ajouterLigneCompteRendu(texte, estAlarme) {
+    const heure = crHeureInput.value || `${String(obtenirMaintenant().getHours()).padStart(2, '0')}:${String(obtenirMaintenant().getMinutes()).padStart(2, '0')}`;
+    if (!texte || !texte.trim()) return;
+    lignesCompteRendu.push({ heure, texte: texte.trim(), estAlarme });
+    afficherLignesCompteRendu();
+}
+
+crAlarmeResultsList.addEventListener('click', (e) => {
+    const item = e.target.closest('.alarm-result-item');
+    if (!item || !item.dataset.alarme) return;
+    ajouterLigneCompteRendu(item.dataset.alarme, true);
+});
+crAjouterTexteBtn.addEventListener('click', () => {
+    ajouterLigneCompteRendu(crTexteLibre.value, false);
+    crTexteLibre.value = '';
+});
+
+function afficherLignesCompteRendu() {
+    if (lignesCompteRendu.length === 0) {
+        crLignesListe.innerHTML = '<div class="alarm-multi-empty">Aucun événement pour l\'instant.</div>';
+        return;
+    }
+    const triees = [...lignesCompteRendu].sort((a, b) => a.heure.localeCompare(b.heure));
+    crLignesListe.innerHTML = triees.map((l) => {
+        const indexReel = lignesCompteRendu.indexOf(l);
+        const classeTexte = l.estAlarme ? 'cr-alarme' : 'cr-libre';
+        return `<div class="cr-ligne-item">
+            <button class="cr-ligne-remove" data-index="${indexReel}" title="Retirer"><svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+            <span class="cr-ligne-heure">${l.heure}</span><span class="cr-ligne-texte ${classeTexte}">${l.texte.replace(/</g, '&lt;')}</span>
+        </div>`;
+    }).join('');
+}
+crLignesListe.addEventListener('click', (e) => {
+    const btn = e.target.closest('.cr-ligne-remove');
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.index, 10);
+    lignesCompteRendu.splice(idx, 1);
+    afficherLignesCompteRendu();
+});
+crViderBtn.addEventListener('click', () => {
+    lignesCompteRendu = [];
+    afficherLignesCompteRendu();
+});
+
+function construireCompteRenduTrie() {
+    return [...lignesCompteRendu].sort((a, b) => a.heure.localeCompare(b.heure));
+}
+function construireHtmlCompteRendu() {
+    return construireCompteRenduTrie().map(l => {
+        const couleur = l.estAlarme ? '#cc0000' : '#000000';
+        const texteEchappe = l.texte.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+        return `<div><b>${l.heure}</b> <span style="color:${couleur};">${texteEchappe}</span></div>`;
+    }).join('');
+}
+function construireTexteCompteRendu() {
+    return construireCompteRenduTrie().map(l => `${l.heure} ${l.texte}`).join('\n');
+}
+
+crCopierBtn.addEventListener('click', () => {
+    if (lignesCompteRendu.length === 0) return;
+    const html = construireHtmlCompteRendu();
+    const texte = construireTexteCompteRendu();
+    const texteOriginal = crCopierBtn.textContent;
+    const confirmerCopie = () => {
+        crCopierBtn.textContent = '✓ Copié !';
+        setTimeout(() => { crCopierBtn.textContent = texteOriginal; }, 1500);
+    };
+    if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+        const item = new ClipboardItem({
+            'text/html': new Blob([html], { type: 'text/html' }),
+            'text/plain': new Blob([texte], { type: 'text/plain' })
+        });
+        navigator.clipboard.write([item]).then(confirmerCopie).catch(() => {
+            navigator.clipboard.writeText(texte).then(confirmerCopie).catch(() => {});
+        });
+    } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(texte).then(confirmerCopie).catch(() => {});
+    }
+});
+
 const alarmChoiceOverlay = document.getElementById('alarmChoiceOverlay');
 const alarmChoiceBox = document.getElementById('alarmChoiceBox');
 const closeChoiceBtn = document.getElementById('closeChoiceBtn');
