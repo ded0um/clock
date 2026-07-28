@@ -1887,7 +1887,7 @@ function construireHtmlCompteRendu() {
         const heureCellule = montrerHeure ? `<b>${l.heure}</b>` : '';
         return `<tr>` +
             `<td style="vertical-align:top; padding:0 10px 6px 0; white-space:nowrap; font-weight:bold;">${heureCellule}</td>` +
-            `<td style="vertical-align:top; padding:0 0 6px 0; color:${couleur};">${texteEchappe}</td>` +
+            `<td style="vertical-align:top; padding:0 0 6px 0;"><font color="${couleur}"><span style="color:${couleur};">${texteEchappe}</span></font></td>` +
         `</tr>`;
     }).join('');
     return `<table style="border-collapse:collapse; border:none;" cellpadding="0" cellspacing="0">${lignesHtml}</table>`;
