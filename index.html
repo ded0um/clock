@@ -437,8 +437,12 @@ body.jour-sans-boutons .icon-btn { opacity: 0 !important; visibility: hidden !im
     position: relative;
     font-size: 0.95rem;
     line-height: 1.5;
+    display: flex;
+    align-items: flex-start;
 }
-.cr-ligne-heure { font-weight: bold; color: var(--text-color); margin-right: 6px; }
+.cr-ligne-heure { font-weight: bold; color: var(--text-color); margin-right: 6px; flex-shrink: 0; }
+.cr-ligne-heure-masquee { visibility: hidden; }
+.cr-ligne-texte { white-space: pre-line; }
 .cr-ligne-texte.cr-alarme { color: #ff5555; }
 .cr-ligne-texte.cr-libre { color: #ddd; }
 .cr-ligne-remove {
@@ -1830,13 +1834,18 @@ function afficherLignesCompteRendu() {
         crLignesListe.innerHTML = '<div class="alarm-multi-empty">Aucun événement pour l\'instant.</div>';
         return;
     }
-    const triees = [...lignesCompteRendu].sort((a, b) => a.heure.localeCompare(b.heure));
+    const triees = construireCompteRenduTrie();
+    let derniereHeure = null;
     crLignesListe.innerHTML = triees.map((l) => {
         const indexReel = lignesCompteRendu.indexOf(l);
         const classeTexte = l.estAlarme ? 'cr-alarme' : 'cr-libre';
+        const montrerHeure = l.heure !== derniereHeure;
+        derniereHeure = l.heure;
+        const classeHeure = 'cr-ligne-heure' + (montrerHeure ? '' : ' cr-ligne-heure-masquee');
+        const texteEchappe = l.texte.replace(/</g, '&lt;');
         return `<div class="cr-ligne-item">
             <button class="cr-ligne-remove" data-index="${indexReel}" title="Retirer"><svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
-            <span class="cr-ligne-heure">${l.heure}</span><span class="cr-ligne-texte ${classeTexte}">${l.texte.replace(/</g, '&lt;')}</span>
+            <span class="${classeHeure}">${l.heure}</span><span class="cr-ligne-texte ${classeTexte}">${texteEchappe}</span>
         </div>`;
     }).join('');
 }
@@ -1856,14 +1865,26 @@ function construireCompteRenduTrie() {
     return [...lignesCompteRendu].sort((a, b) => a.heure.localeCompare(b.heure));
 }
 function construireHtmlCompteRendu() {
+    let derniereHeure = null;
     return construireCompteRenduTrie().map(l => {
         const couleur = l.estAlarme ? '#cc0000' : '#000000';
-        const texteEchappe = l.texte.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-        return `<div><b>${l.heure}</b> <span style="color:${couleur};">${texteEchappe}</span></div>`;
+        const texteEchappe = l.texte.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\n/g, '<br>');
+        const montrerHeure = l.heure !== derniereHeure;
+        derniereHeure = l.heure;
+        const heureHtml = montrerHeure
+            ? `<b>${l.heure}</b>`
+            : `<b style="visibility:hidden;">${l.heure}</b>`;
+        return `<div>${heureHtml} <span style="color:${couleur};">${texteEchappe}</span></div>`;
     }).join('');
 }
 function construireTexteCompteRendu() {
-    return construireCompteRenduTrie().map(l => `${l.heure} ${l.texte}`).join('\n');
+    let derniereHeure = null;
+    return construireCompteRenduTrie().map(l => {
+        const montrerHeure = l.heure !== derniereHeure;
+        derniereHeure = l.heure;
+        const prefixe = montrerHeure ? `${l.heure} ` : ' '.repeat(l.heure.length + 1);
+        return `${prefixe}${l.texte}`;
+    }).join('\n');
 }
 
 crCopierBtn.addEventListener('click', () => {
