@@ -879,6 +879,7 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
     }
 }
 </style>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -1202,16 +1203,16 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
     </div>
 </div>
 
-<!-- FENÊTRE DE CONNEXION ADMIN (cachée, appui 8s sur "h") -->
+<!-- FENÊTRE DE CONNEXION ADMIN (cachée, appui 8s sur "h" ou 5 taps sur la date) -->
 <div class="alarm-modal-overlay" id="adminLoginOverlay">
     <div class="alarm-modal-box choice-modal-box" id="adminLoginBox">
         <div class="alarm-modal-header">
             <h2>Accès admin</h2>
             <button id="closeAdminLoginBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
         </div>
-        <input type="password" id="adminPasswordInput" class="alarm-search-input" placeholder="Mot de passe" autocomplete="off">
-        <div id="adminLoginError" class="ssi-zone-indispo hidden" style="text-align:center; margin-bottom:12px;">Mot de passe incorrect</div>
-        <button class="btn-submit" id="adminLoginSubmitBtn" style="margin-top:0;">Valider</button>
+        <p style="color:#888; font-size:0.9rem; text-align:center; margin: 0 0 15px;">Connexion réservée à un compte Google autorisé.</p>
+        <div id="googleSignInDiv" style="display:flex; justify-content:center; margin-bottom: 12px;"></div>
+        <div id="adminLoginError" class="ssi-zone-indispo hidden" style="text-align:center;">Ce compte Google n'est pas autorisé.</div>
     </div>
 </div>
 
@@ -2399,14 +2400,15 @@ function copierRapport() {
     });
 }
 
-// --- PANNEAU ADMIN CACHÉ (appui 8s sur "h") ---
-const MOT_DE_PASSE_ADMIN = 'Dedoum0154';
+// --- PANNEAU ADMIN CACHÉ (appui 8s sur "h", ou 5 taps sur la date) ---
+// Connexion Google — seule cette adresse est autorisée à accéder au panneau admin
+const GOOGLE_CLIENT_ID = '969427940741-tfunj3kkqo5nr855d88m8mhktovljhgi.apps.googleusercontent.com';
+const EMAIL_ADMIN_AUTORISE = 'cedricrl.dumont@gmail.com';
 // À remplacer par l'URL CSV publiée de la Feuille 3 (Fichier > Partager > Publier sur le web > choisir "Feuille 3" > CSV)
 const URL_SHEET3_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0r83fOH8sBa5pZxUyvBYwyII0BRYj0D2WZOD6u_tpxuOJlS4NzQgsF6_JEBaBV7cLUw5Fb9H2ycTe/pub?gid=2061938972&single=true&output=csv';
 
 const adminLoginOverlay = document.getElementById('adminLoginOverlay');
 const adminLoginBox = document.getElementById('adminLoginBox');
-const adminPasswordInput = document.getElementById('adminPasswordInput');
 const adminLoginError = document.getElementById('adminLoginError');
 const adminPanelOverlay = document.getElementById('adminPanelOverlay');
 const adminPanelBox = document.getElementById('adminPanelBox');
@@ -2427,11 +2429,48 @@ dateLabelEl.addEventListener('click', (e) => {
     }
 });
 
+// Décode la partie "payload" d'un jeton JWT (sans vérification de signature, faite par Google avant émission)
+function decoderJwt(jeton) {
+    try {
+        const partie = jeton.split('.')[1];
+        const json = decodeURIComponent(atob(partie.replace(/-/g, '+').replace(/_/g, '/')).split('').map(c =>
+            '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        ).join(''));
+        return JSON.parse(json);
+    } catch (e) {
+        return null;
+    }
+}
+
+function traiterReponseGoogle(reponse) {
+    const donnees = decoderJwt(reponse.credential);
+    if (donnees && donnees.email && donnees.email.toLowerCase() === EMAIL_ADMIN_AUTORISE.toLowerCase() && donnees.email_verified) {
+        adminLoginError.classList.add('hidden');
+        fermerLoginAdmin();
+        ouvrirPanelAdmin();
+    } else {
+        adminLoginError.classList.remove('hidden');
+    }
+}
+
+let googleSignInInitialise = false;
+function initialiserGoogleSignIn() {
+    if (googleSignInInitialise || !window.google || !window.google.accounts) return;
+    google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: traiterReponseGoogle
+    });
+    google.accounts.id.renderButton(
+        document.getElementById('googleSignInDiv'),
+        { theme: 'filled_black', size: 'large', text: 'signin_with', shape: 'pill' }
+    );
+    googleSignInInitialise = true;
+}
+
 function ouvrirLoginAdmin() {
-    adminPasswordInput.value = '';
     adminLoginError.classList.add('hidden');
     adminLoginOverlay.classList.add('open');
-    setTimeout(() => adminPasswordInput.focus(), 50);
+    initialiserGoogleSignIn();
 }
 function fermerLoginAdmin() {
     adminLoginOverlay.classList.remove('open');
@@ -2444,19 +2483,6 @@ adminLoginOverlay.addEventListener('click', (e) => {
     if (e.target === adminLoginOverlay) fermerLoginAdmin();
 });
 adminLoginBox.addEventListener('click', (e) => e.stopPropagation());
-
-function tenterConnexionAdmin() {
-    if (adminPasswordInput.value === MOT_DE_PASSE_ADMIN) {
-        fermerLoginAdmin();
-        ouvrirPanelAdmin();
-    } else {
-        adminLoginError.classList.remove('hidden');
-    }
-}
-document.getElementById('adminLoginSubmitBtn').addEventListener('click', tenterConnexionAdmin);
-adminPasswordInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') tenterConnexionAdmin();
-});
 
 function ouvrirPanelAdmin() {
     adminPanelOverlay.classList.add('open');
