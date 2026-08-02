@@ -6,18 +6,19 @@
   <title>Calculateur de temps</title>
   <style>
     :root {
-      --primary-color: #2563eb;
-      --bg-color: #f8fafc;
-      --card-bg: #ffffff;
-      --text-color: #1e293b;
-      --border-color: #cbd5e1;
+      --bg-color: #000000;
+      --card-bg: #111111;
+      --text-color: #ffffff;
+      --text-dim: #888888;
+      --accent: #ff8c00;
+      --border-color: #222222;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
@@ -26,7 +27,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      min-height: 100dvh;
       padding: 20px;
     }
 
@@ -34,7 +35,7 @@
       background-color: var(--card-bg);
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(255, 140, 0, 0.25);
       width: 100%;
       max-width: 420px;
     }
@@ -47,51 +48,54 @@
       display: block;
       margin-bottom: 8px;
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     input[type="number"] {
       width: 100%;
       padding: 12px;
-      border: 1px solid var(--border-color);
+      border: 1px solid #333;
       border-radius: 8px;
+      background-color: #1c1c1c;
+      color: var(--text-color);
       font-size: 1rem;
       outline: none;
       transition: border-color 0.2s;
     }
 
     input[type="number"]:focus {
-      border-color: var(--primary-color);
+      border-color: var(--accent);
     }
 
     .result-box {
       margin-top: 20px;
       padding: 15px;
-      background-color: #eff6ff;
-      border-left: 4px solid var(--primary-color);
+      background-color: #141414;
+      border-left: 4px solid var(--accent);
       border-radius: 6px;
     }
 
     .result-box p {
       margin-bottom: 5px;
-      font-size: 0.9rem;
-      color: #475569;
+      font-size: 0.85rem;
+      color: var(--text-dim);
     }
 
     .result-value {
       font-size: 1.25rem;
       font-weight: 700;
-      color: var(--primary-color);
+      color: var(--accent);
     }
 
     .error {
-      background-color: #fef2f2;
-      border-left-color: #ef4444;
-      color: #991b1b;
+      border-left-color: #ff4444;
     }
 
     .error .result-value {
-      color: #dc2626;
+      color: #ff4444;
       font-size: 1rem;
     }
   </style>
