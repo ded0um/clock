@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+html_code_v2 = """<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inspection BAES - DB SCHENKER B1</title>
+    <title>BAES</title>
     <style>
         :root {
             --bg-color: #f4f6f9;
@@ -11,171 +11,424 @@
             --text-color: #2c3e50;
             --border-color: #e2e8f0;
             --primary: #2563eb;
+            --primary-hover: #1d4ed8;
             --success: #16a34a;
             --danger: #dc2626;
+            --warning: #d97706;
+            --info: #0284c7;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; max-width: 1200px; margin: 0 auto; }
-        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
         header {
             background: linear-gradient(135deg, #1e293b, #0f172a);
-            color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
-        .grid-container { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media(min-width: 900px) { .grid-container { grid-template-columns: 320px 1fr; } }
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media(min-width: 900px) {
+            .grid-container {
+                grid-template-columns: 340px 1fr;
+            }
+        }
 
         .card {
-            background: var(--card-bg); border-radius: 12px; padding: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border-color); margin-bottom: 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
         }
 
-        .card h2 { font-size: 1.1rem; margin-bottom: 15px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #0f172a;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-        /* LED Indicator Styles */
-        .led-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--border-color); }
-        .led-dot { width: 14px; height: 14px; border-radius: 50%; margin-top: 3px; flex-shrink: 0; }
-        .led-green-fix { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
-        .led-green-blink { background: #22c55e; animation: blink 1s infinite; }
-        .led-orange-blink { background: #f97316; animation: blink 1s infinite; }
-        .led-orange-fix { background: #f97316; box-shadow: 0 0 6px #f97316; }
-        .led-double-orange { background: #ea580c; animation: fast-blink 0.5s infinite; }
-        .led-off { background: #64748b; }
+        /* Guide LED LED colors */
+        .led-guide-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
 
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
-        @keyframes fast-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.1; } }
+        .led-guide-item:last-child {
+            border-bottom: none;
+        }
 
-        /* Form Controls */
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
-        .form-control { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .led-indicator-group {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
 
-        .check-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin: 10px 0; }
-        .check-item { background: #f8fafc; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; }
+        .led-indicator {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
 
-        .btn { padding: 10px 16px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; background: var(--primary); color: white; width: 100%; }
-        .btn-outline { background: transparent; border: 1px solid var(--border-color); color: #475569; width: auto; }
+        .led-green-fix { background-color: #22c55e; box-shadow: 0 0 8px #22c55e; }
+        .led-green-blink { background-color: #22c55e; animation: blink 1s infinite; }
+        .led-orange-blink { background-color: #f97316; animation: blink 1s infinite; }
+        .led-orange-fix { background-color: #f97316; box-shadow: 0 0 8px #f97316; }
+        .led-off { background-color: #64748b; border: 1px solid #334155; }
 
-        /* Table */
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        th { background: #f1f5f9; }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        .led-info h4 {
+            font-size: 0.95rem;
+            color: #1e293b;
+        }
+
+        .led-info p {
+            font-size: 0.825rem;
+            color: #64748b;
+        }
+
+        /* Form & Inputs */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #475569;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background-color: #f8fafc;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #fff;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .check-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .check-item {
+            background: white;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .check-item select {
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 2px 5px;
+            font-weight: 600;
+        }
+
         .status-C { color: var(--success); font-weight: bold; }
         .status-NC { color: var(--danger); font-weight: bold; }
-        .badge-success { background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
-        .badge-danger { background: #fee2e2; color: #b91c1c; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
 
-        @media print {
-            .no-print { display: none !important; }
-            .grid-container { display: block; }
-            body { padding: 0; background: white; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+            width: 100%;
         }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+
+        /* Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .badge-success { background: #dcfce7; color: #15803d; }
+        .badge-danger { background: #fee2e2; color: #b91c1c; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🚨 Contrôle Mensuel BAES - DB SCHENKER B1</h1>
-        <p>Aide au diagnostic & Fiche d'inspection numérique</p>
+        <h1>🚨 BAES</h1>
+        <p>Application d'inspection rapide & Guide d'indication des voyants</p>
     </header>
 
     <div class="grid-container">
         
-        <!-- DIAGNOSTIC VOYANTS -->
+        <!-- COLONNE GAUCHE : AIDE & INDICATION VOYANTS -->
         <aside>
             <div class="card">
-                <h2>💡 Diagnostic LED (SATI)</h2>
-                <div class="led-item"><span class="led-dot led-green-fix"></span><div><strong>Vert Fixe :</strong> RAS (OK)</div></div>
-                <div class="led-item"><span class="led-dot led-green-blink"></span><div><strong>Vert Clignotant :</strong> Test auto en cours</div></div>
-                <div class="led-item"><span class="led-dot led-orange-blink"></span><div><strong>Orange Clignotant :</strong> Défaut Batterie</div></div>
-                <div class="led-item"><span class="led-dot led-orange-fix"></span><div><strong>Orange Fixe :</strong> Défaut Lampe/LED</div></div>
-                <div class="led-item"><span class="led-dot led-double-orange"></span><div><strong>2 Oranges Clignotants :</strong> Pas de Secteur (230V)</div></div>
-                <div class="led-item"><span class="led-dot led-off"></span><div><strong>Éteint :</strong> Coupure secteur / Bloc HS</div></div>
-            </div>
-
-            <div class="card no-print">
-                <h2>📋 Informations Ronde</h2>
-                <div class="form-group">
-                    <label>Agent / Technicien</label>
-                    <input type="text" id="agentName" class="form-control" placeholder="Votre nom">
+                <h2>💡 Indication LED (SATI)</h2>
+                
+                <div class="led-guide-item">
+                    <div class="led-indicator-group">
+                        <span class="led-indicator led-green-fix"></span>
+                    </div>
+                    <div class="led-info">
+                        <h4>Vert Fixe</h4>
+                        <p><strong>RAS.</strong> Bloc OK & batterie chargée.</p>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Date du contrôle</label>
-                    <input type="date" id="controlDate" class="form-control">
+
+                <div class="led-guide-item">
+                    <div class="led-indicator-group">
+                        <span class="led-indicator led-green-blink"></span>
+                    </div>
+                    <div class="led-info">
+                        <h4>Vert Clignotant</h4>
+                        <p><strong>Test auto en cours.</strong> Patienter.</p>
+                    </div>
+                </div>
+
+                <div class="led-guide-item">
+                    <div class="led-indicator-group">
+                        <span class="led-indicator led-orange-blink"></span>
+                    </div>
+                    <div class="led-info">
+                        <h4>Orange Clignotant</h4>
+                        <p><strong>Défaut Batterie.</strong> HS ou déconnectée.</p>
+                    </div>
+                </div>
+
+                <div class="led-guide-item">
+                    <div class="led-indicator-group">
+                        <span class="led-indicator led-orange-fix"></span>
+                    </div>
+                    <div class="led-info">
+                        <h4>Orange Fixe</h4>
+                        <p><strong>Défaut Lampe/LED.</strong> Ampoule HS.</p>
+                    </div>
+                </div>
+
+                <div class="led-guide-item">
+                    <div class="led-indicator-group">
+                        <span class="led-indicator led-orange-fix"></span>
+                        <span class="led-indicator led-orange-blink"></span>
+                    </div>
+                    <div class="led-info">
+                        <h4>2 LED Oranges (1 fixe + 1 clignotante)</h4>
+                        <p><strong>Défaut Secteur / Ligne.</strong> Pas d'alimentation 230V ou problème de ligne.</p>
+                    </div>
+                </div>
+
+                <div class="led-guide-item">
+                    <div class="led-indicator-group">
+                        <span class="led-indicator led-off"></span>
+                    </div>
+                    <div class="led-info">
+                        <h4>Éteint Total</h4>
+                        <p><strong>Panne Secteur ou Bloc HS.</strong></p>
+                    </div>
                 </div>
             </div>
         </aside>
 
-        <!-- FORMULAIRE ET TABLEAU -->
+        <!-- COLONNE DROITE : FORMULAIRE DE SAISIE ET RELEVE -->
         <main>
-            <div class="card no-print">
-                <h2>🔍 Inspecter un BAES</h2>
+            
+            <!-- FORMULAIRE RAPIDE -->
+            <div class="card">
+                <h2>🔍 Saisie Rapide d'un Bloc</h2>
                 <form id="baesForm">
                     <div class="form-row">
                         <div class="form-group">
-                            <label>N° BAES</label>
-                            <input type="number" id="baesId" class="form-control" value="1" required>
+                            <label for="baesId">N° du BAES</label>
+                            <input type="number" id="baesId" class="form-control" placeholder="Ex: 1" required>
                         </div>
                         <div class="form-group">
-                            <label>Localisation / Cellule</label>
-                            <input type="text" id="cellLocation" class="form-control" placeholder="Ex: Cellule 1">
+                            <label for="cellLocation">Cellule / Zone</label>
+                            <input type="text" id="cellLocation" class="form-control" placeholder="Ex: Cellule 1 / SDC">
                         </div>
                     </div>
 
+                    <label style="font-size:0.85rem; font-weight:600; color:#475569;">Points de contrôle (C = Conforme / NC = Non Conforme) :</label>
                     <div class="check-grid">
-                        <div class="check-item"><span>Accessibilité</span><select id="chkAccess"><option value="C">C</option><option value="NC">NC</option></select></div>
-                        <div class="check-item"><span>État général</span><select id="chkEtatGen"><option value="C">C</option><option value="NC">NC</option></select></div>
-                        <div class="check-item"><span>Éclairage Veille</span><select id="chkVeille"><option value="C">C</option><option value="NC">NC</option></select></div>
-                        <div class="check-item"><span>Éclairage Secours</span><select id="chkSecours"><option value="C">C</option><option value="NC">NC</option></select></div>
-                        <div class="check-item"><span>Fixation</span><select id="chkFixation"><option value="C">C</option><option value="NC">NC</option></select></div>
-                        <div class="check-item"><span>État Boîtier</span><select id="chkBoitier"><option value="C">C</option><option value="NC">NC</option></select></div>
+                        <div class="check-item">
+                            <span>Accessibilité</span>
+                            <select id="chkAccess"><option value="C">C</option><option value="NC">NC</option></select>
+                        </div>
+                        <div class="check-item">
+                            <span>État général</span>
+                            <select id="chkEtatGen"><option value="C">C</option><option value="NC">NC</option></select>
+                        </div>
+                        <div class="check-item">
+                            <span>Éclairage Veille</span>
+                            <select id="chkVeille"><option value="C">C</option><option value="NC">NC</option></select>
+                        </div>
+                        <div class="check-item">
+                            <span>Éclairage Secours</span>
+                            <select id="chkSecours"><option value="C">C</option><option value="NC">NC</option></select>
+                        </div>
+                        <div class="check-item">
+                            <span>Fixation</span>
+                            <select id="chkFixation"><option value="C">C</option><option value="NC">NC</option></select>
+                        </div>
+                        <div class="check-item">
+                            <span>État Boîtier</span>
+                            <select id="chkBoitier"><option value="C">C</option><option value="NC">NC</option></select>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Commentaires / Détail du problème si NC</label>
-                        <input type="text" id="comments" class="form-control" placeholder="Ex: 2 LED oranges clignotantes">
+                        <label for="comments">Commentaires / Précision du problème</label>
+                        <input type="text" id="comments" class="form-control" placeholder="Obligatoire si NC (Ex: 2 LED oranges, 1 clignotante à côté)">
                     </div>
 
-                    <button type="submit" class="btn">➕ Valider le bloc</button>
+                    <button type="submit" class="btn btn-primary">➕ Valider et Passer au Suivant</button>
                 </form>
             </div>
 
+            <!-- TABLEAU DES RESULTATS -->
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h2>📄 Relevé d'inspection</h2>
-                    <button onclick="window.print()" class="btn btn-outline no-print">🖨️ Imprimer</button>
-                </div>
+                <h2>📄 Tableau de Ronde</h2>
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th>N°</th>
-                            <th>Cellule</th>
-                            <th>Acc.</th>
-                            <th>État</th>
-                            <th>Veille</th>
-                            <th>Sec.</th>
-                            <th>Fix.</th>
-                            <th>Boîtier</th>
-                            <th>Statut</th>
-                            <th>Commentaires</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
+                <div class="table-responsive">
+                    <table id="baesTable">
+                        <thead>
+                            <tr>
+                                <th>N°</th>
+                                <th>Cellule</th>
+                                <th>Access.</th>
+                                <th>État Gen.</th>
+                                <th>Veille</th>
+                                <th>Secours</th>
+                                <th>Fixation</th>
+                                <th>Boîtier</th>
+                                <th>Statut</th>
+                                <th>Commentaires</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Rempli en JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
         </main>
     </div>
 
     <script>
-        document.getElementById('controlDate').valueAsDate = new Date();
         const form = document.getElementById('baesForm');
+        const tableBody = document.getElementById('tableBody');
         let currentId = 1;
+
+        // Auto-fill next ID
+        document.getElementById('baesId').value = currentId;
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
+
             const id = document.getElementById('baesId').value;
             const cell = document.getElementById('cellLocation').value || '-';
             const access = document.getElementById('chkAccess').value;
@@ -186,8 +439,11 @@
             const boitier = document.getElementById('chkBoitier').value;
             const comments = document.getElementById('comments').value;
 
+            // Global Status
             const isNC = [access, etatGen, veille, secours, fixation, boitier].includes('NC');
-            const statusBadge = isNC ? '<span class="badge-danger">NC</span>' : '<span class="badge-success">OK</span>';
+            const statusBadge = isNC 
+                ? '<span class="badge badge-danger">NC</span>' 
+                : '<span class="badge badge-success">CONFORME</span>';
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -201,13 +457,25 @@
                 <td class="status-${boitier}">${boitier}</td>
                 <td>${statusBadge}</td>
                 <td>${comments}</td>
+                <td><button onclick="this.closest('tr').remove()" style="background:none;border:none;color:red;cursor:pointer;">❌</button></td>
             `;
-            document.getElementById('tableBody').appendChild(tr);
 
+            tableBody.appendChild(tr);
+
+            // Reset inputs for next entry
             currentId = parseInt(id) + 1;
             document.getElementById('baesId').value = currentId;
             document.getElementById('comments').value = '';
+            
+            // Focus back to BAES ID or comments
+            document.getElementById('baesId').focus();
         });
     </script>
 </body>
 </html>
+"""
+
+with open("index-v2.html", "w", encoding="utf-8") as f:
+    f.write(html_code_v2)
+
+print("Updated HTML generated successfully as index-v2.html")
