@@ -1,4 +1,4 @@
-html_code_v2 = """<!DOCTYPE html>
+html_code_v3 = """<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -29,7 +29,7 @@ html_code_v2 = """<!DOCTYPE html>
             background-color: var(--bg-color);
             color: var(--text-color);
             padding: 15px;
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
             line-height: 1.5;
         }
@@ -62,9 +62,9 @@ html_code_v2 = """<!DOCTYPE html>
             gap: 20px;
         }
 
-        @media(min-width: 900px) {
+        @media(min-width: 950px) {
             .grid-container {
-                grid-template-columns: 340px 1fr;
+                grid-template-columns: 380px 1fr;
             }
         }
 
@@ -88,7 +88,7 @@ html_code_v2 = """<!DOCTYPE html>
             justify-content: space-between;
         }
 
-        /* Guide LED LED colors */
+        /* Guide LED Table / List */
         .led-guide-item {
             display: flex;
             align-items: flex-start;
@@ -119,23 +119,36 @@ html_code_v2 = """<!DOCTYPE html>
 
         .led-green-fix { background-color: #22c55e; box-shadow: 0 0 8px #22c55e; }
         .led-green-blink { background-color: #22c55e; animation: blink 1s infinite; }
-        .led-orange-blink { background-color: #f97316; animation: blink 1s infinite; }
         .led-orange-fix { background-color: #f97316; box-shadow: 0 0 8px #f97316; }
-        .led-off { background-color: #64748b; border: 1px solid #334155; }
+        .led-orange-blink { background-color: #f97316; animation: blink 1s infinite; }
+        .led-green-orange-alt { background-color: #22c55e; animation: alt-blink 1s infinite; }
+        .led-red-fix { background-color: #ef4444; box-shadow: 0 0 8px #ef4444; }
 
         @keyframes blink {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.2; }
         }
 
+        @keyframes alt-blink {
+            0%, 49% { background-color: #22c55e; }
+            50%, 100% { background-color: #f97316; }
+        }
+
         .led-info h4 {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #1e293b;
         }
 
         .led-info p {
-            font-size: 0.825rem;
-            color: #64748b;
+            font-size: 0.8rem;
+            color: #475569;
+        }
+
+        .led-info .action {
+            font-size: 0.78rem;
+            color: #0284c7;
+            font-weight: 600;
+            margin-top: 2px;
         }
 
         /* Form & Inputs */
@@ -267,15 +280,16 @@ html_code_v2 = """<!DOCTYPE html>
         <!-- COLONNE GAUCHE : AIDE & INDICATION VOYANTS -->
         <aside>
             <div class="card">
-                <h2>💡 Indication LED (SATI)</h2>
+                <h2>💡 Indication LED / État</h2>
                 
                 <div class="led-guide-item">
                     <div class="led-indicator-group">
                         <span class="led-indicator led-green-fix"></span>
                     </div>
                     <div class="led-info">
-                        <h4>Vert Fixe</h4>
-                        <p><strong>RAS.</strong> Bloc OK & batterie chargée.</p>
+                        <h4>Vert fixe</h4>
+                        <p>BAES OK, aucun défaut</p>
+                        <div class="action">Action : Aucune</div>
                     </div>
                 </div>
 
@@ -284,18 +298,9 @@ html_code_v2 = """<!DOCTYPE html>
                         <span class="led-indicator led-green-blink"></span>
                     </div>
                     <div class="led-info">
-                        <h4>Vert Clignotant</h4>
-                        <p><strong>Test auto en cours.</strong> Patienter.</p>
-                    </div>
-                </div>
-
-                <div class="led-guide-item">
-                    <div class="led-indicator-group">
-                        <span class="led-indicator led-orange-blink"></span>
-                    </div>
-                    <div class="led-info">
-                        <h4>Orange Clignotant</h4>
-                        <p><strong>Défaut Batterie.</strong> HS ou déconnectée.</p>
+                        <h4>Vert clignotant</h4>
+                        <p>Batterie en charge ou test en cours</p>
+                        <div class="action">Action : Normal (attendre la fin de la charge/test)</div>
                     </div>
                 </div>
 
@@ -304,29 +309,65 @@ html_code_v2 = """<!DOCTYPE html>
                         <span class="led-indicator led-orange-fix"></span>
                     </div>
                     <div class="led-info">
-                        <h4>Orange Fixe</h4>
-                        <p><strong>Défaut Lampe/LED.</strong> Ampoule HS.</p>
+                        <h4>Orange / Jaune fixe</h4>
+                        <p>Défaut batterie</p>
+                        <div class="action">Action : Remplacer la batterie</div>
                     </div>
                 </div>
 
                 <div class="led-guide-item">
                     <div class="led-indicator-group">
-                        <span class="led-indicator led-orange-fix"></span>
                         <span class="led-indicator led-orange-blink"></span>
                     </div>
                     <div class="led-info">
-                        <h4>2 LED Oranges (1 fixe + 1 clignotante)</h4>
-                        <p><strong>Défaut Secteur / Ligne.</strong> Pas d'alimentation 230V ou problème de ligne.</p>
+                        <h4>Orange / Jaune clignotant</h4>
+                        <p>Défaut lampe/LED de secours ou défaut électronique</p>
+                        <div class="action">Action : Vérifier/remplacer la source lumineuse ou le bloc</div>
                     </div>
                 </div>
 
                 <div class="led-guide-item">
                     <div class="led-indicator-group">
-                        <span class="led-indicator led-off"></span>
+                        <span class="led-indicator led-orange-blink"></span>
+                        <span class="led-indicator led-orange-blink"></span>
                     </div>
                     <div class="led-info">
-                        <h4>Éteint Total</h4>
-                        <p><strong>Panne Secteur ou Bloc HS.</strong></p>
+                        <h4>Deux LEDs orange clignotant ensemble</h4>
+                        <p>Défaut important / défaut général</p>
+                        <div class="action">Action : Remplacer le bloc (souvent)</div>
+                    </div>
+                </div>
+
+                <div class="led-guide-item">
+                    <div class="led-indicator-group">
+                        <span class="led-indicator led-green-orange-alt"></span>
+                    </div>
+                    <div class="led-info">
+                        <h4>Vert + Orange en alternance</h4>
+                        <p>Test en cours (continuité ou autonomie)</p>
+                        <div class="action">Action : Attendre la fin du test</div>
+                    </div>
+                </div>
+
+                <div class="led-guide-item">
+                    <div class="led-indicator-group">
+                        <span class="led-indicator led-red-fix"></span>
+                    </div>
+                    <div class="led-info">
+                        <h4>Rouge fixe (sur certains modèles)</h4>
+                        <p>Batterie à remplacer d’urgence</p>
+                        <div class="action">Action : Remplacer la batterie immédiatement</div>
+                    </div>
+                </div>
+
+                <div class="led-guide-item">
+                    <div class="led-indicator-group">
+                        <span class="led-indicator led-red-fix"></span>
+                    </div>
+                    <div class="led-info">
+                        <h4>Rouge (surtout sur télécommande)</h4>
+                        <p>Défaut global de l’installation ou alarme incendie</p>
+                        <div class="action">Action : Vérifier l’installation</div>
                     </div>
                 </div>
             </div>
@@ -365,10 +406,6 @@ html_code_v2 = """<!DOCTYPE html>
                             <select id="chkVeille"><option value="C">C</option><option value="NC">NC</option></select>
                         </div>
                         <div class="check-item">
-                            <span>Éclairage Secours</span>
-                            <select id="chkSecours"><option value="C">C</option><option value="NC">NC</option></select>
-                        </div>
-                        <div class="check-item">
                             <span>Fixation</span>
                             <select id="chkFixation"><option value="C">C</option><option value="NC">NC</option></select>
                         </div>
@@ -380,7 +417,7 @@ html_code_v2 = """<!DOCTYPE html>
 
                     <div class="form-group">
                         <label for="comments">Commentaires / Précision du problème</label>
-                        <input type="text" id="comments" class="form-control" placeholder="Obligatoire si NC (Ex: 2 LED oranges, 1 clignotante à côté)">
+                        <input type="text" id="comments" class="form-control" placeholder="Obligatoire si NC (Ex: Orange fixe - Remplacer batterie)">
                     </div>
 
                     <button type="submit" class="btn btn-primary">➕ Valider et Passer au Suivant</button>
@@ -389,7 +426,7 @@ html_code_v2 = """<!DOCTYPE html>
 
             <!-- TABLEAU DES RESULTATS -->
             <div class="card">
-                <h2>📄 Tableau de Ronde</h2>
+                <h2>📄 Tableau de Relevé</h2>
 
                 <div class="table-responsive">
                     <table id="baesTable">
@@ -400,7 +437,6 @@ html_code_v2 = """<!DOCTYPE html>
                                 <th>Access.</th>
                                 <th>État Gen.</th>
                                 <th>Veille</th>
-                                <th>Secours</th>
                                 <th>Fixation</th>
                                 <th>Boîtier</th>
                                 <th>Statut</th>
@@ -434,13 +470,12 @@ html_code_v2 = """<!DOCTYPE html>
             const access = document.getElementById('chkAccess').value;
             const etatGen = document.getElementById('chkEtatGen').value;
             const veille = document.getElementById('chkVeille').value;
-            const secours = document.getElementById('chkSecours').value;
             const fixation = document.getElementById('chkFixation').value;
             const boitier = document.getElementById('chkBoitier').value;
             const comments = document.getElementById('comments').value;
 
             // Global Status
-            const isNC = [access, etatGen, veille, secours, fixation, boitier].includes('NC');
+            const isNC = [access, etatGen, veille, fixation, boitier].includes('NC');
             const statusBadge = isNC 
                 ? '<span class="badge badge-danger">NC</span>' 
                 : '<span class="badge badge-success">CONFORME</span>';
@@ -452,7 +487,6 @@ html_code_v2 = """<!DOCTYPE html>
                 <td class="status-${access}">${access}</td>
                 <td class="status-${etatGen}">${etatGen}</td>
                 <td class="status-${veille}">${veille}</td>
-                <td class="status-${secours}">${secours}</td>
                 <td class="status-${fixation}">${fixation}</td>
                 <td class="status-${boitier}">${boitier}</td>
                 <td>${statusBadge}</td>
@@ -467,7 +501,7 @@ html_code_v2 = """<!DOCTYPE html>
             document.getElementById('baesId').value = currentId;
             document.getElementById('comments').value = '';
             
-            // Focus back to BAES ID or comments
+            // Focus back to BAES ID
             document.getElementById('baesId').focus();
         });
     </script>
@@ -475,7 +509,7 @@ html_code_v2 = """<!DOCTYPE html>
 </html>
 """
 
-with open("index-v2.html", "w", encoding="utf-8") as f:
-    f.write(html_code_v2)
+with open("index-v3.html", "w", encoding="utf-8") as f:
+    f.write(html_code_v3)
 
-print("Updated HTML generated successfully as index-v2.html")
+print("Updated HTML generated successfully as index-v3.html")
