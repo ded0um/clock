@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schéma des zones de quais</title>
+<style>
+    :root {
+        --bg-color: #000000;
+        --card-bg: #111111;
+        --card-bg-table: #0a0a0a;
+        --text-color: #ffffff;
+        --text-dim: #888888;
+        --accent: #ff8c00;
+        --vert-is: #22c55e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        padding: 30px 20px 60px;
+        min-height: 100dvh;
+    }
+    .page-wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    h1 {
+        font-size: 1.4rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-dim);
+        margin-bottom: 30px;
+        border-bottom: 1px solid rgba(255, 140, 0, 0.25);
+        padding-bottom: 15px;
+    }
+    .cellule-row {
+        margin-bottom: 22px;
+    }
+    .cellule-titre {
+        font-size: 1rem;
+        font-weight: bold;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
+    .cellule-sequence {
+        display: grid;
+        gap: 6px;
+        width: 100%;
+    }
+    .bloc {
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border: 1px solid #2a2a2a;
+        background-color: var(--card-bg);
+        height: 62px;
+        padding: 4px 3px;
+        min-width: 0;
+        overflow: hidden;
+    }
+    .bloc .num { font-size: 0.95rem; font-weight: bold; color: var(--text-color); }
+    .bloc .lbl { font-size: 0.58rem; color: var(--text-dim); text-transform: uppercase; line-height: 1.15; }
+    .bloc svg { width: 18px; height: 18px; stroke: var(--text-dim); fill: none; margin-bottom: 2px; }
+
+    .bloc-table {
+        background-color: var(--card-bg-table);
+    }
+
+    .bloc-acces {
+        background-color: rgba(255, 140, 0, 0.08);
+        border-color: rgba(255, 140, 0, 0.4);
+    }
+    .bloc-acces svg { stroke: var(--accent); }
+    .bloc-acces .num { color: var(--accent); }
+
+    .bloc-montecharge svg { stroke: var(--text-dim); }
+
+    .bloc-is {
+        background-color: rgba(34, 197, 94, 0.08);
+        border-color: rgba(34, 197, 94, 0.45);
+    }
+    .bloc-is .code { font-size: 0.68rem; font-weight: bold; color: var(--vert-is); line-height: 1.15; }
+
+    .legende {
+        margin-top: 40px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        padding-top: 20px;
+        border-top: 1px solid #1e1e1e;
+    }
+    .legende-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8rem;
+        color: var(--text-dim);
+    }
+    .legende-puce {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+        flex-shrink: 0;
+        border: 1px solid #2a2a2a;
+    }
+    .legende-puce.quai { background-color: var(--card-bg); }
+    .legende-puce.table { background-color: var(--card-bg-table); }
+    .legende-puce.acces { background-color: rgba(255, 140, 0, 0.08); border-color: rgba(255, 140, 0, 0.4); }
+    .legende-puce.is { background-color: rgba(34, 197, 94, 0.08); border-color: rgba(34, 197, 94, 0.45); }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+    <h1>Schéma des zones de quais</h1>
+
+    <div id="conteneurCellules"></div>
+
+    <div class="legende">
+        <div class="legende-item"><div class="legende-puce quai"></div>Quai</div>
+        <div class="legende-item"><div class="legende-puce table"></div>Table auto</div>
+        <div class="legende-item"><div class="legende-puce acces"></div>Accès pompiers / Monte charge</div>
+        <div class="legende-item"><div class="legende-puce is"></div>Issue de Secours (IS)</div>
+    </div>
+</div>
+
+<script>
+const ICONE_MONTE_CHARGE = '<svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"/><polyline points="10 9 12 7 14 9"/><polyline points="10 15 12 17 14 15"/></svg>';
+const ICONE_ACCES = '<svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
+
+// poids : 1 = largeur normale (quai / table / accès / monte charge), 0.5 = IS (moitié moins large)
+const cellules = [
+    { nom: "Cellule 1", elements: [
+        { type: 'is', code: 'ISC1', poids: 0.5 },
+        { type: 'acces', numero: 64, poids: 1 },
+        { type: 'table', numero: 63, poids: 1 },
+        { type: 'quai', numeros: [58, 59, 60, 61, 62] }
+    ]},
+    { nom: "Cellule 2", elements: [
+        { type: 'is', code: 'IS SPI2 RDC', poids: 0.5 },
+        { type: 'quai', numeros: [56, 57] },
+        { type: 'montecharge', poids: 1 },
+        { type: 'quai', numeros: [55] },
+        { type: 'quai', numeros: [53] },
+        { type: 'is', code: 'ISC2', poids: 0.5 },
+        { type: 'table', numero: 54, poids: 1 }
+    ]},
+    { nom: "Cellule 3", elements: [
+        { type: 'quai', numeros: [50, 51] },
+        { type: 'is', code: 'ISC3', poids: 0.5 },
+        { type: 'table', numero: 49, poids: 1 },
+        { type: 'quai', numeros: [46, 47, 48] }
+    ]},
+    { nom: "Cellule 4", elements: [
+        { type: 'quai', numeros: [43, 44, 45] },
+        { type: 'table', numero: 42, poids: 1 },
+        { type: 'is', code: 'ISC4', poids: 0.5 },
+        { type: 'quai', numeros: [40, 41] }
+    ]},
+    { nom: "Cellule 5", elements: [
+        { type: 'quai', numeros: [38, 39] },
+        { type: 'is', code: 'ISC5', poids: 0.5 },
+        { type: 'quai', numeros: [36, 37] },
+        { type: 'table', numero: 35, poids: 1 },
+        { type: 'quai', numeros: [34] }
+    ]},
+    { nom: "Cellule 6", elements: [
+        { type: 'quai', numeros: [29, 30, 31, 32, 33] },
+        { type: 'table', numero: 28, poids: 1 },
+        { type: 'acces', numero: 27, poids: 1 },
+        { type: 'is', code: 'ISC6', poids: 0.5 }
+    ]}
+];
+
+function construireBlocsEtPoids(el) {
+    if (el.type === 'quai') {
+        return el.numeros.map(n => ({
+            poids: 1,
+            html: `<div class="bloc bloc-quai"><span class="num">${n}</span><span class="lbl">Quai</span></div>`
+        }));
+    }
+    if (el.type === 'table') {
+        return [{
+            poids: 1,
+            html: `<div class="bloc bloc-table"><span class="num">${el.numero}</span><span class="lbl">Table auto</span></div>`
+        }];
+    }
+    if (el.type === 'montecharge') {
+        return [{
+            poids: 1,
+            html: `<div class="bloc bloc-montecharge">${ICONE_MONTE_CHARGE}<span class="lbl">Monte charge</span></div>`
+        }];
+    }
+    if (el.type === 'acces') {
+        return [{
+            poids: 1,
+            html: `<div class="bloc bloc-acces">${ICONE_ACCES}<span class="num">${el.numero}</span><span class="lbl">Accès pompiers</span></div>`
+        }];
+    }
+    if (el.type === 'is') {
+        return [{
+            poids: 0.5,
+            html: `<div class="bloc bloc-is"><span class="code">${el.code}</span></div>`
+        }];
+    }
+    return [];
+}
+
+const conteneur = document.getElementById('conteneurCellules');
+conteneur.innerHTML = cellules.map(cell => {
+    const blocs = cell.elements.flatMap(construireBlocsEtPoids);
+    const gridTemplate = blocs.map(b => `${b.poids}fr`).join(' ');
+    const html = blocs.map(b => b.html).join('');
+    return `
+        <div class="cellule-row">
+            <div class="cellule-titre">${cell.nom}</div>
+            <div class="cellule-sequence" style="grid-template-columns:${gridTemplate};">
+                ${html}
+            </div>
+        </div>
+    `;
+}).join('');
+</script>
+
+</body>
+</html>
