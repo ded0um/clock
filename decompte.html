@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculateur de temps restant</title>
+  <title>Calculateur de temps</title>
   <style>
     :root {
       --primary-color: #2563eb;
@@ -37,13 +37,6 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
       width: 100%;
       max-width: 420px;
-    }
-
-    h1 {
-      font-size: 1.4rem;
-      margin-bottom: 20px;
-      text-align: center;
-      color: var(--primary-color);
     }
 
     .form-group {
@@ -106,11 +99,9 @@
 <body>
 
   <div class="card">
-    <h1>Temps restant jusqu'à 07h00</h1>
-    
     <div class="form-group">
       <label for="nombreRestant">Nombre restant :</label>
-      <input type="number" id="nombreRestant" placeholder="Ex: 10" min="3" step="1" oninput="redemarrerTimer()">
+      <input type="number" id="nombreRestant" placeholder="Ex: 10" min="2" step="1" oninput="redemarrerTimer()">
     </div>
 
     <div id="resultatContainer" class="result-box" style="display: none;">
@@ -123,15 +114,10 @@
     let timerId = null;
 
     function redemarrerTimer() {
-      // Annuler l'ancien intervalle s'il existe
       if (timerId) {
         clearInterval(timerId);
       }
-
-      // Lancer la première mise à jour immédiatement
       calculerTemps();
-
-      // Puis rafraîchir toutes les 1000 ms (1 seconde)
       timerId = setInterval(calculerTemps, 1000);
     }
 
@@ -141,7 +127,6 @@
       const container = document.getElementById('resultatContainer');
       const textDiv = document.getElementById('resultatText');
 
-      // Si le champ est vide, on masque la zone de résultat
       if (inputEl.value === "") {
         container.style.display = 'none';
         return;
@@ -149,45 +134,38 @@
 
       container.style.display = 'block';
 
-      // Validation
       if (isNaN(inputVal)) {
         container.className = 'result-box error';
         textDiv.textContent = "Veuillez entrer un nombre valide.";
         return;
       }
 
-      const diviseur = inputVal - 2;
+      // Le diviseur est (nombre restant - 1)
+      const diviseur = inputVal - 1;
 
       if (diviseur <= 0) {
         container.className = 'result-box error';
-        textDiv.textContent = "Le nombre doit être supérieur à 2.";
+        textDiv.textContent = "Le nombre doit être supérieur à 1.";
         return;
       }
 
       const maintenant = new Date();
       const prochaineHeureCible = new Date();
 
-      // Fixer la cible à 07h00 aujourd'hui
       prochaineHeureCible.setHours(7, 0, 0, 0);
 
-      // Si 07h00 aujourd'hui est déjà passée, cibler 07h00 demain
       if (maintenant >= prochaineHeureCible) {
         prochaineHeureCible.setDate(prochaineHeureCible.getDate() + 1);
       }
 
-      // Temps restant en millisecondes
       const tempsRestantMs = prochaineHeureCible - maintenant;
-
-      // Temps alloué par unité
       const tempsParUniteMs = tempsRestantMs / diviseur;
 
-      // Conversions
       const secondesTotales = Math.floor(tempsParUniteMs / 1000);
       const heures = Math.floor(secondesTotales / 3600);
       const minutes = Math.floor((secondesTotales % 3600) / 60);
       const secondes = secondesTotales % 60;
 
-      // Formatage du texte de résultat
       let resultatFormatted = "";
 
       if (heures > 0) {
