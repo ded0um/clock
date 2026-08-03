@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saisie des Contrôles Mensuels</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #e2e8f0;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --danger: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 15px;
+            max-width: 1300px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        @media(min-width: 768px) {
+            header {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .header-title h1 {
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+        }
+
+        .header-title p {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .select-control-type {
+            background: #334155;
+            color: white;
+            border: 1px solid #475569;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .select-control-type:focus {
+            border-color: var(--primary);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media(min-width: 950px) {
+            .grid-container {
+                grid-template-columns: 360px 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #0f172a;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .led-guide-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .led-guide-item:last-child {
+            border-bottom: none;
+        }
+
+        .led-indicator-group {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+
+        .led-indicator {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        .led-green-fix { background-color: #22c55e; box-shadow: 0 0 8px #22c55e; }
+        .led-green-blink { background-color: #22c55e; animation: blink 1s infinite; }
+        .led-orange-fix { background-color: #f97316; box-shadow: 0 0 8px #f97316; }
+        .led-orange-blink { background-color: #f97316; animation: blink 1s infinite; }
+        .led-green-orange-alt { background-color: #22c55e; animation: alt-blink 1s infinite; }
+        .led-red-fix { background-color: #ef4444; box-shadow: 0 0 8px #ef4444; }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        @keyframes alt-blink {
+            0%, 49% { background-color: #22c55e; }
+            50%, 100% { background-color: #f97316; }
+        }
+
+        .led-info h4 { font-size: 0.9rem; color: #1e293b; }
+        .led-info p { font-size: 0.8rem; color: #475569; }
+        .led-info .action { font-size: 0.78rem; color: #0284c7; font-weight: 600; margin-top: 2px; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #475569; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; background-color: #f8fafc; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .check-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .check-item {
+            background: white;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .check-item select, .check-item input[type="number"] {
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 2px 5px;
+            font-weight: 600;
+        }
+
+        .status-C, .status-OK { color: var(--success); font-weight: bold; }
+        .status-NC, .status-NOK { color: var(--danger); font-weight: bold; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            width: 100%;
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn:hover { background: var(--primary-hover); }
+
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background-color: #f1f5f9; color: #334155; font-weight: 600; white-space: nowrap; }
+
+        .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+        .badge-success { background: #dcfce7; color: #15803d; }
+        .badge-danger { background: #fee2e2; color: #b91c1c; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1>📋 Formulaire de Contrôles Mensuels</h1>
+            <p>Sélectionnez le type d'inspection à effectuer</p>
+        </div>
+        <div>
+            <select id="controlTypeSelect" class="select-control-type">
+                <option value="baes">🚨 BAES</option>
+                <option value="dm">🔴 Déclencheurs Manuels (DM)</option>
+                <option value="eclairage">💡 Éclairages Extérieurs</option>
+                <option value="cales">🚛 Chandelles & Cales de Quai</option>
+                <option value="douche">🚿 Douche / Lave-Œil</option>
+                <option value="paratonnerre">⚡ Compteurs Paratonnerre</option>
+            </select>
+        </div>
+    </header>
+
+    <div class="grid-container">
+        
+        <!-- PANNEAU GAUCHE : AIDE & INDICATION VOYANTS -->
+        <aside>
+            <div class="card" id="guideCard">
+                <h2 id="guideTitle">💡 Indication LED / État</h2>
+                <div id="guideContent">
+                    <!-- Généré dynamiquement en JS -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- PANNEAU DROIT : FORMULAIRE ET TABLEAU DE RELEVÉ -->
+        <main>
+            <div class="card">
+                <h2 id="formTitle">🔍 Saisie Rapide</h2>
+                <form id="inspectionForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="itemId">N° / Ref</label>
+                            <input type="number" id="itemId" class="form-control" placeholder="Ex: 1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemZone">Cellule / Zone</label>
+                            <input type="text" id="itemZone" class="form-control" placeholder="Ex: C1 / RDC">
+                        </div>
+                    </div>
+
+                    <label style="font-size:0.85rem; font-weight:600; color:#475569;">Points de contrôle :</label>
+                    <div class="check-grid" id="dynamicChecks">
+                        <!-- Généré dynamiquement en JS -->
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comments">Commentaires / Précision</label>
+                        <input type="text" id="comments" class="form-control" placeholder="Obligatoire si anomalie détectée">
+                    </div>
+
+                    <button type="submit" class="btn">➕ Valider et Passer au Suivant</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>📄 Relevé des Inspections</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead id="tableHead">
+                            <!-- En-têtes générés en JS -->
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Données saisies en JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const config = {
+            baes: {
+                title: "🚨 BAES",
+                guideTitle: "💡 Indication LED / État",
+                guideHTML: `
+                    <div class="led-guide-item">
+                        <div class="led-indicator-group"><span class="led-indicator led-green-fix"></span></div>
+                        <div class="led-info"><h4>Vert fixe</h4><p>BAES OK, aucun défaut</p><div class="action">Action : Aucune</div></div>
+                    </div>
+                    <div class="led-guide-item">
+                        <div class="led-indicator-group"><span class="led-indicator led-green-blink"></span></div>
+                        <div class="led-info"><h4>Vert clignotant</h4><p>Batterie en charge ou test en cours</p><div class="action">Action : Normal (attendre la fin)</div></div>
+                    </div>
+                    <div class="led-guide-item">
+                        <div class="led-indicator-group"><span class="led-indicator led-orange-fix"></span></div>
+                        <div class="led-info"><h4>Orange / Jaune fixe</h4><p>Défaut batterie</p><div class="action">Action : Remplacer la batterie</div></div>
+                    </div>
+                    <div class="led-guide-item">
+                        <div class="led-indicator-group"><span class="led-indicator led-orange-blink"></span></div>
+                        <div class="led-info"><h4>Orange / Jaune clignotant</h4><p>Défaut lampe/LED de secours ou électronique</p><div class="action">Action : Vérifier/remplacer la source ou le bloc</div></div>
+                    </div>
+                    <div class="led-guide-item">
+                        <div class="led-indicator-group">
+                            <span class="led-indicator led-orange-blink"></span>
+                            <span class="led-indicator led-orange-blink"></span>
+                        </div>
+                        <div class="led-info"><h4>Deux LEDs orange clignotant ensemble</h4><p>Défaut important / général</p><div class="action">Action : Remplacer le bloc</div></div>
+                    </div>
+                    <div class="led-guide-item">
+                        <div class="led-indicator-group"><span class="led-indicator led-green-orange-alt"></span></div>
+                        <div class="led-info"><h4>Vert + Orange en alternance</h4><p>Test en cours (continuité/autonomie)</p><div class="action">Action : Attendre la fin du test</div></div>
+                    </div>
+                    <div class="led-guide-item">
+                        <div class="led-indicator-group"><span class="led-indicator led-red-fix"></span></div>
+                        <div class="led-info"><h4>Rouge fixe</h4><p>Batterie à remplacer d’urgence</p><div class="action">Action : Remplacer immédiatement</div></div>
+                    </div>
+                    <div class="led-guide-item">
+                        <div class="led-indicator-group"><span class="led-indicator led-red-fix"></span></div>
+                        <div class="led-info"><h4>Rouge (télécommande)</h4><p>Défaut global / alarme incendie</p><div class="action">Action : Vérifier l'installation</div></div>
+                    </div>
+                `,
+                checks: [
+                    { id: 'access', label: 'Accessibilité', type: 'cnc' },
+                    { id: 'etatGen', label: 'État général', type: 'cnc' },
+                    { id: 'veille', label: 'Éclairage Veille', type: 'cnc' },
+                    { id: 'fixation', label: 'Fixation', type: 'cnc' },
+                    { id: 'boitier', label: 'État Boîtier', type: 'cnc' }
+                ],
+                headers: ['N°', 'Zone', 'Access.', 'État Gen.', 'Veille', 'Fixation', 'Boîtier', 'Statut', 'Commentaires', 'Action']
+            },
+            dm: {
+                title: "🔴 Déclencheurs Manuels (DM)",
+                guideTitle: "ℹ️ Précisions DM",
+                guideHTML: "<p style='font-size:0.85rem; color:#475569;'>Vérifier la présence de la vitre/membrane réarmable, l'accessibilité du boîtier et l'absence de déclenchement.</p>",
+                checks: [
+                    { id: 'access', label: 'Accessibilité', type: 'cnc' },
+                    { id: 'etatGen', label: 'État général', type: 'cnc' },
+                    { id: 'fixation', label: 'Fixation', type: 'cnc' },
+                    { id: 'mecanisme', label: 'Mécanisme', type: 'cnc' }
+                ],
+                headers: ['N°', 'Zone', 'Access.', 'État Gen.', 'Fixation', 'Mécanisme', 'Statut', 'Commentaires', 'Action']
+            },
+            eclairage: {
+                title: "💡 Éclairages Extérieurs",
+                guideTitle: "ℹ️ Consignes",
+                guideHTML: "<p style='font-size:0.85rem; color:#475569;'>Signaler toute ampoule HS, fixation cassée ou poteau dégradé dans la case commentaires.</p>",
+                checks: [
+                    { id: 'etatGen', label: 'État général', type: 'cnc' },
+                    { id: 'fonction', label: 'Fonctionnement', type: 'cnc' },
+                    { id: 'fixation', label: 'Fixation', type: 'cnc' }
+                ],
+                headers: ['N°', 'Zone', 'État Gen.', 'Fonction.', 'Fixation', 'Statut', 'Commentaires', 'Action']
+            },
+            cales: {
+                title: "🚛 Chandelles & Cales de Quai",
+                guideTitle: "ℹ️ Consignes",
+                guideHTML: "<p style='font-size:0.85rem; color:#475569;'>S'assurer de la présence des 2 cales par quai et de l'état général des chandelles.</p>",
+                checks: [
+                    { id: 'presence', label: 'Présence 2 cales', type: 'cnc' },
+                    { id: 'etatCales', label: 'État Cales/Chandelles', type: 'cnc' }
+                ],
+                headers: ['N° Quai', 'Zone', 'Présence 2 Cales', 'État Cales', 'Statut', 'Commentaires', 'Action']
+            },
+            douche: {
+                title: "🚿 Douche / Lave-Œil",
+                guideTitle: "ℹ️ Procédure",
+                guideHTML: "<p style='font-size:0.85rem; color:#475569;'>Vérifier la propreté de l'équipement, la clarté de l'eau et le bon débit à l'ouverture.</p>",
+                checks: [
+                    { id: 'vannes', label: 'Vannes OK', type: 'oknok' },
+                    { id: 'debit', label: 'Débit correct', type: 'oknok' },
+                    { id: 'eau', label: 'Eau claire', type: 'oknok' },
+                    { id: 'propre', label: 'Propreté', type: 'oknok' },
+                    { id: 'access', label: 'Accès libre', type: 'oknok' },
+                    { id: 'signal', label: 'Signalisation', type: 'oknok' }
+                ],
+                headers: ['N°', 'Zone', 'Vannes', 'Débit', 'Eau', 'Propreté', 'Accès', 'Signal.', 'Statut', 'Commentaires', 'Action']
+            },
+            paratonnerre: {
+                title: "⚡ Compteurs Paratonnerre",
+                guideTitle: "ℹ️ Relevé",
+                guideHTML: "<p style='font-size:0.85rem; color:#475569;'>Relever l'index affiché sur le compteur d'impacts de foudre.</p>",
+                checks: [
+                    { id: 'compteurVal', label: 'Valeur Compteur', type: 'number' },
+                    { id: 'fixation', label: 'Fixation / Descente', type: 'cnc' },
+                    { id: 'access', label: 'Accessibilité', type: 'cnc' }
+                ],
+                headers: ['N° Pt', 'Zone', 'Valeur Compteur', 'Fixation', 'Access.', 'Statut', 'Commentaires', 'Action']
+            }
+        };
+
+        const select = document.getElementById('controlTypeSelect');
+        const dynamicChecks = document.getElementById('dynamicChecks');
+        const tableHead = document.getElementById('tableHead');
+        const tableBody = document.getElementById('tableBody');
+        const guideTitle = document.getElementById('guideTitle');
+        const guideContent = document.getElementById('guideContent');
+        const formTitle = document.getElementById('formTitle');
+        let currentId = 1;
+
+        function loadControlType(typeKey) {
+            const currentConfig = config[typeKey];
+            
+            formTitle.textContent = "🔍 " + currentConfig.title;
+            guideTitle.textContent = currentConfig.guideTitle;
+            guideContent.innerHTML = currentConfig.guideHTML;
+
+            dynamicChecks.innerHTML = '';
+            currentConfig.checks.forEach(chk => {
+                const item = document.createElement('div');
+                item.className = 'check-item';
+                
+                let inputHTML = '';
+                if (chk.type === 'cnc') {
+                    inputHTML = `<select id="chk_${chk.id}"><option value="C">C</option><option value="NC">NC</option></select>`;
+                } else if (chk.type === 'oknok') {
+                    inputHTML = `<select id="chk_${chk.id}"><option value="OK">OK</option><option value="NOK">NOK</option></select>`;
+                } else if (chk.type === 'number') {
+                    inputHTML = `<input type="number" id="chk_${chk.id}" value="0" style="width:60px;">`;
+                }
+
+                item.innerHTML = `<span>${chk.label}</span>${inputHTML}`;
+                dynamicChecks.appendChild(item);
+            });
+
+            tableHead.innerHTML = `<tr>${currentConfig.headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+            tableBody.innerHTML = '';
+            currentId = 1;
+            document.getElementById('itemId').value = currentId;
+        }
+
+        select.addEventListener('change', (e) => loadControlType(e.target.value));
+
+        loadControlType('baes');
+
+        document.getElementById('inspectionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const currentConfig = config[select.value];
+            const id = document.getElementById('itemId').value;
+            const zone = document.getElementById('itemZone').value || '-';
+            const comments = document.getElementById('comments').value;
+
+            let isNC = false;
+            let checkCells = '';
+
+            currentConfig.checks.forEach(chk => {
+                const el = document.getElementById(`chk_${chk.id}`);
+                const val = el.value;
+                if (val === 'NC' || val === 'NOK') isNC = true;
+                
+                const styleClass = (val === 'C' || val === 'OK') ? `status-${val}` : (val === 'NC' || val === 'NOK') ? `status-${val}` : '';
+                checkCells += `<td class="${styleClass}">${val}</td>`;
+            });
+
+            const statusBadge = isNC 
+                ? '<span class="badge badge-danger">NC / NOK</span>' 
+                : '<span class="badge badge-success">CONFORME</span>';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${id}</strong></td>
+                <td>${zone}</td>
+                ${checkCells}
+                <td>${statusBadge}</td>
+                <td>${comments}</td>
+                <td><button onclick="this.closest('tr').remove()" style="background:none;border:none;color:red;cursor:pointer;">❌</button></td>
+            `;
+
+            tableBody.appendChild(tr);
+
+            currentId = parseInt(id) + 1;
+            document.getElementById('itemId').value = currentId;
+            document.getElementById('comments').value = '';
+            document.getElementById('itemId').focus();
+        });
+    </script>
+</body>
+</html>
