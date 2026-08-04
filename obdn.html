@@ -21,17 +21,17 @@
     }
     .controls {
       flex: 1;
-      max-width: 400px;
+      max-width: 350px;
     }
     textarea {
       width: 100%;
-      height: 200px;
+      height: 250px;
       border: 1px solid #ccc;
       border-radius: 4px;
       padding: 10px;
       box-sizing: border-box;
       font-family: monospace;
-      font-size: 12px;
+      font-size: 11px;
     }
     button {
       background-color: #007bff;
@@ -49,144 +49,162 @@
     button.pdf-btn { background-color: #28a745; }
     button.pdf-btn:hover { background-color: #218838; }
 
-    /* Zone du Reçu Fiscal PDF */
+    /* Zone de rendu exacte du PDF A4 */
     .preview {
       flex: 2;
       display: flex;
       justify-content: center;
     }
     #receipt {
-      width: 180mm;
-      min-height: 250mm;
-      padding: 15mm;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 15mm 20mm;
       background: white;
-      border: 1px solid #ddd;
       box-sizing: border-box;
-      position: relative;
-      font-size: 13px;
-      line-height: 1.5;
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 14px;
+      line-height: 1.4;
       color: #000;
+      position: relative;
     }
-    .header {
+    .banner {
+      width: 100%;
+      max-height: 70px;
+      object-fit: contain;
+      margin-bottom: 20px;
+    }
+    .doc-title {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      text-decoration: underline;
+      margin: 15px 0 25px 0;
+      letter-spacing: 1px;
+    }
+    .org-details {
+      margin-bottom: 20px;
+    }
+    .org-details p {
+      margin: 2px 0;
+    }
+    .receipt-meta {
+      margin: 20px 0;
+    }
+    .donation-body {
+      margin: 25px 0;
+    }
+    .donor-block {
+      margin: 30px 0 30px 40px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .legal-notice {
+      font-size: 11px;
+      margin-top: 40px;
+      text-align: justify;
+    }
+    .footer-section {
+      margin-top: 30px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      border-bottom: 2px solid #000;
-      padding-bottom: 10px;
-      margin-bottom: 15px;
     }
-    .header-info { text-align: left; }
-    .header-info h2 { margin: 0; font-size: 18px; text-transform: uppercase; }
-    .header-info p { margin: 2px 0; font-size: 11px; }
-    .title-box {
+    .signature-area {
       text-align: center;
-      margin: 20px 0;
     }
-    .title-box h1 {
-      font-size: 22px;
-      margin: 0;
-      text-decoration: underline;
-    }
-    .meta-info {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      font-weight: bold;
-    }
-    .donor-box {
-      border: 1px solid #000;
-      padding: 12px;
-      margin: 20px 0;
-      border-radius: 4px;
-      background: #fafafa;
-    }
-    .footer {
-      margin-top: 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
-    .signature-box {
-      text-align: right;
-    }
-    .signature-box img {
-      max-width: 150px;
+    .signature-img {
+      max-width: 180px;
       height: auto;
-      display: block;
-      margin-left: auto;
+      margin-top: 5px;
+    }
+    .page-number {
+      position: absolute;
+      bottom: 15mm;
+      right: 20mm;
+      font-size: 12px;
     }
   </style>
 </head>
 <body>
 
   <div class="panel controls">
-    <h3>1. Coller les informations Yapla</h3>
-    <textarea id="rawInput" placeholder="Collez le texte brut du don ici..."></textarea>
-    <button onclick="parseData()">Analyser & Remplir le Reçu</button>
-    <button class="pdf-btn" onclick="generatePDF()">Télécharger le PDF</button>
+    <h3>1. Texte du don Yapla</h3>
+    <textarea id="rawInput" placeholder="Collez les détails du don ici..."></textarea>
+    <button onclick="parseData()">1. Analyser le texte</button>
+    <button class="pdf-btn" onclick="generatePDF()">2. Télécharger le PDF</button>
   </div>
 
   <div class="preview">
     <div id="receipt">
-      <div class="header">
-        <div class="header-info">
-          <h2>Ô Bonheur des Nanouts</h2>
-          <p>7 Impasse Michel VION</p>
-          <p>80260 LA VICOGNE</p>
-          <p><strong>Organisme d’intérêt général</strong></p>
-        </div>
+      <!-- Visuel d'en-tête (Logo + Adresse) -->
+      <img src="banner.png" class="banner" alt="Ô BONHEUR DES NANOUTS ASSOCIATION" onerror="this.style.display='none'; document.getElementById('alt-header').style.display='block';">
+      
+      <div id="alt-header" style="display:none; text-align:center; font-weight:bold; margin-bottom:20px;">
+        Ô BONHEUR DES NANOUT'S ASSOCIATION<br>
+        7 IMPASSE MICHEL VION - 80260 LA VICOGNE
       </div>
 
-      <div class="title-box">
-        <h1>REÇU FISCAL</h1>
+      <div class="doc-title">REÇU FISCAL</div>
+
+      <div class="org-details">
+        <p><strong>Ô Bonheur des Nanouts</strong></p>
+        <p>7 Impasse Michel VION</p>
+        <p>80260 LA VICOGNE</p>
+        <p><strong>Organisme d’intérêt général</strong></p>
       </div>
 
-      <div class="meta-info">
-        <div>N° d’ordre : RF-<span id="outNumOrdre">001</span></div>
-        <div>Reçu émis à <span id="outLieuEmission">La Vicogne</span>, le <span id="outDateEmission">--/--/----</span></div>
+      <div class="receipt-meta">
+        <p>N° d’ordre : RF-<span id="outNumOrdre"><<Numéro d'ordre>></span></p>
+        <p>Reçu émis à <span id="outLieuEmission">La Vicogne</span>, le <span id="outDateEmission"><<Date d'émission>></span></p>
       </div>
 
-      <p>L’Association Ô Bonheur des Nanouts, reconnaît avoir reçu au titre des dons et versements la somme de <strong>***<span id="outMontantText">0,00</span> €***</strong>.</p>
-
-      <p>
-        <strong>Date du don :</strong> <span id="outDateDon">--/--/----</span><br>
-        <strong>Montant du don :</strong> ***<span id="outMontant">0,00</span> €***<br>
-        <strong>Mode de Versement :</strong> <span id="outMode">Carte bancaire</span><br>
-        <strong>Nature du don :</strong> Numéraire
-      </p>
-
-      <div class="donor-box">
-        <strong id="outNomPrenom">NOM Prénom</strong><br>
-        <span id="outAdresse">Adresse</span><br>
-        <span id="outVilleCode">Code Postal - Ville</span><br>
-        <span id="outPays">France</span>
+      <div class="donation-body">
+        <p>L’Association Ô Bonheur des Nanouts, reconnaît, avoir reçu au titre des dons et versements la somme de <strong>***<span id="outMontantText"><<Montant>></span>€***</strong>.</p>
+        
+        <p style="margin-top: 15px;">
+          Date du don : <span id="outDateDon"><<Date>></span><br>
+          Montant du don : <strong>***<span id="outMontant"><<Montant>></span>€***</strong><br>
+          Mode de Versement : <span id="outMode"><<Mode de versement>></span><br>
+          Nature du don : Numéraire
+        </p>
       </div>
 
-      <p style="font-size: 11px; margin-top: 30px;">
+      <div class="donor-block">
+        <strong id="outNomPrenom"><<NOM>> <<Prénom>></strong><br>
+        <span id="outAdresse"><<Adresse>></span><br>
+        <span id="outVilleCode"><<Ville>> - <<Code postal>></span><br>
+        <span id="outPays"><<Pays>></span>
+      </div>
+
+      <p class="legal-notice">
         Le bénéficiaire certifie sur l’honneur que les dons et versements qu’il reçoit ouvrent droit à la réduction d’impôt prévue à l'article 200 du Code Général des Impôts.
       </p>
 
-      <div class="footer">
+      <div class="footer-section">
         <div>
-          <p><span id="outLieuFooter">La Vicogne</span>, le <span id="outDateFooter">--/--/----</span></p>
+          <p><span id="outLieuFooter">La Vicogne</span>, le <span id="outDateFooter"><<Date d'émission>></span></p>
         </div>
-        <div class="signature-box">
-          <p><strong>LEMOINE Thérèse</strong><br>Présidente de l’association</p>
+        <div class="signature-area">
+          <p style="margin:0;"><strong>LEMOINE Thérèse</strong><br>Présidente de l’association</p>
+          <img src="signature.png" class="signature-img" alt="Signature" onerror="this.style.display='none';">
         </div>
       </div>
+
+      <div class="page-number">1/1</div>
     </div>
   </div>
 
   <script>
-    // Met à jour automatiquement la date d'émission au jour J
-    const today = new Date().toLocaleDateString('fr-FR');
-    document.getElementById('outDateEmission').innerText = today;
-    document.getElementById('outDateFooter').innerText = today;
+    // Initialisation automatique des dates à la date du jour
+    const now = new Date();
+    const todayStr = now.toLocaleDateString('fr-FR');
+    document.getElementById('outDateEmission').innerText = todayStr;
+    document.getElementById('outDateFooter').innerText = todayStr;
 
     function parseData() {
       const text = document.getElementById('rawInput').value;
 
-      // Extraction via expressions régulières
+      // Extraction des blocs texte
       const prenomMatch = text.match(/Prénom\s*\n\s*([^\n]+)/i);
       const nomMatch = text.match(/Nom\s*\n\s*([^\n]+)/i);
       const adresseMatch = text.match(/Adresse\s*\n\s*([^\n]+)/i);
@@ -196,14 +214,14 @@
       const montantMatch = text.match(/Montant\s*\n\s*([\d,]+)/i);
       const dateMatch = text.match(/Date officielle du don\s*\n\s*([\d\-]+)/i);
       const modeMatch = text.match(/Mode de paiement\s*\n\s*([^\n]+)/i);
-      const refMatch = text.match(/N° de facture\s*N° de paiement[^\n]*\n[^\t]*\t[^\t]*\t([0-9]+)/i);
+      const factureMatch = text.match(/Facture\s*([0-9]+)/i) || text.match(/26[0-9]{8}/);
 
-      // Injection dans le modèle HTML
+      // Remplacement dans le document
       if (nomMatch && prenomMatch) {
         document.getElementById('outNomPrenom').innerText = `${nomMatch[1].toUpperCase()} ${prenomMatch[1]}`;
       }
       if (adresseMatch) document.getElementById('outAdresse').innerText = adresseMatch[1];
-      if (villeMatch && cpMatch) document.getElementById('outVilleCode').innerText = `${cpMatch[1]} ${villeMatch[1]}`;
+      if (villeMatch && cpMatch) document.getElementById('outVilleCode').innerText = `${villeMatch[1]} - ${cpMatch[1]}`;
       if (paysMatch) document.getElementById('outPays').innerText = paysMatch[1];
       
       if (montantMatch) {
@@ -213,15 +231,14 @@
       }
       
       if (dateMatch) {
-        // Formater la date en DD/MM/YYYY
-        const d = dateMatch[1].split('-');
+        const d = dateMatch[1].split(' ')[0].split('-');
         if (d.length === 3) {
           document.getElementById('outDateDon').innerText = `${d[0]}/${d[1]}/${d[2]}`;
         }
       }
       
       if (modeMatch) document.getElementById('outMode').innerText = modeMatch[1];
-      if (refMatch) document.getElementById('outNumOrdre').innerText = refMatch[1];
+      if (factureMatch) document.getElementById('outNumOrdre').innerText = factureMatch[1] || factureMatch[0];
     }
 
     function generatePDF() {
@@ -229,10 +246,10 @@
       const nomPrenom = document.getElementById('outNomPrenom').innerText.replace(/\s+/g, '_');
       
       const opt = {
-        margin:       10,
+        margin:       0,
         filename:     `Recu_Fiscal_${nomPrenom}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
+        html2canvas:  { scale: 2, useCORS: true },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
