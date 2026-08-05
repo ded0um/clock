@@ -28,23 +28,25 @@ html,body{height:100%;margin:0;font-family:Inter, "Segoe UI", system-ui, -apple-
 .side-toggle button{appearance:none;border:0;background:transparent;color:#ddd;padding:6px 8px;cursor:pointer;font-size:0.86rem}
 .side-toggle button.active{background:var(--accent);color:#000;font-weight:700}
 
-/* Table compact */
+/* Table compact, grouped headers */
 .table-wrap{margin-top:8px;border-radius:8px;padding:6px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));border:1px solid var(--border);overflow:auto}
 .table{width:100%;border-collapse:collapse;font-size:0.88rem;table-layout:fixed}
-.table thead th{background:rgba(10,10,10,0.6);padding:6px;text-align:left;color:var(--muted);font-weight:700;position:sticky;top:0;font-size:0.82rem}
-.table td{padding:6px;border-top:1px solid rgba(255,255,255,0.02);vertical-align:middle}
+.table thead th{background:rgba(10,10,10,0.6);padding:6px;text-align:center;color:var(--muted);font-weight:700;position:sticky;top:0;font-size:0.82rem;border-bottom:1px solid rgba(255,255,255,0.03)}
+.table thead tr:first-child th{border-bottom:1px solid rgba(255,255,255,0.05)}
+.table thead tr:nth-child(2) th{font-weight:600;font-size:0.78rem;padding:4px}
+.table td{padding:6px;border-top:1px solid rgba(255,255,255,0.02);vertical-align:middle;text-align:left}
 .select{padding:6px;border-radius:6px;background:#0a0a0a;border:1px solid var(--border);color:#fff;font-size:0.85rem}
 input[type="text"]{font-size:0.88rem;padding:6px;border-radius:6px;background:#0a0a0a;border:1px solid var(--border);color:#fff}
 input[type="checkbox"]{width:16px;height:16px}
 .status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;border:1px solid rgba(255,255,255,0.06)}
 .status-text{font-size:0.8rem;color:var(--muted)}
 
-/* compact multi-line header */
-.col-label{display:block;line-height:1;font-size:0.78rem;color:var(--muted);white-space:normal;text-align:left}
+/* compact multi-line label used in subheaders */
+.col-label{display:block;line-height:1;font-size:0.78rem;color:var(--muted);white-space:normal;text-align:center}
 
 /* comment preview cell */
-.comment-preview{display:flex;align-items:center;gap:8px}
-.comment-text{font-size:0.86rem;color:var(--muted);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.comment-preview{display:flex;align-items:center;gap:8px;justify-content:flex-start}
+.comment-text{font-size:0.86rem;color:var(--muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* modal (generic) */
 .modal-backdrop{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000}
@@ -54,20 +56,20 @@ input[type="checkbox"]{width:16px;height:16px}
 .modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
 .modal pre{white-space:pre-wrap;font-family:monospace;background:#070707;padding:12px;border-radius:8px;border:1px solid var(--border);max-height:60vh;overflow:auto;color:#fff}
 
-/* column sizing */
-.table thead th:nth-child(1){width:36px}
-.table thead th:nth-child(2){width:72px}
-.table thead th:nth-child(3){width:86px}
-.table thead th:nth-child(4){width:86px}
-.table thead th:nth-child(5){width:86px}
-.table thead th:nth-child(6){width:86px}
-.table thead th:nth-child(7){min-width:120px}
+/* column sizing: status | quai | calles.pres | calles.chains | chand.pres | chand.etat | comment */
+.table thead th[colspan="1"]:nth-child(1){width:36px}
+.table thead th:nth-child(2){width:68px} /* quai or first group */
+.table thead tr:nth-child(2) th:nth-child(3){width:64px}
+.table thead tr:nth-child(2) th:nth-child(4){width:64px}
+.table thead tr:nth-child(2) th:nth-child(5){width:64px}
+.table thead tr:nth-child(2) th:nth-child(6){width:64px}
+.table thead th:last-child{min-width:120px}
 
 /* responsive */
 @media (max-width:560px){
   .container{padding:8px;margin:8px}
   .title{font-size:1rem}
-  .table thead th{padding:5px;font-size:0.8rem}
+  .table thead th{padding:5px;font-size:0.78rem}
   .table td{padding:5px}
   .btn{padding:6px 8px;font-size:0.82rem}
 }
@@ -100,17 +102,16 @@ input[type="checkbox"]{width:16px;height:16px}
     </div>
   </div>
 
-  <!-- modal roots -->
   <div id="modalRoot" aria-hidden="true"></div>
 
 <script>
 /*
-  Updated behavior:
-  - The generated report now includes only the problematic quays.
-    If a quay is fully OK (all 4 checks true) it is omitted from the report.
-  - The label for a present-but-not-ok chandelle is now "Chandelle endommagée".
-  - If no problems, the report shows "Aucun problème détecté."
-  - Everything else remains the same.
+  Grouped-columns layout:
+  - Header rendered in two rows:
+    Row 1: (empty) | Quai | Calles (colspan=2) | Chandelle (colspan=2) | Commentaire
+    Row 2: (empty) | (quai header cell) | Présence | Chaînes | Présence | Etat | (comment)
+  - Data and behavior preserved (DOM-based rows).
+  - Report still lists only problematic quays; damaged chandelle label is "Chandelle endommagée".
 */
 
 const MIN_Q = 27, MAX_Q = 64;
@@ -136,16 +137,15 @@ function makeRecord(n){
     commentaire: ''
   };
 }
-
 function loadData(){
-  try {
+  try{
     const raw = localStorage.getItem(DATA_KEY);
     if(raw){
       const parsed = JSON.parse(raw);
       for(let n=MIN_Q;n<=MAX_Q;n++) if(!parsed[n]) parsed[n] = makeRecord(n);
       return parsed;
     }
-  } catch(e){}
+  }catch(e){}
   const map = {};
   for(let n=MIN_Q;n<=MAX_Q;n++) map[n] = makeRecord(n);
   localStorage.setItem(DATA_KEY, JSON.stringify(map));
@@ -164,42 +164,66 @@ function statusColor(status){
 }
 function statusText(status){ return status === 'good' ? 'OK' : 'Défaut'; }
 
+/* Render a two-row grouped header depending on side */
 function renderHeader(){
   const leftOrder = side === 'left';
-  const lblPresence = `<span class="col-label">Présence<br>2 calles</span>`;
-  const lblChains = `<span class="col-label">Chaînes<br>calles OK</span>`;
-  const lblPresChand = `<span class="col-label">Présence<br>Chandelle</span>`;
-  const lblEtatChand = `<span class="col-label">Etat<br>Chandelle OK</span>`;
-  const lblComment = `<span class="col-label">Commentaire</span>`;
+  // first header row (groups)
+  let row1 = document.createElement('tr');
+  // second header row (subcolumns)
+  let row2 = document.createElement('tr');
 
-  let ths = '';
-  if(leftOrder){
-    ths += `<tr>
-      <th></th>
-      <th>Quai</th>
-      <th>${lblPresence}</th>
-      <th>${lblChains}</th>
-      <th>${lblPresChand}</th>
-      <th>${lblEtatChand}</th>
-      <th>${lblComment}</th>
-    </tr>`;
-  } else {
-    ths += `<tr>
-      <th></th>
-      <th>${lblPresence}</th>
-      <th>${lblChains}</th>
-      <th>${lblPresChand}</th>
-      <th>${lblEtatChand}</th>
-      <th>${lblComment}</th>
-      <th>Quai</th>
-    </tr>`;
+  // Helper: create th
+  function th(html, opts = {}) {
+    const el = document.createElement('th');
+    el.innerHTML = html;
+    if(opts.colSpan) el.colSpan = opts.colSpan;
+    if(opts.rowSpan) el.rowSpan = opts.rowSpan;
+    return el;
   }
-  tableHead.innerHTML = ths;
+
+  if(leftOrder){
+    // status empty cell occupies first column in both rows
+    row1.appendChild(th(''));
+    row1.appendChild(th('Quai', {rowSpan:2}));
+    row1.appendChild(th('Calles', {colSpan:2}));
+    row1.appendChild(th('Chandelle', {colSpan:2}));
+    row1.appendChild(th('Commentaire', {rowSpan:2}));
+
+    // second row: subheaders (note position aligns with colspans)
+    row2.appendChild(th('Présence',{}));
+    row2.appendChild(th('Chaînes',{}));
+    row2.appendChild(th('Présence',{}));
+    row2.appendChild(th('Etat',{}));
+
+    // we need an empty first th in row2 to match status column
+    // actually status column is first but we didn't add it to row2 yet -> add at start
+    row2.insertBefore(th(''), row2.firstChild);
+  } else {
+    // right order: groups before Commentaire and Quai at end
+    row1.appendChild(th(''));
+    row1.appendChild(th('Calles', {colSpan:2}));
+    row1.appendChild(th('Chandelle', {colSpan:2}));
+    row1.appendChild(th('Commentaire', {rowSpan:2}));
+    row1.appendChild(th('Quai', {rowSpan:2}));
+
+    // second row: subheaders, with initial empty for status
+    row2.appendChild(th(''));
+    row2.appendChild(th('Présence',{}));
+    row2.appendChild(th('Chaînes',{}));
+    row2.appendChild(th('Présence',{}));
+    row2.appendChild(th('Etat',{}));
+  }
+
+  // attach rows (clear then append)
+  tableHead.innerHTML = '';
+  tableHead.appendChild(row1);
+  tableHead.appendChild(row2);
 }
 
-/* DOM helpers */
+/* DOM cell helpers */
 function tdStatus(rec){
   const td = document.createElement('td');
+  td.style.textAlign = 'center';
   const span = document.createElement('span');
   span.className = 'status-dot';
   span.style.background = statusColor(computeRowStatus(rec));
@@ -223,7 +247,7 @@ function tdCheckbox(n, key){
   inp.dataset.q = n;
   inp.dataset.k = key;
   inp.checked = !!data[n][key];
-  inp.addEventListener('change', () => {
+  inp.addEventListener('change', ()=>{
     data[n][key] = inp.checked;
     persist();
     updateRowStatus(n);
@@ -254,7 +278,7 @@ function tdCommentPreview(n){
 function openCommentModal(n){
   modalRoot.innerHTML = '';
   modalRoot.style.display = 'block';
-  modalRoot.setAttribute('aria-hidden', 'false');
+  modalRoot.setAttribute('aria-hidden','false');
 
   const backdrop = document.createElement('div');
   backdrop.className = 'modal-backdrop';
@@ -293,22 +317,20 @@ function openCommentModal(n){
   backdrop.appendChild(modal);
   modalRoot.appendChild(backdrop);
 
-  backdrop.addEventListener('click', (e)=>{
-    if(e.target === backdrop) closeModal();
-  });
+  backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeModal(); });
   setTimeout(()=> ta.focus(), 80);
 }
 function closeModal(){
   modalRoot.innerHTML = '';
   modalRoot.style.display = 'none';
-  modalRoot.setAttribute('aria-hidden', 'true');
+  modalRoot.setAttribute('aria-hidden','true');
 }
 
 /* Report modal: only problematic quays */
 function openReportModal(){
   modalRoot.innerHTML = '';
   modalRoot.style.display = 'block';
-  modalRoot.setAttribute('aria-hidden', 'false');
+  modalRoot.setAttribute('aria-hidden','false');
 
   const backdrop = document.createElement('div');
   backdrop.className = 'modal-backdrop';
@@ -334,13 +356,8 @@ function openReportModal(){
   closeBtn.textContent = 'Fermer';
 
   copyBtn.addEventListener('click', async ()=>{
-    try {
-      await navigator.clipboard.writeText(pre.textContent);
-      copyBtn.textContent = '✅ Copié';
-      setTimeout(()=> copyBtn.textContent = '📋 Copier', 1200);
-    } catch(e){
-      alert('Impossible de copier : ' + (e && e.message ? e.message : e));
-    }
+    try { await navigator.clipboard.writeText(pre.textContent); copyBtn.textContent = '✅ Copié'; setTimeout(()=> copyBtn.textContent = '📋 Copier',1200); }
+    catch(e){ alert('Impossible de copier : ' + (e && e.message ? e.message : e)); }
   });
   closeBtn.addEventListener('click', closeModal);
 
@@ -353,12 +370,10 @@ function openReportModal(){
   backdrop.appendChild(modal);
   modalRoot.appendChild(backdrop);
 
-  backdrop.addEventListener('click', (e)=>{
-    if(e.target === backdrop) closeModal();
-  });
+  backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeModal(); });
 }
 
-/* Generate report text containing only problems (label for damaged chandelle adjusted) */
+/* Report text: only problems, with simplified label for damaged chandelle */
 function generateReportText(){
   const nums = (side === 'left') ? (()=>{ const a=[]; for(let n=MAX_Q;n>=MIN_Q;n--) a.push(n); return a; })()
                                  : (()=>{ const a=[]; for(let n=MIN_Q;n<=MAX_Q;n++) a.push(n); return a; })();
@@ -370,29 +385,26 @@ function generateReportText(){
   let problemCount = 0;
   nums.forEach(n=>{
     const r = data[n];
-    // skip fully OK quays
     if(r.calles_both_present && r.chains_ok && r.chandelle_present && r.chandelle_ok) return;
 
     const issues = [];
     if(!r.calles_both_present) issues.push('Calles manquantes');
     if(!r.chains_ok) issues.push('Chaînes cassées');
     if(!r.chandelle_present) issues.push('Chandelle absente');
-    else if(!r.chandelle_ok) issues.push('Chandelle endommagée'); // <- label changed here
+    else if(!r.chandelle_ok) issues.push('Chandelle endommagée'); // simplified label
+
     const note = r.commentaire ? ` — ${r.commentaire}` : '';
     lines.push(`Quai ${n} : ${issues.join(' ; ')}${note}`);
     problemCount++;
   });
 
-  if(problemCount === 0){
-    lines.push('Aucun problème détecté.');
-  } else {
-    lines.unshift(`Total de quais avec problèmes : ${problemCount}`);
-  }
+  if(problemCount === 0) lines.push('Aucun problème détecté.');
+  else lines.unshift(`Total de quais avec problèmes : ${problemCount}`);
 
   return lines.join('\n');
 }
 
-/* Render table (DOM-based) */
+/* Render rows DOM-based */
 function renderTable(){
   renderHeader();
   while(tableBody.firstChild) tableBody.removeChild(tableBody.firstChild);
@@ -409,22 +421,22 @@ function renderTable(){
 
     const statusTd = tdStatus(rec);
     const quaiTd = tdQuai(n);
-    const callesTd = tdCheckbox(n, 'calles_both_present');
-    const chainsTd = tdCheckbox(n, 'chains_ok');
-    const chandellePresTd = tdCheckbox(n, 'chandelle_present');
-    const chandelleOkTd = tdCheckbox(n, 'chandelle_ok');
+    const callesPresTd = tdCheckbox(n, 'calles_both_present');
+    const callesChainsTd = tdCheckbox(n, 'chains_ok');
+    const chandPresTd = tdCheckbox(n, 'chandelle_present');
+    const chandOkTd = tdCheckbox(n, 'chandelle_ok');
     const commentTd = tdCommentPreview(n);
 
     const cells = leftOrder
-      ? [statusTd, quaiTd, callesTd, chainsTd, chandellePresTd, chandelleOkTd, commentTd]
-      : [statusTd, callesTd, chainsTd, chandellePresTd, chandelleOkTd, commentTd, quaiTd];
+      ? [statusTd, quaiTd, callesPresTd, callesChainsTd, chandPresTd, chandOkTd, commentTd]
+      : [statusTd, callesPresTd, callesChainsTd, chandPresTd, chandOkTd, commentTd, quaiTd];
 
     cells.forEach(c => tr.appendChild(c));
     tableBody.appendChild(tr);
   });
 }
 
-/* update row dot */
+/* update row status dot */
 function updateRowStatus(n){
   const tr = document.getElementById('row-'+n);
   if(!tr) return;
@@ -436,16 +448,11 @@ function updateRowStatus(n){
   }
 }
 
-/* side setter, reset */
+/* side setter and reset */
 function setSide(newSide){
   side = newSide === 'right' ? 'right' : 'left';
-  if(side === 'left'){
-    sideLeftBtn.classList.add('active');
-    sideRightBtn.classList.remove('active');
-  } else {
-    sideLeftBtn.classList.remove('active');
-    sideRightBtn.classList.add('active');
-  }
+  if(side === 'left'){ sideLeftBtn.classList.add('active'); sideRightBtn.classList.remove('active'); }
+  else { sideLeftBtn.classList.remove('active'); sideRightBtn.classList.add('active'); }
   persistSide();
   renderTable();
 }
