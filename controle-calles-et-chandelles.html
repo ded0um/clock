@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Contrôles — Calles & Chandelles (v5)</title>
+<title>Contrôles — Calles & Chandelles</title>
 <style>
 :root{
   --bg:#000;
@@ -28,9 +28,22 @@ html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe U
 .btn.ghost{background:transparent;color:var(--muted)}
 .small{font-size:0.78rem;color:var(--muted)}
 
-/* table */
-.table-wrap{margin-top:8px;border-radius:8px;padding:0;background:var(--card);border:1px solid var(--border);overflow:auto;max-height:68vh}
-.table{width:100%;border-collapse:collapse;font-size:0.86rem;table-layout:fixed}
+/* table container: removed max-height and internal scrollbars (overflow visible) */
+.table-wrap{
+  margin-top:8px;
+  border-radius:8px;
+  padding:0;
+  background:var(--card);
+  border:1px solid var(--border);
+  overflow:visible; /* removed max-height so page scrollbar is used */
+}
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:0.86rem;
+  table-layout:fixed;
+}
 .table thead tr{display:table-row}
 .table thead th{
   background:var(--card);
@@ -39,30 +52,55 @@ html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe U
   color:var(--muted);
   font-weight:700;
   white-space:nowrap;
-  z-index:2000; /* headers on top */
+  z-index:2000; /* headers on top of content */
 }
-.table thead tr:first-child th{height:var(--h1);line-height:var(--h1);position:sticky;top:0}
-.table thead tr:nth-child(2) th{height:var(--h2);line-height:var(--h2);position:sticky;top:var(--h1)}
+/* precise sticky positions so there's no gap when scrolling (sticky relative to viewport) */
+.table thead tr:first-child th{
+  height:var(--h1);
+  line-height:var(--h1);
+  position:sticky;
+  top:0;
+}
+.table thead tr:nth-child(2) th{
+  height:var(--h2);
+  line-height:var(--h2);
+  position:sticky;
+  top:var(--h1);
+}
 /* avoid seam between header rows */
 .table thead tr:first-child th,
-.table thead tr:nth-child(2) th { border-bottom: none; border-top: none; box-shadow:none; }
+.table thead tr:nth-child(2) th { border-bottom:none; border-top:none; box-shadow:none; }
 
-/* data */
-.table td{padding:6px 8px;border-top:1px solid rgba(255,255,255,0.02);vertical-align:middle;white-space:nowrap}
+/* data rows */
+.table td{
+  padding:6px 8px;
+  border-top:1px solid rgba(255,255,255,0.02);
+  vertical-align:middle;
+  white-space:nowrap;
+  background:transparent;
+}
 .status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;border:1px solid rgba(255,255,255,0.06)}
 .type-btn{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;min-width:22px;height:22px;padding:0 6px;background:#0d0d0d;border:1px solid var(--border);color:#ddd;font-size:0.82rem;border-radius:6px;cursor:pointer;position:relative;z-index:10}
 .comment-preview{display:flex;align-items:center;gap:8px}
 .comment-text{font-size:0.82rem;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis}
 
-/* type menu (fixed) placed under anchor; z-index lower than header so header not overlapped) */
+/* validated checkbox cell at end */
+.valid-check{display:flex;align-items:center;gap:8px;justify-content:center}
+.valid-check input{width:16px;height:16px}
+
+/* type menu: fixed; z-index lower than header so it doesn't cover titles */
 .type-menu{position:fixed;background:#0d0d0d;border:1px solid var(--border);border-radius:6px;min-width:160px;z-index:1500}
 .type-menu button{display:block;width:100%;text-align:left;padding:8px 10px;background:transparent;border:0;color:#fff;cursor:pointer}
 .type-menu button:hover{background:rgba(255,255,255,0.02)}
 
-/* validate badge */
-.valid-badge{display:inline-block;margin-left:8px;padding:2px 6px;background:rgba(34,197,94,0.12);color:var(--good);border:1px solid rgba(34,197,94,0.18);border-radius:6px;font-size:0.75rem}
+/* modal overlay (report & comment) */
+.modal-backdrop{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:3000}
+.modal{background:#0b0b0b;border:1px solid var(--border);padding:12px;border-radius:8px;max-width:820px;width:94%;color:#fff;box-shadow:0 10px 30px rgba(0,0,0,0.7)}
+.modal .title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.modal h3{margin:0;font-size:1rem}
+.modal pre{white-space:pre-wrap;font-family:monospace;background:#070707;padding:10px;border-radius:8px;border:1px solid var(--border);max-height:60vh;overflow:auto;color:#fff;font-size:0.86rem}
+.close-x{background:transparent;border:0;color:#fff;font-size:1.1rem;cursor:pointer}
 
-/* responsive */
 @media (max-width:760px){
   .comment-text{max-width:100px}
   .type-btn{min-width:20px;height:20px;padding:0 5px;font-size:0.78rem}
@@ -102,13 +140,10 @@ html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe U
   <div id="typeMenuRoot"></div>
 
 <script>
-/* v5: new features requested:
- - report opens in a NEW WINDOW (synchronously via window.open + write) with copy button
- - header sticky gap fixed (precise heights + no borders)
- - visual validation per quay (validé badge toggle)
- - initial/selectable control mode (both / calles / chandelles) — UI adapts (hide irrelevant columns)
- - autodock/compacteur quays skipped from checks & report
- - 27 and 64 permanently removed
+/* Data and behavior
+   - Once a row is validated, other inputs on that line are locked but the validation checkbox itself remains togglable.
+   - This file is identical to previous behavior except the disabling logic excludes the validated checkbox so you can uncheck it anytime.
+   - 27 and 64 permanently excluded; autodock/compacteur excluded from checks/report.
 */
 
 const MIN_Q = 27, MAX_Q = 64;
@@ -116,22 +151,19 @@ const SKIP_QUAYS = new Set([27,64]);
 const COMPACTEURS = new Set([38,48]);
 const AUTODOCKS = new Set([63,54,49,42,35]);
 
-const DATA_KEY = 'calles_chandelles_v5';
-const SIDE_KEY = 'quais_side_v5';
-const MODE_KEY = 'calles_chandelles_mode_v5';
+const DATA_KEY = 'calles_chandelles';
+const MODE_KEY = 'calles_chandelles_mode';
 
 const tableHead = document.getElementById('tableHead');
 const tableBody = document.getElementById('tableBody');
 const modalRoot = document.getElementById('modalRoot');
-const typeMenuRoot = document.getElementById('typeMenuRoot');
 
 const modeSelect = document.getElementById('modeSelect');
 const startBtn = document.getElementById('startBtn');
 const genBtn = document.getElementById('genBtn');
 const resetBtn = document.getElementById('resetBtn');
 
-let side = localStorage.getItem(SIDE_KEY) || 'left';
-let mode = localStorage.getItem(MODE_KEY) || 'both'; // 'both' | 'calles' | 'chandelles'
+let mode = localStorage.getItem(MODE_KEY) || 'both';
 modeSelect.value = mode;
 
 let data = loadData();
@@ -149,7 +181,7 @@ function makeRecord(n){
     chandelle_present: false,
     chandelle_ok: true,
     commentaire: '',
-    type: defaultTypeFor(n), // normal | autodock | compacteur
+    type: defaultTypeFor(n),
     validated: false
   };
 }
@@ -178,164 +210,109 @@ function loadData(){
 }
 function persist(){ localStorage.setItem(DATA_KEY, JSON.stringify(data)); }
 function persistMode(){ localStorage.setItem(MODE_KEY, mode); }
-function persistSide(){ localStorage.setItem(SIDE_KEY, side); }
 
-/* status: treat autodock/compacteur as OK (no control required) */
+/* compute status; autodock/compacteur => treated as OK */
 function computeRowStatus(rec){
   if(!rec) return 'bad';
   if(rec.type && rec.type !== 'normal') return 'good';
-  // depending on mode, consider only relevant checks
-  if(mode === 'calles'){
-    return (rec.calles_both_present && rec.chains_ok) ? 'good' : 'bad';
-  }
-  if(mode === 'chandelles'){
-    return (rec.chandelle_present && rec.chandelle_ok) ? 'good' : 'bad';
-  }
-  // both
+  if(mode === 'calles') return (rec.calles_both_present && rec.chains_ok) ? 'good' : 'bad';
+  if(mode === 'chandelles') return (rec.chandelle_present && rec.chandelle_ok) ? 'good' : 'bad';
   return (rec.calles_both_present && rec.chains_ok && rec.chandelle_present && rec.chandelle_ok) ? 'good' : 'bad';
 }
 function statusColor(st){ return st==='good' ? getComputedStyle(document.documentElement).getPropertyValue('--good').trim() : getComputedStyle(document.documentElement).getPropertyValue('--bad').trim(); }
 
-/* Header rendering depending on mode */
+/* render header depending on mode */
 function renderHeader(){
-  const leftOrder = side === 'left';
   tableHead.innerHTML = '';
   const row1 = document.createElement('tr');
   const row2 = document.createElement('tr');
   function th(html, opts={}){ const e=document.createElement('th'); e.innerHTML=html; if(opts.colSpan) e.colSpan=opts.colSpan; if(opts.rowSpan) e.rowSpan=opts.rowSpan; return e; }
 
-  if(leftOrder){
-    row1.appendChild(th(''));
-    row1.appendChild(th('Quai', {rowSpan:2}));
-    if(mode === 'both' || mode === 'calles'){
-      row1.appendChild(th('Calles', {colSpan:2}));
-    }
-    if(mode === 'both' || mode === 'chandelles'){
-      row1.appendChild(th('Chandelle', {colSpan:2}));
-    }
-    row1.appendChild(th('Commentaire', {rowSpan:2}));
+  row1.appendChild(th(''));
+  row1.appendChild(th('Quai',{rowSpan:2}));
+  if(mode==='both' || mode==='calles') row1.appendChild(th('Calles',{colSpan:2}));
+  if(mode==='both' || mode==='chandelles') row1.appendChild(th('Chandelle',{colSpan:2}));
+  row1.appendChild(th('Commentaire',{rowSpan:2}));
+  row1.appendChild(th('Validé',{rowSpan:2}));
 
-    row2.appendChild(th('')); // status align
-    if(mode === 'both' || mode === 'calles'){ row2.appendChild(th('Présence')); row2.appendChild(th('Chaînes')); }
-    if(mode === 'both' || mode === 'chandelles'){ row2.appendChild(th('Présence')); row2.appendChild(th('Etat')); }
-  } else {
-    row1.appendChild(th(''));
-    if(mode === 'both' || mode === 'calles') row1.appendChild(th('Calles',{colSpan:2}));
-    if(mode === 'both' || mode === 'chandelles') row1.appendChild(th('Chandelle',{colSpan:2}));
-    row1.appendChild(th('Commentaire',{rowSpan:2}));
-    row1.appendChild(th('Quai',{rowSpan:2}));
-
-    row2.appendChild(th(''));
-    if(mode === 'both' || mode === 'calles'){ row2.appendChild(th('Présence')); row2.appendChild(th('Chaînes')); }
-    if(mode === 'both' || mode === 'chandelles'){ row2.appendChild(th('Présence')); row2.appendChild(th('Etat')); }
-  }
+  row2.appendChild(th(''));
+  if(mode==='both' || mode==='calles'){ row2.appendChild(th('Présence')); row2.appendChild(th('Chaînes')); }
+  if(mode==='both' || mode==='chandelles'){ row2.appendChild(th('Présence')); row2.appendChild(th('Etat')); }
 
   tableHead.appendChild(row1);
   tableHead.appendChild(row2);
 }
 
-/* Row cell helpers */
+/* cell helpers */
 function tdStatus(rec,n){
-  const td = document.createElement('td');
-  td.style.textAlign='center';
-  const dot = document.createElement('span');
-  dot.className='status-dot';
+  const td=document.createElement('td'); td.style.textAlign='center';
+  const dot=document.createElement('span'); dot.className='status-dot';
   const st = computeRowStatus(rec);
   dot.style.background = statusColor(st);
   dot.title = st==='good' ? 'OK' : 'Défaut';
   td.appendChild(dot);
-
-  // validate toggle button
-  const vbtn = document.createElement('button');
-  vbtn.className='type-btn';
-  vbtn.style.minWidth='34px';
-  vbtn.title = rec.validated ? 'Annuler validation' : 'Valider ce quai';
-  vbtn.textContent = rec.validated ? '✔' : 'Val';
-  vbtn.addEventListener('click',(e)=>{ e.stopPropagation(); if(!data[n]) data[n]=makeRecord(n); data[n].validated = !data[n].validated; persist(); renderTable(); });
-  td.appendChild(vbtn);
-
-  if(rec.validated){
-    const b = document.createElement('span');
-    b.className='valid-badge';
-    b.textContent='Validé';
-    td.appendChild(b);
-  }
   return td;
 }
-
 function tdQuai(n){
-  const td = document.createElement('td');
-  td.style.display='flex';
-  td.style.alignItems='center';
-  const s = document.createElement('strong');
-  s.textContent = 'Q' + n;
-  td.appendChild(s);
-
-  const btn = document.createElement('button');
-  btn.className='type-btn';
+  const td=document.createElement('td'); td.style.display='flex'; td.style.alignItems='center';
+  const s=document.createElement('strong'); s.textContent='Q'+n; td.appendChild(s);
+  const btn=document.createElement('button'); btn.className='type-btn';
   const t = (data[n] && data[n].type) ? data[n].type : defaultTypeFor(n);
-  btn.textContent = (t==='normal')? 'Q' : (t==='autodock' ? 'A' : 'C');
-
-  btn.addEventListener('click', (ev)=>{
-    ev.stopPropagation();
-    openTypeMenu(n, btn);
-  });
-
+  btn.textContent = (t==='normal')?'Q':(t==='autodock'?'A':'C');
+  btn.addEventListener('click',(ev)=>{ ev.stopPropagation(); openTypeMenu(n, btn); });
   td.appendChild(btn);
   return td;
 }
-
-function tdCheckbox(n,key,label){
-  const td = document.createElement('td');
-  td.style.textAlign='center';
-  const inp = document.createElement('input');
-  inp.type='checkbox'; inp.autocomplete='off';
+function tdCheckbox(n,key){
+  const td=document.createElement('td'); td.style.textAlign='center';
+  const inp=document.createElement('input'); inp.type='checkbox'; inp.autocomplete='off';
   inp.checked = !!(data[n] && data[n][key]);
-  if(data[n] && data[n].type && data[n].type !== 'normal') inp.disabled = true;
-  inp.addEventListener('change', ()=>{
-    if(!data[n]) data[n]=makeRecord(n);
-    data[n][key] = inp.checked;
-    persist();
-    updateRowStatus(n);
-  });
-  td.appendChild(inp);
-  return td;
+  // input will be disabled later depending on type/validated; keep as-is here
+  inp.addEventListener('change', ()=>{ if(!data[n]) data[n]=makeRecord(n); data[n][key]=inp.checked; persist(); updateRowStatus(n); });
+  td.appendChild(inp); return td;
 }
-
 function tdComment(n){
-  const td = document.createElement('td');
-  const wrap = document.createElement('div'); wrap.className='comment-preview';
-  const span = document.createElement('span'); span.className='comment-text';
+  const td=document.createElement('td');
+  const wrap=document.createElement('div'); wrap.className='comment-preview';
+  const span=document.createElement('span'); span.className='comment-text';
   span.textContent = (data[n] && data[n].commentaire) ? data[n].commentaire : '';
   span.title = span.textContent;
-  const btn = document.createElement('button'); btn.className='btn'; btn.textContent='✎';
-  btn.style.padding='4px 8px';
+  const btn=document.createElement('button'); btn.className='btn'; btn.textContent='✎'; btn.style.padding='4px 8px';
   btn.addEventListener('click', ()=> openCommentModal(n));
   wrap.appendChild(span); wrap.appendChild(btn); td.appendChild(wrap);
   return td;
 }
+function tdValidated(n){
+  const td=document.createElement('td'); td.className='valid-check';
+  const inp=document.createElement('input'); inp.type='checkbox';
+  inp.checked = !!(data[n] && data[n].validated);
+  inp.addEventListener('change', ()=>{
+    if(!data[n]) data[n]=makeRecord(n);
+    data[n].validated = inp.checked;
+    persist();
+    renderTable(); // re-render to lock/unlock other inputs
+  });
+  td.appendChild(inp); return td;
+}
 
-/* custom type menu: fixed-position and below header z-index so it never covers titles while scrolling */
+/* type menu */
 let activeTypeMenu = null;
 function openTypeMenu(n, anchor){
   closeTypeMenu();
   const rect = anchor.getBoundingClientRect();
-  const menu = document.createElement('div');
-  menu.className='type-menu';
+  const menu = document.createElement('div'); menu.className='type-menu';
   menu.style.left = Math.max(8, rect.left) + 'px';
   menu.style.top = Math.min(window.innerHeight - 120, rect.bottom + 6) + 'px';
   const opts = [
-    {v:'normal',t:'Quai (Normal)'},
-    {v:'autodock',t:'Autodock (pas de contrôle)'},
-    {v:'compacteur',t:'Compacteur (pas de contrôle)'}
+    {v:'normal', t:'Quai (Normal)'},
+    {v:'autodock', t:'Autodock (pas de contrôle)'},
+    {v:'compacteur', t:'Compacteur (pas de contrôle)'}
   ];
   opts.forEach(o=>{
-    const b = document.createElement('button');
-    b.textContent = o.t;
+    const b=document.createElement('button'); b.textContent=o.t;
     b.addEventListener('click', ()=>{
       if(!data[n]) data[n]=makeRecord(n);
       data[n].type = o.v;
-      // when switching to 'normal', keep current values; when switching to non-normal, we keep values but disable inputs visually
       persist();
       renderTable();
       closeTypeMenu();
@@ -344,90 +321,65 @@ function openTypeMenu(n, anchor){
   });
   document.body.appendChild(menu);
   activeTypeMenu = menu;
-  setTimeout(()=> {
-    document.addEventListener('click', onDocClickForTypeMenu);
-    window.addEventListener('resize', closeTypeMenu);
-    window.addEventListener('scroll', closeTypeMenu, true);
-  }, 0);
+  setTimeout(()=>{ document.addEventListener('click', onDocClickForTypeMenu); window.addEventListener('resize', closeTypeMenu); window.addEventListener('scroll', closeTypeMenu, true); }, 0);
 }
-function onDocClickForTypeMenu(e){
-  if(activeTypeMenu && !activeTypeMenu.contains(e.target)) closeTypeMenu();
-}
-function closeTypeMenu(){
-  if(activeTypeMenu){ activeTypeMenu.remove(); activeTypeMenu=null; document.removeEventListener('click', onDocClickForTypeMenu); window.removeEventListener('resize', closeTypeMenu); window.removeEventListener('scroll', closeTypeMenu, true); }
-}
+function onDocClickForTypeMenu(e){ if(activeTypeMenu && !activeTypeMenu.contains(e.target)) closeTypeMenu(); }
+function closeTypeMenu(){ if(activeTypeMenu){ activeTypeMenu.remove(); activeTypeMenu=null; document.removeEventListener('click', onDocClickForTypeMenu); window.removeEventListener('resize', closeTypeMenu); window.removeEventListener('scroll', closeTypeMenu, true); } }
 
-/* comment modal */
+/* comment modal (centered) */
 function openCommentModal(n){
   modalRoot.innerHTML=''; modalRoot.style.display='block'; modalRoot.setAttribute('aria-hidden','false');
-  const backdrop = document.createElement('div'); backdrop.className='modal-backdrop'; backdrop.setAttribute('role','dialog'); backdrop.setAttribute('aria-modal','true');
-  const modal = document.createElement('div'); modal.className='modal';
-  const h = document.createElement('h3'); h.textContent=`Commentaire — Quai ${n}`;
-  const ta = document.createElement('textarea'); ta.autocomplete='off'; ta.value = (data[n] && data[n].commentaire) ? data[n].commentaire : '';
-  const actions = document.createElement('div'); actions.className='actions';
-  const save = document.createElement('button'); save.className='btn'; save.textContent='Enregistrer';
-  const cancel = document.createElement('button'); cancel.className='btn ghost'; cancel.textContent='Annuler';
-  save.addEventListener('click', ()=>{
-    if(!data[n]) data[n]=makeRecord(n);
-    data[n].commentaire = ta.value;
-    persist(); closeModal(); renderTable();
-  });
+  const backdrop=document.createElement('div'); backdrop.className='modal-backdrop';
+  const modal=document.createElement('div'); modal.className='modal';
+  const header=document.createElement('div'); header.className='title-row';
+  const h=document.createElement('h3'); h.textContent='Commentaire — Quai ' + n;
+  const close=document.createElement('button'); close.className='close-x'; close.innerHTML='✕'; close.addEventListener('click', closeModal);
+  header.appendChild(h); header.appendChild(close);
+  const ta=document.createElement('textarea'); ta.autocomplete='off'; ta.style.width='100%'; ta.style.minHeight='120px';
+  ta.value = (data[n] && data[n].commentaire) ? data[n].commentaire : '';
+  const actions=document.createElement('div'); actions.className='actions';
+  const save=document.createElement('button'); save.className='btn'; save.textContent='Enregistrer';
+  const cancel=document.createElement('button'); cancel.className='btn ghost'; cancel.textContent='Annuler';
+  save.addEventListener('click', ()=>{ if(!data[n]) data[n]=makeRecord(n); data[n].commentaire = ta.value; persist(); closeModal(); renderTable(); });
   cancel.addEventListener('click', closeModal);
   actions.appendChild(cancel); actions.appendChild(save);
-  modal.appendChild(h); modal.appendChild(ta); modal.appendChild(actions);
+  modal.appendChild(header); modal.appendChild(ta); modal.appendChild(actions);
   backdrop.appendChild(modal); modalRoot.appendChild(backdrop);
   backdrop.addEventListener('click',(e)=>{ if(e.target===backdrop) closeModal(); });
-  setTimeout(()=>ta.focus(),80);
+  setTimeout(()=> ta.focus(), 80);
 }
 function closeModal(){ modalRoot.innerHTML=''; modalRoot.style.display='none'; modalRoot.setAttribute('aria-hidden','true'); }
 
-/* report in new window */
-function openReportWindow(){
-  const htmlReport = buildReportHtml(generateReportLines());
-  // open blank window synchronously (from click)
-  const w = window.open('', '_blank');
-  if(!w){ alert('Pop‑up bloquée : autorisez les fenêtres pop‑up pour ce site.'); return; }
-  try{
-    w.document.open();
-    w.document.write(htmlReport);
-    w.document.close();
-  }catch(e){
-    // fallback: blob
-    const blob = new Blob([htmlReport], {type:'text/html'});
-    const url = URL.createObjectURL(blob);
-    const w2 = window.open(url, '_blank');
-    setTimeout(()=> URL.revokeObjectURL(url),2000);
-    if(!w2) alert('Pop‑up bloquée : autorisez les fenêtres pop‑up pour ce site.');
-  }
-}
-function buildReportHtml(lines){
-  // produce a small HTML with copy button
-  const safe = lines.map(l => l.replace(/&/g,'&amp;').replace(/</g,'&lt;')).join('\n');
-  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rapport — Calles & Chandelles</title>
-    <style>body{background:#000;color:#fff;font-family:monospace;padding:14px}button{background:#111;border:1px solid #333;color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer}pre{white-space:pre-wrap}</style>
-    </head><body>
-    <div style="margin-bottom:10px"><button id="copyBtn">📋 Copier</button></div>
-    <pre id="report">${safe}</pre>
-    <script>
-      document.getElementById('copyBtn').addEventListener('click', async ()=>{
-        try{ await navigator.clipboard.writeText(document.getElementById('report').innerText); const b=document.getElementById('copyBtn'); b.textContent='✅ Copié'; setTimeout(()=>b.textContent='📋 Copier',1200); } catch(e){ alert('Impossible de copier : '+e); }
-      });
-    <\/script>
-    </body></html>`;
+/* report modal (overlay) */
+function openReportModal(){
+  modalRoot.innerHTML=''; modalRoot.style.display='block'; modalRoot.setAttribute('aria-hidden','false');
+  const backdrop=document.createElement('div'); backdrop.className='modal-backdrop';
+  const modal=document.createElement('div'); modal.className='modal';
+  const header=document.createElement('div'); header.className='title-row';
+  const h=document.createElement('h3'); h.textContent='Compte rendu — Calles & Chandelles';
+  const close=document.createElement('button'); close.className='close-x'; close.innerHTML='✕'; close.addEventListener('click', closeModal);
+  header.appendChild(h); header.appendChild(close);
+  const pre=document.createElement('pre'); pre.textContent = generateReportText().join('\n');
+  const actions=document.createElement('div'); actions.className='actions';
+  const copy=document.createElement('button'); copy.className='btn'; copy.textContent='📋 Copier';
+  copy.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(pre.innerText); copy.textContent='✅ Copié'; setTimeout(()=>copy.textContent='📋 Copier',1200); }catch(e){ alert('Impossible de copier : '+e); } });
+  actions.appendChild(copy);
+  modal.appendChild(header); modal.appendChild(pre); modal.appendChild(actions);
+  backdrop.appendChild(modal); modalRoot.appendChild(backdrop);
+  backdrop.addEventListener('click',(e)=>{ if(e.target===backdrop) closeModal(); });
 }
 
-/* generate report lines (array of strings) formatted as requested */
-function generateReportLines(){
-  const quays = getQuays().slice().sort((a,b)=>a-b); // ascending
+/* generate report lines (ascending), skip autodock/compacteur, format as requested */
+function generateReportText(){
+  const quays = getQuays().slice().sort((a,b)=>a-b);
   const lines = [];
   lines.push('Compte rendu — Calles & Chandelles');
   lines.push('Généré le : ' + new Date().toLocaleString('fr-FR'));
   lines.push('--------------------------------------------');
-
   let any=false;
   quays.forEach(n=>{
     const r = data[n] || makeRecord(n);
-    if(r.type && r.type !== 'normal') return; // skip autodock/compacteur
+    if(r.type && r.type !== 'normal') return;
     const issues = [];
     if(mode==='both' || mode==='calles'){
       if(!r.calles_both_present) issues.push('Calles manquantes');
@@ -442,107 +394,73 @@ function generateReportLines(){
     any=true;
     lines.push('---');
     lines.push(`Quai ${n} :`);
-    issues.forEach(i => lines.push(i));
+    issues.forEach(i=>lines.push(i));
     if(hasComment) lines.push(r.commentaire.trim());
     lines.push('---');
   });
-
   if(!any) lines.push('Aucun problème détecté et aucun commentaire (hors autodock/compacteur).');
   return lines;
 }
 
-/* rendering rows according to mode */
+/* render table */
 function renderTable(){
   renderHeader();
   while(tableBody.firstChild) tableBody.removeChild(tableBody.firstChild);
-  const q = getQuays().slice();
-  const ordered = (side==='left') ? q.slice().reverse() : q;
+  const quays = getQuays().slice();
+  const ordered = quays; // ascending visually
   ordered.forEach(n=>{
     const rec = data[n] || makeRecord(n);
-    const tr = document.createElement('tr');
-    tr.id = 'row-'+n;
+    const tr = document.createElement('tr'); tr.id='row-'+n;
     const statusTd = tdStatus(rec,n);
     const quaiTd = tdQuai(n);
-
-    // compute which columns to include
     const cells = [];
     cells.push(statusTd);
-    if(side==='left') cells.push(quaiTd);
-
-    if(mode==='both' || mode==='calles'){
-      cells.push(tdCheckbox(n,'calles_both_present'));
-      cells.push(tdCheckbox(n,'chains_ok'));
-    }
-    if(mode==='both' || mode==='chandelles'){
-      cells.push(tdCheckbox(n,'chandelle_present'));
-      cells.push(tdCheckbox(n,'chandelle_ok'));
-    }
-
-    if(side!=='left') cells.push(quaiTd); // put quai at end in right order
+    cells.push(quaiTd);
+    if(mode==='both' || mode==='calles'){ cells.push(tdCheckbox(n,'calles_both_present')); cells.push(tdCheckbox(n,'chains_ok')); }
+    if(mode==='both' || mode==='chandelles'){ cells.push(tdCheckbox(n,'chandelle_present')); cells.push(tdCheckbox(n,'chandelle_ok')); }
     cells.push(tdComment(n));
+    cells.push(tdValidated(n));
 
-    // disable checkboxes for autodock/compacteur
+    // Append cells to row first
+    cells.forEach(c=>tr.appendChild(c));
+    // Now disable inputs for non-normal type or when validated, BUT do NOT disable the validated checkbox itself.
     if(rec.type && rec.type !== 'normal'){
       cells.forEach(td=>{
         const inp = td.querySelector && td.querySelector('input');
-        if(inp) inp.disabled=true;
+        if(inp){
+          // if this input is the validated checkbox (in a .valid-check cell), leave it enabled
+          if(td.classList && td.classList.contains('valid-check')) return;
+          inp.disabled = true;
+        }
+      });
+    }
+    if(rec.validated){
+      cells.forEach(td=>{
+        const inp = td.querySelector && td.querySelector('input');
+        if(inp){
+          if(td.classList && td.classList.contains('valid-check')) return; // keep validated checkbox enabled
+          inp.disabled = true;
+        }
       });
     }
 
-    cells.forEach(c => tr.appendChild(c));
     tableBody.appendChild(tr);
   });
 }
 
-function updateRowStatus(n){
-  const tr = document.getElementById('row-'+n);
-  if(!tr) return;
-  const dot = tr.querySelector('.status-dot');
-  if(dot){
-    const st = computeRowStatus(data[n]);
-    dot.style.background = statusColor(st);
-    dot.title = st==='good' ? 'OK' : 'Défaut';
-  }
-}
-
-/* controls */
-modeSelect.addEventListener('change', ()=>{
-  mode = modeSelect.value;
-  persistMode();
-  renderTable();
-});
-startBtn.addEventListener('click', ()=>{
-  // show a small confirm modal summarizing selected mode
-  const m = mode==='both' ? 'Calles + Chandelles' : (mode==='calles' ? 'Uniquement Calles' : 'Uniquement Chandelles');
-  if(!confirm(`Démarrer le contrôle en mode : ${m} ?`)) return;
-  // nothing else needed; mode already applied
-  alert('Mode appliqué : ' + m);
-});
-
-genBtn.addEventListener('click', ()=> {
-  // open report in new window
-  openReportWindow();
-});
-
-resetBtn.addEventListener('click', ()=>{
-  if(!confirm('Réinitialiser toutes les données ?')) return;
-  getQuays().forEach(n => data[n] = makeRecord(n));
-  persist();
-  renderTable();
-});
+/* events */
+modeSelect.addEventListener('change', ()=>{ mode = modeSelect.value; persistMode(); renderTable(); });
+startBtn.addEventListener('click', ()=>{ const m = mode==='both' ? 'Calles + Chandelles' : (mode==='calles' ? 'Uniquement Calles' : 'Uniquement Chandelles'); if(confirm(`Démarrer le contrôle en mode : ${m} ?`)) alert('Mode appliqué: '+m); });
+genBtn.addEventListener('click', ()=> openReportModal());
+resetBtn.addEventListener('click', ()=>{ if(!confirm('Réinitialiser toutes les données ?')) return; getQuays().forEach(n=>data[n]=makeRecord(n)); persist(); renderTable(); });
 
 /* init */
-function loadInitial(){
-  try{ const raw = localStorage.getItem(DATA_KEY); if(raw) data = JSON.parse(raw); }catch(e){}
-  if(!data) data={};
-  getQuays().forEach(n => { if(!data[n]) data[n] = makeRecord(n); if(!data[n].type) data[n].type = defaultTypeFor(n); if(typeof data[n].validated==='undefined') data[n].validated=false; });
-}
+function loadInitial(){ try{ const raw = localStorage.getItem(DATA_KEY); if(raw) data = JSON.parse(raw); }catch(e){} if(!data) data={}; getQuays().forEach(n=>{ if(!data[n]) data[n]=makeRecord(n); if(!data[n].type) data[n].type = defaultTypeFor(n); if(typeof data[n].validated === 'undefined') data[n].validated=false; }); }
 loadInitial();
 renderTable();
 
-/* close menus on unload */
-window.addEventListener('beforeunload', ()=> closeTypeMenu());
-
+/* cleanup */
+window.addEventListener('beforeunload', ()=>{ if(activeTypeMenu) closeTypeMenu(); });
 </script>
 </body>
 </html>
