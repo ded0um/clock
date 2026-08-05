@@ -35,7 +35,7 @@ html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe U
   padding:0;
   background:var(--card);
   border:1px solid var(--border);
-  overflow:visible; /* removed max-height so page scrollbar is used */
+  overflow:visible; /* page scrollbar is used */
 }
 
 .table{
@@ -52,7 +52,7 @@ html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe U
   color:var(--muted);
   font-weight:700;
   white-space:nowrap;
-  z-index:2000; /* headers on top of content */
+  z-index:2000;
 }
 /* precise sticky positions so there's no gap when scrolling (sticky relative to viewport) */
 .table thead tr:first-child th{
@@ -141,8 +141,9 @@ html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe U
 
 <script>
 /* Data and behavior
-   - Once a row is validated, other inputs on that line are locked but the validation checkbox itself remains togglable.
-   - This file is identical to previous behavior except the disabling logic excludes the validated checkbox so you can uncheck it anytime.
+   - When a row is validated, other inputs on that line are locked; the validated checkbox itself remains togglable (you can unvalidate).
+   - computeRowStatus now strictly considers only the checks relevant to the selected mode.
+   - Changing the mode re-renders and refreshes every row status/pastille.
    - 27 and 64 permanently excluded; autodock/compacteur excluded from checks/report.
 */
 
@@ -211,17 +212,27 @@ function loadData(){
 function persist(){ localStorage.setItem(DATA_KEY, JSON.stringify(data)); }
 function persistMode(){ localStorage.setItem(MODE_KEY, mode); }
 
-/* compute status; autodock/compacteur => treated as OK */
+/* compute status considering only mode-relevant checks */
 function computeRowStatus(rec){
+  // safety
   if(!rec) return 'bad';
+  // autodock/compacteur => no control required -> treat as OK
   if(rec.type && rec.type !== 'normal') return 'good';
-  if(mode === 'calles') return (rec.calles_both_present && rec.chains_ok) ? 'good' : 'bad';
-  if(mode === 'chandelles') return (rec.chandelle_present && rec.chandelle_ok) ? 'good' : 'bad';
+
+  if(mode === 'calles'){
+    // only calles presence + chains matter
+    return (rec.calles_both_present && rec.chains_ok) ? 'good' : 'bad';
+  }
+  if(mode === 'chandelles'){
+    // only chandelles presence + state matter
+    return (rec.chandelle_present && rec.chandelle_ok) ? 'good' : 'bad';
+  }
+  // both mode: all four must be OK
   return (rec.calles_both_present && rec.chains_ok && rec.chandelle_present && rec.chandelle_ok) ? 'good' : 'bad';
 }
 function statusColor(st){ return st==='good' ? getComputedStyle(document.documentElement).getPropertyValue('--good').trim() : getComputedStyle(document.documentElement).getPropertyValue('--bad').trim(); }
 
-/* render header depending on mode */
+/* header rendering depending on mode */
 function renderHeader(){
   tableHead.innerHTML = '';
   const row1 = document.createElement('tr');
@@ -267,7 +278,6 @@ function tdCheckbox(n,key){
   const td=document.createElement('td'); td.style.textAlign='center';
   const inp=document.createElement('input'); inp.type='checkbox'; inp.autocomplete='off';
   inp.checked = !!(data[n] && data[n][key]);
-  // input will be disabled later depending on type/validated; keep as-is here
   inp.addEventListener('change', ()=>{ if(!data[n]) data[n]=makeRecord(n); data[n][key]=inp.checked; persist(); updateRowStatus(n); });
   td.appendChild(inp); return td;
 }
@@ -290,7 +300,8 @@ function tdValidated(n){
     if(!data[n]) data[n]=makeRecord(n);
     data[n].validated = inp.checked;
     persist();
-    renderTable(); // re-render to lock/unlock other inputs
+    // only disable/enable other inputs; the validated checkbox itself remains togglable
+    renderTable();
   });
   td.appendChild(inp); return td;
 }
@@ -421,31 +432,35 @@ function renderTable(){
     cells.push(tdComment(n));
     cells.push(tdValidated(n));
 
-    // Append cells to row first
+    // Append cells
     cells.forEach(c=>tr.appendChild(c));
-    // Now disable inputs for non-normal type or when validated, BUT do NOT disable the validated checkbox itself.
-    if(rec.type && rec.type !== 'normal'){
-      cells.forEach(td=>{
-        const inp = td.querySelector && td.querySelector('input');
-        if(inp){
-          // if this input is the validated checkbox (in a .valid-check cell), leave it enabled
-          if(td.classList && td.classList.contains('valid-check')) return;
-          inp.disabled = true;
-        }
-      });
-    }
-    if(rec.validated){
-      cells.forEach(td=>{
-        const inp = td.querySelector && td.querySelector('input');
-        if(inp){
-          if(td.classList && td.classList.contains('valid-check')) return; // keep validated checkbox enabled
-          inp.disabled = true;
-        }
-      });
-    }
+
+    // Now disable inputs for non-normal type or when validated BUT KEEP validated checkbox enabled
+    const isNonNormal = rec.type && rec.type !== 'normal';
+    const isValidated = rec.validated;
+    cells.forEach(td=>{
+      const inp = td.querySelector && td.querySelector('input');
+      if(!inp) return;
+      // if this is the validated checkbox cell, skip disabling
+      if(td.classList && td.classList.contains('valid-check')) return;
+      if(isNonNormal || isValidated) inp.disabled = true;
+      else inp.disabled = false;
+    });
 
     tableBody.appendChild(tr);
   });
+}
+
+/* update pastille for one row */
+function updateRowStatus(n){
+  const tr = document.getElementById('row-'+n);
+  if(!tr) return;
+  const dot = tr.querySelector('.status-dot');
+  if(dot){
+    const st = computeRowStatus(data[n]);
+    dot.style.background = statusColor(st);
+    dot.title = st==='good' ? 'OK' : 'Défaut';
+  }
 }
 
 /* events */
