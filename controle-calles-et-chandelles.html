@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Contrôles — Calles & Chandelles (v4)</title>
+<style>
+:root{
+  --bg:#000;
+  --card:#111;
+  --muted:#9aa0a6;
+  --accent:#ff8c00;
+  --border:#222;
+  --good:#22c55e;
+  --bad:#ff4444;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;background:var(--bg);color:#fff}
+.container{max-width:820px;margin:12px auto;padding:10px}
+.header{display:flex;flex-direction:column;gap:8px;padding:6px 0}
+.title-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.title{font-size:1.02rem;font-weight:700}
+.controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.small{font-size:0.82rem;color:var(--muted);white-space:nowrap}
+.btn{background:var(--card);border:1px solid var(--border);color:#fff;padding:6px 9px;border-radius:8px;cursor:pointer;font-size:0.88rem}
+.btn.ghost{background:transparent;color:var(--muted)}
+.side-toggle{display:inline-flex;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:#0a0a0a}
+.side-toggle button{appearance:none;border:0;background:transparent;color:#ddd;padding:6px 8px;cursor:pointer;font-size:0.86rem}
+.side-toggle button.active{background:var(--accent);color:#000;font-weight:700}
+
+/* Table compact */
+.table-wrap{margin-top:8px;border-radius:8px;padding:6px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));border:1px solid var(--border);overflow:auto}
+.table{width:100%;border-collapse:collapse;font-size:0.88rem;table-layout:fixed}
+.table thead th{background:rgba(10,10,10,0.6);padding:6px;text-align:left;color:var(--muted);font-weight:700;position:sticky;top:0;font-size:0.82rem}
+.table td{padding:6px;border-top:1px solid rgba(255,255,255,0.02);vertical-align:middle}
+.select{padding:6px;border-radius:6px;background:#0a0a0a;border:1px solid var(--border);color:#fff;font-size:0.85rem}
+input[type="text"]{font-size:0.88rem;padding:6px;border-radius:6px;background:#0a0a0a;border:1px solid var(--border);color:#fff}
+input[type="checkbox"]{width:16px;height:16px}
+.status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;border:1px solid rgba(255,255,255,0.06)}
+.status-text{font-size:0.8rem;color:var(--muted)}
+
+/* compact multi-line header */
+.col-label{display:block;line-height:1;font-size:0.78rem;color:var(--muted);white-space:normal;text-align:left}
+
+/* comment preview cell */
+.comment-preview{display:flex;align-items:center;gap:8px}
+.comment-text{font-size:0.86rem;color:var(--muted);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* modal (generic) */
+.modal-backdrop{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000}
+.modal{background:#0b0b0b;border:1px solid var(--border);padding:14px;border-radius:10px;max-width:720px;width:94%;color:#fff}
+.modal h3{margin:0 0 8px 0}
+.modal textarea{width:100%;min-height:160px;padding:8px;border-radius:8px;border:1px solid var(--border);background:#060606;color:#fff;resize:vertical}
+.modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+.modal pre{white-space:pre-wrap;font-family:monospace;background:#070707;padding:12px;border-radius:8px;border:1px solid var(--border);max-height:60vh;overflow:auto;color:#fff}
+
+/* column sizing */
+.table thead th:nth-child(1){width:36px}
+.table thead th:nth-child(2){width:72px}
+.table thead th:nth-child(3){width:86px}
+.table thead th:nth-child(4){width:86px}
+.table thead th:nth-child(5){width:86px}
+.table thead th:nth-child(6){width:86px}
+.table thead th:nth-child(7){min-width:120px}
+
+/* responsive */
+@media (max-width:560px){
+  .container{padding:8px;margin:8px}
+  .title{font-size:1rem}
+  .table thead th{padding:5px;font-size:0.8rem}
+  .table td{padding:5px}
+  .btn{padding:6px 8px;font-size:0.82rem}
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header class="header" role="banner">
+      <div class="title-row">
+        <div><div class="title">Contrôles — Calles & Chandelles</div></div>
+        <div class="controls" role="region" aria-label="Actions principales">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="small">Position des quais :</div>
+            <div class="side-toggle" aria-label="Choisir affichage des quais">
+              <button id="sideLeftBtn" type="button">À gauche</button>
+              <button id="sideRightBtn" type="button">À droite</button>
+            </div>
+          </div>
+          <button id="genBtn" class="btn">Générer</button>
+          <button id="resetBtn" class="btn ghost">Réinit</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="table-wrap" id="tableWrap" aria-live="polite">
+      <table id="quaisTable" class="table" aria-label="Tableau des quais">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- modal roots -->
+  <div id="modalRoot" aria-hidden="true"></div>
+
+<script>
+/*
+  Full-page implementation:
+  - Left/Right side controls: left => first line Q64, right => first line Q27
+  - Per-line checkboxes: Presence 2 calles, Chaînes OK, Présence Chandelle, Etat Chandelle OK
+  - Status dot: green if ALL four boxes checked, otherwise red
+  - Comment editing via modal (compact preview in table)
+  - "Générer" opens an in-page modal (no popups) with monospaced report and a copy button
+  - "Réinit" resets all data after confirmation
+  - Data persisted to localStorage under 'calles_chandelles_v4'; side under 'quais_side_v4'
+  - Rows built using DOM API (createElement) to avoid input misassignment
+*/
+
+const MIN_Q = 27, MAX_Q = 64;
+const DATA_KEY = 'calles_chandelles_v4';
+const SIDE_KEY = 'quais_side_v4';
+
+const sideLeftBtn = document.getElementById('sideLeftBtn');
+const sideRightBtn = document.getElementById('sideRightBtn');
+const tableHead = document.getElementById('tableHead');
+const tableBody = document.getElementById('tableBody');
+const modalRoot = document.getElementById('modalRoot');
+
+let side = localStorage.getItem(SIDE_KEY) || 'left';
+let data = loadData();
+
+function makeRecord(n){
+  return {
+    quai: n,
+    calles_both_present: false,
+    chains_ok: true,
+    chandelle_present: false,
+    chandelle_ok: true,
+    commentaire: ''
+  };
+}
+
+function loadData(){
+  try {
+    const raw = localStorage.getItem(DATA_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      // ensure all keys present
+      for(let n=MIN_Q;n<=MAX_Q;n++) if(!parsed[n]) parsed[n] = makeRecord(n);
+      return parsed;
+    }
+  } catch(e){}
+  const map = {};
+  for(let n=MIN_Q;n<=MAX_Q;n++) map[n] = makeRecord(n);
+  localStorage.setItem(DATA_KEY, JSON.stringify(map));
+  return map;
+}
+function persist(){ localStorage.setItem(DATA_KEY, JSON.stringify(data)); }
+function persistSide(){ localStorage.setItem(SIDE_KEY, side); }
+
+function computeRowStatus(rec){
+  // green only if all checked, else red
+  if(rec.calles_both_present && rec.chains_ok && rec.chandelle_present && rec.chandelle_ok) return 'good';
+  return 'bad';
+}
+function statusColor(status){
+  return status === 'good' ? getComputedStyle(document.documentElement).getPropertyValue('--good').trim()
+                           : getComputedStyle(document.documentElement).getPropertyValue('--bad').trim();
+}
+function statusText(status){ return status === 'good' ? 'OK' : 'Défaut'; }
+
+/* Header rendering */
+function renderHeader(){
+  const leftOrder = side === 'left';
+  const lblPresence = `<span class="col-label">Présence<br>2 calles</span>`;
+  const lblChains = `<span class="col-label">Chaînes<br>calles OK</span>`;
+  const lblPresChand = `<span class="col-label">Présence<br>Chandelle</span>`;
+  const lblEtatChand = `<span class="col-label">Etat<br>Chandelle OK</span>`;
+  const lblComment = `<span class="col-label">Commentaire</span>`;
+
+  let ths = '';
+  if(leftOrder){
+    ths += `<tr>
+      <th></th>
+      <th>Quai</th>
+      <th>${lblPresence}</th>
+      <th>${lblChains}</th>
+      <th>${lblPresChand}</th>
+      <th>${lblEtatChand}</th>
+      <th>${lblComment}</th>
+    </tr>`;
+  } else {
+    ths += `<tr>
+      <th></th>
+      <th>${lblPresence}</th>
+      <th>${lblChains}</th>
+      <th>${lblPresChand}</th>
+      <th>${lblEtatChand}</th>
+      <th>${lblComment}</th>
+      <th>Quai</th>
+    </tr>`;
+  }
+  tableHead.innerHTML = ths;
+}
+
+/* DOM cell helpers */
+function tdStatus(rec){
+  const td = document.createElement('td');
+  const span = document.createElement('span');
+  span.className = 'status-dot';
+  span.style.background = statusColor(computeRowStatus(rec));
+  span.title = statusText(computeRowStatus(rec));
+  td.appendChild(span);
+  return td;
+}
+function tdQuai(n){
+  const td = document.createElement('td');
+  const s = document.createElement('strong');
+  s.textContent = 'Q' + n;
+  td.appendChild(s);
+  return td;
+}
+function tdCheckbox(n, key){
+  const td = document.createElement('td');
+  td.style.textAlign = 'center';
+  const inp = document.createElement('input');
+  inp.type = 'checkbox';
+  inp.autocomplete = 'off';
+  inp.dataset.q = n;
+  inp.dataset.k = key;
+  inp.checked = !!data[n][key];
+  inp.addEventListener('change', () => {
+    data[n][key] = inp.checked;
+    persist();
+    updateRowStatus(n);
+  });
+  td.appendChild(inp);
+  return td;
+}
+function tdCommentPreview(n){
+  const td = document.createElement('td');
+  const wrap = document.createElement('div');
+  wrap.className = 'comment-preview';
+  const span = document.createElement('span');
+  span.className = 'comment-text';
+  span.textContent = data[n].commentaire ? data[n].commentaire : '';
+  span.title = data[n].commentaire || '';
+  const btn = document.createElement('button');
+  btn.className = 'btn';
+  btn.textContent = '✎';
+  btn.style.padding = '4px 8px';
+  btn.addEventListener('click', ()=> openCommentModal(n));
+  wrap.appendChild(span);
+  wrap.appendChild(btn);
+  td.appendChild(wrap);
+  return td;
+}
+
+/* Modal: comment editor */
+function openCommentModal(n){
+  modalRoot.innerHTML = '';
+  modalRoot.style.display = 'block';
+  modalRoot.setAttribute('aria-hidden', 'false');
+
+  const backdrop = document.createElement('div');
+  backdrop.className = 'modal-backdrop';
+  backdrop.setAttribute('role','dialog');
+  backdrop.setAttribute('aria-modal','true');
+
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  const h = document.createElement('h3');
+  h.textContent = 'Commentaire — Quai ' + n;
+  const ta = document.createElement('textarea');
+  ta.autocomplete = 'off';
+  ta.value = data[n].commentaire || '';
+  const actions = document.createElement('div');
+  actions.className = 'actions';
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'btn';
+  saveBtn.textContent = 'Enregistrer';
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn ghost';
+  cancelBtn.textContent = 'Annuler';
+
+  saveBtn.addEventListener('click', ()=>{
+    data[n].commentaire = ta.value;
+    persist();
+    closeModal();
+    renderTable();
+  });
+  cancelBtn.addEventListener('click', closeModal);
+
+  actions.appendChild(cancelBtn);
+  actions.appendChild(saveBtn);
+  modal.appendChild(h);
+  modal.appendChild(ta);
+  modal.appendChild(actions);
+  backdrop.appendChild(modal);
+  modalRoot.appendChild(backdrop);
+
+  backdrop.addEventListener('click', (e)=>{
+    if(e.target === backdrop) closeModal();
+  });
+  setTimeout(()=> ta.focus(), 80);
+}
+function closeModal(){
+  modalRoot.innerHTML = '';
+  modalRoot.style.display = 'none';
+  modalRoot.setAttribute('aria-hidden', 'true');
+}
+
+/* Report modal (in-page): monospaced text + copy button */
+function openReportModal(){
+  modalRoot.innerHTML = '';
+  modalRoot.style.display = 'block';
+  modalRoot.setAttribute('aria-hidden', 'false');
+
+  const backdrop = document.createElement('div');
+  backdrop.className = 'modal-backdrop';
+  backdrop.setAttribute('role','dialog');
+  backdrop.setAttribute('aria-modal','true');
+
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+
+  const h = document.createElement('h3');
+  h.textContent = 'Compte rendu — Calles & Chandelles';
+
+  const pre = document.createElement('pre');
+  pre.textContent = generateReportText();
+
+  const actions = document.createElement('div');
+  actions.className = 'actions';
+  const copyBtn = document.createElement('button');
+  copyBtn.className = 'btn';
+  copyBtn.textContent = '📋 Copier';
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'btn ghost';
+  closeBtn.textContent = 'Fermer';
+
+  copyBtn.addEventListener('click', async ()=>{
+    try {
+      await navigator.clipboard.writeText(pre.textContent);
+      copyBtn.textContent = '✅ Copié';
+      setTimeout(()=> copyBtn.textContent = '📋 Copier', 1200);
+    } catch(e){
+      alert('Impossible de copier : ' + (e && e.message ? e.message : e));
+    }
+  });
+  closeBtn.addEventListener('click', closeModal);
+
+  actions.appendChild(closeBtn);
+  actions.appendChild(copyBtn);
+
+  modal.appendChild(h);
+  modal.appendChild(pre);
+  modal.appendChild(actions);
+  backdrop.appendChild(modal);
+  modalRoot.appendChild(backdrop);
+
+  backdrop.addEventListener('click', (e)=>{
+    if(e.target === backdrop) closeModal();
+  });
+}
+
+/* generate textual report */
+function generateReportText(){
+  const nums = (side === 'left') ? (()=>{ const a=[]; for(let n=MAX_Q;n>=MIN_Q;n--) a.push(n); return a; })()
+                                 : (()=>{ const a=[]; for(let n=MIN_Q;n<=MAX_Q;n++) a.push(n); return a; })();
+  const lines = [];
+  lines.push('Compte rendu — Calles & Chandelles (v4)');
+  lines.push('Généré le : ' + new Date().toLocaleString('fr-FR'));
+  lines.push('--------------------------------------------');
+  nums.forEach(n=>{
+    const r = data[n];
+    const calles = r.calles_both_present ? 'OK' : 'Manquante';
+    const chains = r.chains_ok ? 'OK' : 'Cassée';
+    const chandelle = r.chandelle_present ? 'Présente' : 'Absente';
+    const chandOk = r.chandelle_ok ? 'OK' : 'Non OK';
+    const note = r.commentaire ? ` — ${r.commentaire}` : '';
+    lines.push(`Quai ${n} : Calles=${calles} / Chaînes=${chains} / Chandelle=${chandelle} (${chandOk})${note}`);
+  });
+  return lines.join('\n');
+}
+
+/* Render table using DOM API (no innerHTML per-row) */
+function renderTable(){
+  renderHeader();
+  // clear tbody
+  while(tableBody.firstChild) tableBody.removeChild(tableBody.firstChild);
+
+  const nums = (side === 'left')
+    ? (function(){ const a=[]; for(let n=MAX_Q;n>=MIN_Q;n--) a.push(n); return a; })()
+    : (function(){ const a=[]; for(let n=MIN_Q;n<=MAX_Q;n++) a.push(n); return a; })();
+
+  const leftOrder = side === 'left';
+  nums.forEach(n=>{
+    const rec = data[n];
+    const tr = document.createElement('tr');
+    tr.id = 'row-' + n;
+
+    const statusTd = tdStatus(rec);
+    const quaiTd = tdQuai(n);
+    const callesTd = tdCheckbox(n, 'calles_both_present');
+    const chainsTd = tdCheckbox(n, 'chains_ok');
+    const chandellePresTd = tdCheckbox(n, 'chandelle_present');
+    const chandelleOkTd = tdCheckbox(n, 'chandelle_ok');
+    const commentTd = tdCommentPreview(n);
+
+    const cells = leftOrder
+      ? [statusTd, quaiTd, callesTd, chainsTd, chandellePresTd, chandelleOkTd, commentTd]
+      : [statusTd, callesTd, chainsTd, chandellePresTd, chandelleOkTd, commentTd, quaiTd];
+
+    cells.forEach(c => tr.appendChild(c));
+    tableBody.appendChild(tr);
+  });
+}
+
+/* update status only for one row */
+function updateRowStatus(n){
+  const tr = document.getElementById('row-'+n);
+  if(!tr) return;
+  const span = tr.querySelector('.status-dot');
+  if(span){
+    const st = computeRowStatus(data[n]);
+    span.style.background = statusColor(st);
+    span.title = statusText(st);
+  }
+}
+
+/* side setter */
+function setSide(newSide){
+  side = newSide === 'right' ? 'right' : 'left';
+  if(side === 'left'){
+    sideLeftBtn.classList.add('active');
+    sideRightBtn.classList.remove('active');
+  } else {
+    sideLeftBtn.classList.remove('active');
+    sideRightBtn.classList.add('active');
+  }
+  persistSide();
+  renderTable();
+}
+
+/* reset */
+function doReset(){
+  if(!confirm('Réinitialiser toutes les données ?')) return;
+  for(let n=MIN_Q;n<=MAX_Q;n++) data[n] = makeRecord(n);
+  persist();
+  renderTable();
+}
+
+/* Wiring up buttons */
+document.getElementById('genBtn').addEventListener('click', openReportModal);
+document.getElementById('resetBtn').addEventListener('click', doReset);
+sideLeftBtn.addEventListener('click', ()=> setSide('left'));
+sideRightBtn.addEventListener('click', ()=> setSide('right'));
+
+/* initial load and render */
+function loadInitial(){
+  try{ const raw = localStorage.getItem(DATA_KEY); if(raw) data = JSON.parse(raw); }catch(e){}
+  for(let n=MIN_Q;n<=MAX_Q;n++) if(!data[n]) data[n] = makeRecord(n);
+}
+loadInitial();
+setSide(localStorage.getItem(SIDE_KEY)||side);
+</script>
+</body>
+</html>
