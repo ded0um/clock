@@ -105,15 +105,12 @@ input[type="checkbox"]{width:16px;height:16px}
 
 <script>
 /*
-  Full-page implementation:
-  - Left/Right side controls: left => first line Q64, right => first line Q27
-  - Per-line checkboxes: Presence 2 calles, Chaînes OK, Présence Chandelle, Etat Chandelle OK
-  - Status dot: green if ALL four boxes checked, otherwise red
-  - Comment editing via modal (compact preview in table)
-  - "Générer" opens an in-page modal (no popups) with monospaced report and a copy button
-  - "Réinit" resets all data after confirmation
-  - Data persisted to localStorage under 'calles_chandelles_v4'; side under 'quais_side_v4'
-  - Rows built using DOM API (createElement) to avoid input misassignment
+  Updated behavior:
+  - The generated report now includes only the problematic quays.
+    If a quay is fully OK (all 4 checks true) it is omitted from the report.
+  - The label for a present-but-not-ok chandelle is now "Chandelle endommagée".
+  - If no problems, the report shows "Aucun problème détecté."
+  - Everything else remains the same.
 */
 
 const MIN_Q = 27, MAX_Q = 64;
@@ -145,7 +142,6 @@ function loadData(){
     const raw = localStorage.getItem(DATA_KEY);
     if(raw){
       const parsed = JSON.parse(raw);
-      // ensure all keys present
       for(let n=MIN_Q;n<=MAX_Q;n++) if(!parsed[n]) parsed[n] = makeRecord(n);
       return parsed;
     }
@@ -159,7 +155,6 @@ function persist(){ localStorage.setItem(DATA_KEY, JSON.stringify(data)); }
 function persistSide(){ localStorage.setItem(SIDE_KEY, side); }
 
 function computeRowStatus(rec){
-  // green only if all checked, else red
   if(rec.calles_both_present && rec.chains_ok && rec.chandelle_present && rec.chandelle_ok) return 'good';
   return 'bad';
 }
@@ -169,7 +164,6 @@ function statusColor(status){
 }
 function statusText(status){ return status === 'good' ? 'OK' : 'Défaut'; }
 
-/* Header rendering */
 function renderHeader(){
   const leftOrder = side === 'left';
   const lblPresence = `<span class="col-label">Présence<br>2 calles</span>`;
@@ -203,7 +197,7 @@ function renderHeader(){
   tableHead.innerHTML = ths;
 }
 
-/* DOM cell helpers */
+/* DOM helpers */
 function tdStatus(rec){
   const td = document.createElement('td');
   const span = document.createElement('span');
@@ -256,7 +250,7 @@ function tdCommentPreview(n){
   return td;
 }
 
-/* Modal: comment editor */
+/* Modal comment editor */
 function openCommentModal(n){
   modalRoot.innerHTML = '';
   modalRoot.style.display = 'block';
@@ -310,7 +304,7 @@ function closeModal(){
   modalRoot.setAttribute('aria-hidden', 'true');
 }
 
-/* Report modal (in-page): monospaced text + copy button */
+/* Report modal: only problematic quays */
 function openReportModal(){
   modalRoot.innerHTML = '';
   modalRoot.style.display = 'block';
@@ -325,7 +319,7 @@ function openReportModal(){
   modal.className = 'modal';
 
   const h = document.createElement('h3');
-  h.textContent = 'Compte rendu — Calles & Chandelles';
+  h.textContent = 'Compte rendu — problèmes détectés';
 
   const pre = document.createElement('pre');
   pre.textContent = generateReportText();
@@ -364,7 +358,7 @@ function openReportModal(){
   });
 }
 
-/* generate textual report */
+/* Generate report text containing only problems (label for damaged chandelle adjusted) */
 function generateReportText(){
   const nums = (side === 'left') ? (()=>{ const a=[]; for(let n=MAX_Q;n>=MIN_Q;n--) a.push(n); return a; })()
                                  : (()=>{ const a=[]; for(let n=MIN_Q;n<=MAX_Q;n++) a.push(n); return a; })();
@@ -372,22 +366,35 @@ function generateReportText(){
   lines.push('Compte rendu — Calles & Chandelles (v4)');
   lines.push('Généré le : ' + new Date().toLocaleString('fr-FR'));
   lines.push('--------------------------------------------');
+
+  let problemCount = 0;
   nums.forEach(n=>{
     const r = data[n];
-    const calles = r.calles_both_present ? 'OK' : 'Manquante';
-    const chains = r.chains_ok ? 'OK' : 'Cassée';
-    const chandelle = r.chandelle_present ? 'Présente' : 'Absente';
-    const chandOk = r.chandelle_ok ? 'OK' : 'Non OK';
+    // skip fully OK quays
+    if(r.calles_both_present && r.chains_ok && r.chandelle_present && r.chandelle_ok) return;
+
+    const issues = [];
+    if(!r.calles_both_present) issues.push('Calles manquantes');
+    if(!r.chains_ok) issues.push('Chaînes cassées');
+    if(!r.chandelle_present) issues.push('Chandelle absente');
+    else if(!r.chandelle_ok) issues.push('Chandelle endommagée'); // <- label changed here
     const note = r.commentaire ? ` — ${r.commentaire}` : '';
-    lines.push(`Quai ${n} : Calles=${calles} / Chaînes=${chains} / Chandelle=${chandelle} (${chandOk})${note}`);
+    lines.push(`Quai ${n} : ${issues.join(' ; ')}${note}`);
+    problemCount++;
   });
+
+  if(problemCount === 0){
+    lines.push('Aucun problème détecté.');
+  } else {
+    lines.unshift(`Total de quais avec problèmes : ${problemCount}`);
+  }
+
   return lines.join('\n');
 }
 
-/* Render table using DOM API (no innerHTML per-row) */
+/* Render table (DOM-based) */
 function renderTable(){
   renderHeader();
-  // clear tbody
   while(tableBody.firstChild) tableBody.removeChild(tableBody.firstChild);
 
   const nums = (side === 'left')
@@ -417,7 +424,7 @@ function renderTable(){
   });
 }
 
-/* update status only for one row */
+/* update row dot */
 function updateRowStatus(n){
   const tr = document.getElementById('row-'+n);
   if(!tr) return;
@@ -429,7 +436,7 @@ function updateRowStatus(n){
   }
 }
 
-/* side setter */
+/* side setter, reset */
 function setSide(newSide){
   side = newSide === 'right' ? 'right' : 'left';
   if(side === 'left'){
@@ -442,8 +449,6 @@ function setSide(newSide){
   persistSide();
   renderTable();
 }
-
-/* reset */
 function doReset(){
   if(!confirm('Réinitialiser toutes les données ?')) return;
   for(let n=MIN_Q;n<=MAX_Q;n++) data[n] = makeRecord(n);
@@ -451,13 +456,13 @@ function doReset(){
   renderTable();
 }
 
-/* Wiring up buttons */
+/* wire buttons */
 document.getElementById('genBtn').addEventListener('click', openReportModal);
 document.getElementById('resetBtn').addEventListener('click', doReset);
 sideLeftBtn.addEventListener('click', ()=> setSide('left'));
 sideRightBtn.addEventListener('click', ()=> setSide('right'));
 
-/* initial load and render */
+/* init */
 function loadInitial(){
   try{ const raw = localStorage.getItem(DATA_KEY); if(raw) data = JSON.parse(raw); }catch(e){}
   for(let n=MIN_Q;n<=MAX_Q;n++) if(!data[n]) data[n] = makeRecord(n);
