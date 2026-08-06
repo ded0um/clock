@@ -11,7 +11,7 @@
     --panel-border: #2c313b;
     --ink: #d7dbe0;
     --muted: #7a8290;
-    --accent: #f2a33c;
+    --accent: #f2a33c; /* Couleur orange pour la décoration */
     --ok: #33c46a;
     --nok: #e5484d;
     --off: #05070a;
@@ -46,6 +46,26 @@
     text-transform:uppercase;
     margin:0 0 10px;
     text-align:center;
+  }
+
+  /* Bouton Compte-rendu sur la page d'accueil */
+  .btn-generer{
+    background: var(--accent);
+    color: #000;
+    font-weight: bold;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 10px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
+    flex: 0 0 auto;
+  }
+  .btn-generer:hover{
+    opacity: 0.9;
   }
 
   /* Écran d'accueil : choix de la cellule */
@@ -87,7 +107,6 @@
     justify-content:space-between;
     align-items:center;
     gap:6px;
-    flex-wrap:wrap;
   }
   .retour, .nav-lat{
     background:var(--panel);
@@ -237,13 +256,68 @@
   .stat.ok b{color:var(--ok);}
   .stat.nok b{color:var(--nok);}
   .stat.off b{color:var(--muted);}
-  .stat.reste b{color:var(--accent);}
+
+  /* Style de la fenêtre Modale du Compte Rendu */
+  .modal{
+    display:none;
+    position:fixed;
+    top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.85);
+    z-index:100;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+  }
+  .modal-contenu{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:10px;
+    max-width:600px;
+    width:100%;
+    max-height:90vh;
+    overflow-y:auto;
+    padding:20px;
+    color:var(--ink);
+  }
+  .cr-emojis{
+    font-family: monospace;
+    white-space: pre-wrap;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  .modal-actions{
+    display:flex;
+    justify-content:space-between;
+    margin-top:20px;
+    gap:10px;
+  }
+  .btn-fermer, .btn-copier{
+    background:var(--panel-border);
+    color:var(--ink);
+    border:none;
+    padding:10px 18px;
+    border-radius:6px;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:0.85rem;
+  }
+  .btn-copier{
+    background:var(--accent);
+    color:#000;
+    font-weight:bold;
+    transition: background 0.2s;
+  }
+  .btn-copier:hover{
+    opacity: 0.9;
+  }
 </style>
 </head>
 <body>
 <div class="app">
 
   <h1>Contrôle éclairage — Bâtiment 1</h1>
+
+  <button id="btnGenerer" class="btn-generer">📋 Générer le compte-rendu</button>
 
   <div class="accueil" id="accueil"></div>
 
@@ -266,9 +340,21 @@
 
 </div>
 
+<!-- Fenêtre Modale pour le Compte Rendu -->
+<div class="modal" id="modalCR">
+  <div class="modal-contenu">
+    <div id="crDetails" class="cr-emojis"></div>
+    <div class="modal-actions">
+      <button class="btn-fermer" id="btnFermerCR">Fermer</button>
+      <button class="btn-copier" id="btnCopierCR">📋 Copier le texte</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const states = ['', 'nc', 'hs'];
 const labels = ['', 'NC', ''];
+const emojis = ['🟩', '🟥', '⬛'];
 
 function creerLampe(numero){
   const div = document.createElement('div');
@@ -303,11 +389,11 @@ function creerVide(){
   return div;
 }
 
-// Stockage : numérotation en colonnes -> number = (c-1)*rows + r + offset
-// extraGauche : ajoute une colonne supplémentaire à gauche, peuplée uniquement sur la 1re ligne (lampe "?")
 function creerGrilleStockage(cols, rows, offset, extraGauche){
   const g = document.createElement('div');
   g.className = 'grille-stockage';
+  g.dataset.cols = extraGauche ? cols + 1 : cols;
+  g.dataset.rows = rows;
   g.style.gridTemplateColumns = `repeat(${extraGauche ? cols+1 : cols}, 1fr)`;
   g.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
   for(let i=0;i<rows;i++){
@@ -324,11 +410,11 @@ function creerGrilleStockage(cols, rows, offset, extraGauche){
   return g;
 }
 
-// Quai : numérotation en lignes -> number = (r-1)*cols + c
-// extraDroite : ajoute une colonne supplémentaire à droite, peuplée uniquement sur la 1re ligne (lampe "?")
 function creerGrilleQuai(cols, rows, extraDroite){
   const g = document.createElement('div');
   g.className = 'grille-quai';
+  g.dataset.cols = extraDroite ? cols + 1 : cols;
+  g.dataset.rows = rows;
   g.style.gridTemplateColumns = `repeat(${extraDroite ? cols+1 : cols}, 1fr)`;
   g.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
   for(let i=0;i<rows;i++){
@@ -349,6 +435,7 @@ const conteneurCellules = document.getElementById('cellules');
 const conteneurAccueil = document.getElementById('accueil');
 const zonePlan = document.getElementById('zonePlan');
 const accueil = document.getElementById('accueil');
+const btnGenerer = document.getElementById('btnGenerer');
 
 const statsBar = document.getElementById('statsBar');
 const ordreCellules = ['1','2','3','4','5','6','DH'];
@@ -361,6 +448,7 @@ function majBoutonsNav(){
 
 function afficherCellule(id){
   accueil.style.display = 'none';
+  btnGenerer.style.display = 'none';
   zonePlan.style.display = 'flex';
   statsBar.style.display = 'flex';
   document.querySelectorAll('.cellule').forEach(c=>c.classList.remove('actif'));
@@ -374,6 +462,7 @@ document.getElementById('btnRetour').addEventListener('click', ()=>{
   zonePlan.style.display = 'none';
   statsBar.style.display = 'none';
   accueil.style.display = 'grid';
+  btnGenerer.style.display = 'block';
 });
 
 document.getElementById('btnPrecedente').addEventListener('click', ()=>{
@@ -392,7 +481,7 @@ function ajouterBoutonAccueil(id, libelle){
   conteneurAccueil.appendChild(bouton);
 }
 
-// Cellules 1 à 6 : stockage 10x5 + quai 9x4
+// Cellules 1 à 6
 const definitionsCellules = [1,2,3,4,5,6];
 definitionsCellules.forEach((id, index)=>{
   const cell = document.createElement('div');
@@ -424,9 +513,7 @@ definitionsCellules.forEach((id, index)=>{
   ajouterBoutonAccueil(id, 'Cellule ' + id);
 });
 
-// Cellule D+H réunies : deux grilles stockage 10x2, pas de quai
-// Le "remplissage" invisible en flex:5 conserve la même hauteur de case
-// que dans les cellules classiques (5 lignes stockage + 4 lignes quai = 9 unités)
+// Cellule D+H
 const cellDH = document.createElement('div');
 cellDH.className = 'cellule';
 cellDH.id = 'cellule-DH';
@@ -471,7 +558,7 @@ function updateStats(){
   document.getElementById('cptHS').textContent = total.hs;
 }
 
-// Lampes déjà neutralisées (noir) à l'ouverture de la page
+// Lampes neutralisées par défaut
 const etatsInitiaux = {
   1: [28,29],
   2: [31],
@@ -499,9 +586,7 @@ Object.keys(etatsInitiaux).forEach(id=>{
 
 updateStats();
 
-// Calcule la plus grande taille possible pour la cellule active en conservant
-// le ratio largeur/hauteur (10 colonnes pour 9 unités de hauteur), pour éviter
-// toute déformation quel que soit l'écran ou l'orientation.
+// Calcul adaptatif des dimensions
 const RATIO = 10/9;
 function ajusterTaille(){
   const conteneur = document.querySelector('.zone-plan');
@@ -509,11 +594,9 @@ function ajusterTaille(){
   const h = conteneur.clientHeight;
   let cibleW, cibleH;
   if (w <= h){
-    // Portrait (usage principal sur téléphone) : on remplit tout l'espace disponible
     cibleW = w;
     cibleH = h;
   } else if (w / h > RATIO){
-    // Paysage très large : on limite la largeur pour éviter l'écrasement
     cibleH = h;
     cibleW = h * RATIO;
   } else {
@@ -528,6 +611,101 @@ function ajusterTaille(){
 window.addEventListener('resize', ajusterTaille);
 window.addEventListener('orientationchange', ()=> setTimeout(ajusterTaille, 150));
 ajusterTaille();
+
+/* Génération du Schéma d'Emojis pour une grille */
+function genererGrilleEmojis(grilleEl) {
+  const cols = parseInt(grilleEl.dataset.cols);
+  const enfants = Array.from(grilleEl.children);
+  let texte = '';
+  let ligneActuelle = '';
+
+  enfants.forEach((item, index) => {
+    if (item.classList.contains('lampe')) {
+      const state = parseInt(item.dataset.state || '0');
+      ligneActuelle += emojis[state] + ' ';
+    } else if (item.classList.contains('vide')) {
+      ligneActuelle += '   ';
+    }
+
+    if ((index + 1) % cols === 0) {
+      texte += ligneActuelle.trimEnd() + '\n';
+      ligneActuelle = '';
+    }
+  });
+  return texte;
+}
+
+/* Formatage de la date en JJ/MM/AAAA HH:MM:SS */
+function obtenirDateFormatee() {
+  const maintenant = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  const date = `${pad(maintenant.getDate())}/${pad(maintenant.getMonth() + 1)}/${maintenant.getFullYear()}`;
+  const heure = `${pad(maintenant.getHours())}:${pad(maintenant.getMinutes())}:${pad(maintenant.getSeconds())}`;
+  return `${date} ${heure}`;
+}
+
+/* Génération du Compte-Rendu Visuel */
+const modalCR = document.getElementById('modalCR');
+const btnFermerCR = document.getElementById('btnFermerCR');
+const btnCopierCR = document.getElementById('btnCopierCR');
+const crDetails = document.getElementById('crDetails');
+
+btnGenerer.addEventListener('click', ()=>{
+  let texte = `Compte rendu — Eclairage B1\n`;
+  texte += `Généré le : ${obtenirDateFormatee()}\n`;
+  texte += `--------------------------------------------\n`;
+  texte += `Légende : 🟩 Conforme   🟥 Non Conforme   ⬛ Neutralisé\n`;
+  texte += `--------------------------------------------\n\n`;
+
+  ordreCellules.forEach(id=>{
+    const cell = document.getElementById('cellule-'+id);
+    texte += `---\nCELLULE ${id==='DH'?'D+H':id}\n`;
+
+    const grillesStockage = cell.querySelectorAll('.grille-stockage');
+    const grilleQuai = cell.querySelector('.grille-quai');
+
+    if(grillesStockage.length === 1) {
+      texte += `[ STOCKAGE ]\n`;
+      texte += genererGrilleEmojis(grillesStockage[0]);
+    } else if(grillesStockage.length > 1) {
+      texte += `[ STOCKAGE H ]\n`;
+      texte += genererGrilleEmojis(grillesStockage[0]);
+      texte += `---\n[ STOCKAGE D ]\n`;
+      texte += genererGrilleEmojis(grillesStockage[1]);
+    }
+
+    if(grilleQuai) {
+      texte += `[ QUAI ]\n`;
+      texte += genererGrilleEmojis(grilleQuai);
+    }
+
+    texte += `\n`;
+  });
+
+  crDetails.textContent = texte.trim();
+  modalCR.style.display = 'flex';
+});
+
+btnFermerCR.addEventListener('click', ()=>{
+  modalCR.style.display = 'none';
+});
+
+/* Copie du contenu du compte-rendu */
+btnCopierCR.addEventListener('click', ()=>{
+  const texte = crDetails.textContent;
+  navigator.clipboard.writeText(texte).then(() => {
+    const texteOrigine = btnCopierCR.textContent;
+    btnCopierCR.textContent = '✓ Copié !';
+    btnCopierCR.style.background = 'var(--ok)';
+    setTimeout(() => {
+      btnCopierCR.textContent = texteOrigine;
+      btnCopierCR.style.background = 'var(--accent)';
+    }, 2000);
+  }).catch(err => {
+    alert('Erreur lors de la copie du texte.');
+    console.error(err);
+  });
+});
 </script>
 </body>
 </html>
