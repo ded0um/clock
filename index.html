@@ -197,6 +197,64 @@ body {
 }
 
 .icon-btn:hover { color: #888888; transform: scale(1.1); opacity: 1; }
+
+.menu-toggle-btn {
+    position: fixed;
+    top: calc(20px + env(safe-area-inset-top));
+    left: 20px;
+    bottom: auto;
+    right: auto;
+    z-index: 20;
+}
+.menu-toggle-btn.active { color: var(--yellow-led); opacity: 1; }
+
+.menu-panel-overlay { align-items: stretch; justify-content: flex-start; padding: 0; }
+.menu-panel-box {
+    width: fit-content;
+    max-width: 320px;
+    min-width: 220px;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0 12px 12px 0;
+    overflow-y: auto;
+}
+.menu-liens-liste {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.menu-lien-item {
+    display: block;
+    background: #161616;
+    border: 1px solid #262626;
+    border-radius: 10px;
+    padding: 14px 16px;
+    color: #eee;
+    font-size: 0.95rem;
+    font-weight: bold;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+.menu-lien-item:hover {
+    background: #1c1c1c;
+    border-color: rgba(255, 140, 0, 0.4);
+}
+
+@media (max-width: 768px) {
+    .menu-panel-box {
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+        height: 100dvh;
+        max-height: 100dvh;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+    .menu-panel-overlay { padding: 0; }
+    .menu-toggle-btn { top: calc(15px + env(safe-area-inset-top)); left: 15px; }
+}
 .icon-btn.active { color: var(--yellow-led); opacity: 1; }
 
 .toggle-switch {
@@ -233,9 +291,9 @@ body {
 }
 
 /* MASQUER LE BOUTON QUAND L'APPLICATION EST EN PLEIN ÉCRAN */
-:-webkit-full-screen #togglePanelBtn, :-webkit-full-screen #toggleWeatherBtn, :-webkit-full-screen #toggleAlarmSearchBtn, :-webkit-full-screen #toggleCompteRenduBtn, :-webkit-full-screen #toggleVacationBtn { opacity: 0; visibility: hidden; pointer-events: none; }
-:-ms-fullscreen #togglePanelBtn, :-ms-fullscreen #toggleWeatherBtn, :-ms-fullscreen #toggleAlarmSearchBtn, :-ms-fullscreen #toggleCompteRenduBtn, :-ms-fullscreen #toggleVacationBtn { opacity: 0; visibility: hidden; pointer-events: none; }
-:fullscreen #togglePanelBtn, :fullscreen #toggleWeatherBtn, :fullscreen #toggleAlarmSearchBtn, :fullscreen #toggleCompteRenduBtn, :fullscreen #toggleVacationBtn { opacity: 0; visibility: hidden; pointer-events: none; }
+:-webkit-full-screen #togglePanelBtn, :-webkit-full-screen #toggleWeatherBtn, :-webkit-full-screen #toggleAlarmSearchBtn, :-webkit-full-screen #toggleCompteRenduBtn, :-webkit-full-screen #toggleVacationBtn, :-webkit-full-screen #toggleMenuBtn { opacity: 0; visibility: hidden; pointer-events: none; }
+:-ms-fullscreen #togglePanelBtn, :-ms-fullscreen #toggleWeatherBtn, :-ms-fullscreen #toggleAlarmSearchBtn, :-ms-fullscreen #toggleCompteRenduBtn, :-ms-fullscreen #toggleVacationBtn, :-ms-fullscreen #toggleMenuBtn { opacity: 0; visibility: hidden; pointer-events: none; }
+:fullscreen #togglePanelBtn, :fullscreen #toggleWeatherBtn, :fullscreen #toggleAlarmSearchBtn, :fullscreen #toggleCompteRenduBtn, :fullscreen #toggleVacationBtn, :fullscreen #toggleMenuBtn { opacity: 0; visibility: hidden; pointer-events: none; }
 
 body.jour-sans-boutons .icon-btn, body.jour-sans-boutons #toggleVacationBtn { opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
 body.jour-sans-boutons .vacation-bar-wrap { opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
@@ -957,6 +1015,23 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
 </div>
 
 <!-- ZONE DE GAUCHE : HORLOGE + BOUTONS FIXES -->
+<!-- MENU DE NAVIGATION (bouton flottant en haut à gauche) -->
+<button class="menu-toggle-btn icon-btn" id="toggleMenuBtn" title="Menu"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+
+<div class="alarm-modal-overlay menu-panel-overlay" id="menuPanelOverlay">
+    <div class="alarm-modal-box menu-panel-box" id="menuPanelBox">
+        <div class="alarm-modal-header">
+            <h2>Menu</h2>
+            <button id="closeMenuBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+        </div>
+        <div class="menu-liens-liste">
+            <a href="controle-calles-et-chandelles.html" class="menu-lien-item">Contrôle Calles &amp; Chandelles</a>
+            <a href="quais.html" class="menu-lien-item">Schéma des quais</a>
+            <a href="controle-eclairage-b1.html" class="menu-lien-item">Contrôle éclairage B1</a>
+        </div>
+    </div>
+</div>
+
 <div class="left-zone" id="mainClickZone">
     <div class="top-controls">
         <div id="leds-sheet-container" class="leds-sheet-container"></div>
@@ -2044,6 +2119,34 @@ crCopierBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(texte).then(confirmerCopie).catch(() => {});
     }
 });
+
+// --- MENU DE NAVIGATION ---
+const toggleMenuBtn = document.getElementById('toggleMenuBtn');
+const menuPanelOverlay = document.getElementById('menuPanelOverlay');
+const menuPanelBox = document.getElementById('menuPanelBox');
+const closeMenuBtn = document.getElementById('closeMenuBtn');
+
+function ouvrirMenu() {
+    menuPanelOverlay.classList.add('open');
+    toggleMenuBtn.classList.add('active');
+}
+function fermerMenu() {
+    menuPanelOverlay.classList.remove('open');
+    toggleMenuBtn.classList.remove('active');
+}
+toggleMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (menuPanelOverlay.classList.contains('open')) fermerMenu();
+    else ouvrirMenu();
+});
+closeMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fermerMenu();
+});
+menuPanelOverlay.addEventListener('click', (e) => {
+    if (e.target === menuPanelOverlay) fermerMenu();
+});
+menuPanelBox.addEventListener('click', (e) => e.stopPropagation());
 
 const alarmChoiceOverlay = document.getElementById('alarmChoiceOverlay');
 const alarmChoiceBox = document.getElementById('alarmChoiceBox');
