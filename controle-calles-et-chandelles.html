@@ -100,6 +100,16 @@ html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe U
   position: sticky;
 }
 
+/* En-tête Quai cliquable pour inversion */
+.table thead th.quai-header-clickable {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s ease;
+}
+.table thead th.quai-header-clickable:hover {
+  color: var(--accent);
+}
+
 /* Bordures verticales explicites */
 .border-right {
   border-right: 1px solid var(--col-divider) !important;
@@ -335,6 +345,7 @@ const genBtn = document.getElementById('genBtn');
 const resetBtn = document.getElementById('resetBtn');
 
 let mode = 'both';
+let sortAscending = true; // État du tri pour l'ordre des quais
 
 let data = createInitialData();
 
@@ -360,11 +371,12 @@ function makeRecord(n){
 function getQuays(){
   const out=[];
   for(let n=MIN_Q;n<=MAX_Q;n++) if(!SKIP_QUAYS.has(n)) out.push(n);
+  out.sort((a, b) => sortAscending ? a - b : b - a);
   return out;
 }
 function createInitialData(){
   const map={};
-  getQuays().forEach(n=> map[n]=makeRecord(n));
+  for(let n=MIN_Q;n<=MAX_Q;n++) if(!SKIP_QUAYS.has(n)) map[n]=makeRecord(n);
   return map;
 }
 
@@ -422,7 +434,14 @@ function renderHeader(){
     return e; 
   }
 
-  row1.appendChild(th('Quai',{rowSpan:2, className:'border-right'}));
+  const quaiTh = th(`Quai ${sortAscending ? '▲' : '▼'}`, {rowSpan:2, className:'border-right quai-header-clickable'});
+  quaiTh.title = "Cliquer pour inverser l'ordre des quais";
+  quaiTh.addEventListener('click', () => {
+    sortAscending = !sortAscending;
+    renderTable();
+  });
+  row1.appendChild(quaiTh);
+
   if(mode==='both' || mode==='calles') row1.appendChild(th('Calles',{colSpan:2, className:'group-header border-right'}));
   if(mode==='both' || mode==='chandelles') row1.appendChild(th('Chandelle',{colSpan:2, className:'group-header border-right'}));
   row1.appendChild(th('Commentaire',{rowSpan:2, className:'border-right'}));
@@ -644,7 +663,7 @@ function openReportModal(){
 }
 
 function generateReportText(){
-  const quays = getQuays().slice().sort((a,b)=>a-b);
+  const quays = getQuays().slice().sort((a,b)=> sortAscending ? a - b : b - a);
   const lines = [];
   
   lines.push('============================================');
