@@ -354,9 +354,9 @@
       <!-- RANGÉE H -->
       <div class="cell-box ch" onclick="clickCell('H', event)">
         <div class="cell-label">H</div>
-        <!-- IS (Jaune) -->
-        <div class="tag is-tag arrow-left" style="top: 10px; left: -10px;">12</div>
-        <div class="tag is-tag arrow-right" style="top: 10px; right: -10px;">13</div>
+        <!-- IS 12 et 13 centrées à 20% du bas -->
+        <div class="tag is-tag arrow-left" style="bottom: 20%; left: -10px;">12</div>
+        <div class="tag is-tag arrow-right" style="bottom: 20%; right: -10px;">13</div>
         <!-- DM Rouges -->
         <div class="tag dm-red-tag" style="top: 32px; left: -10px;">12</div>
         <div class="tag dm-red-tag" style="top: 32px; right: -10px;">13</div>
@@ -374,21 +374,24 @@
       <div class="tech-zone">
         <div class="tech-box" onclick="clickCell('TGBT', event)">
           TGBT
-          <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">5</div>
           <div class="tag dm-red-tag" style="top: -26px; left: 50%; transform: translateX(-50%);">5</div>
         </div>
         <div class="tech-box" onclick="clickCell('Chaufferie', event)">
           Chauf.
-          <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">6</div>
+          <!-- IS 5 en Chaufferie -->
+          <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">5</div>
           <div class="tag dm-red-tag" style="top: -26px; left: 50%; transform: translateX(-50%);">6</div>
         </div>
         <div class="tech-box" onclick="clickCell('Atelier Maintenance', event)">
           Atelier Maint.
-          <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">7</div>
+          <!-- IS 6 en Atelier Maintenance -->
+          <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">6</div>
           <div class="tag dm-red-tag" style="top: -26px; left: 50%; transform: translateX(-50%);">7</div>
         </div>
         <div class="tech-box" onclick="clickCell('Salle de Charge C2', event)">
           S. Charge C2
+          <!-- IS 7 en Salle de Charge C2 -->
+          <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">7</div>
         </div>
       </div>
 
@@ -396,8 +399,8 @@
       <div class="c6-top-wrapper">
         <div class="cell-box sc-c6" onclick="clickCell('Salle de Charge C6', event)">
           <span style="font-size:0.55rem; font-weight:600; color:#ccc;">S. Charge C6</span>
-          <!-- IS 16 déplacée ici -->
-          <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">16</div>
+          <!-- IS 16 à 10% du côté droit -->
+          <div class="tag is-tag arrow-up" style="top: -10px; right: 10%;">16</div>
         </div>
       </div>
 
@@ -423,7 +426,7 @@
       <!-- CELLULE 2 -->
       <div class="cell-box c2" onclick="clickCell('C2', event)">
         <div class="cell-label">C2</div>
-        <!-- IS -->
+        <!-- IS 4 : Sortie vers l'extérieur (haut) -->
         <div class="tag is-tag arrow-up" style="top: -10px; left: 10%;">4</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">27</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 40%;">31</div>
@@ -469,8 +472,7 @@
         <div class="cell-label">C6</div>
         <div class="tag is-tag arrow-up" style="top: -10px; left: 30%;">15</div>
         <div class="tag is-tag arrow-right" style="top: 35%; right: -10px;">17</div>
-        <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">20</div>
-        <div class="tag is-tag arrow-down" style="bottom: -10px; right: 30%;">19</div>
+        <!-- IS 19 et 20 supprimées -->
         <div class="tag dm-red-tag" style="top: -10px; left: 55%;">15</div>
         <div class="tag dm-red-tag" style="top: 20%; right: -10px;">17</div>
         <div class="tag dm-red-tag" style="bottom: -10px; right: 10%;">18</div>
