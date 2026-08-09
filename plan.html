@@ -61,7 +61,6 @@
       width: 100%;
       max-width: 1100px;
       justify-content: center;
-      flex-wrap: wrap;
     }
 
     .btn-toggle {
@@ -106,46 +105,20 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
-      position: relative;
       cursor: pointer;
-      transition: all 0.3s ease;
     }
 
-    /* Style spécifique pour le mode Plein Écran */
-    .plan-wrapper.fullscreen {
-      position: fixed;
-      top: 0;
-      left: 0;
+    /* Style du plan lorsqu'il passe en plein écran */
+    .plan-wrapper:fullscreen {
       width: 100vw;
       height: 100vh;
       max-width: none;
-      z-index: 9999;
       border-radius: 0;
-      padding: 40px 10px 10px 10px;
+      padding: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #000000;
-      overflow: auto;
-    }
-
-    .btn-close-fullscreen {
-      display: none;
-      position: fixed;
-      top: 10px;
-      right: 15px;
-      background: #222;
-      border: 1px solid #555;
-      color: #fff;
-      font-size: 1.2rem;
-      padding: 4px 12px;
-      border-radius: 6px;
-      z-index: 10000;
-      cursor: pointer;
-    }
-
-    .plan-wrapper.fullscreen .btn-close-fullscreen {
-      display: block;
+      background-color: var(--bg);
     }
 
     .building-container {
@@ -154,6 +127,7 @@
       grid-template-rows: 80px 80px 240px;
       gap: 6px;
       min-width: 850px;
+      width: 100%;
     }
 
     .cell-box {
@@ -164,7 +138,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background-color 0.2s ease, border-color 0.2s ease;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
 
     .cell-box:hover {
@@ -209,6 +184,7 @@
       font-weight: 600;
       color: #cccccc;
       position: relative;
+      cursor: pointer;
       line-height: 1.1;
       padding: 2px;
     }
@@ -312,9 +288,19 @@
     .off-map-tags .tag { position: relative; }
 
     @media (max-width: 600px) {
-      body { padding: 8px 4px; }
-      .btn-toggle { font-size: 0.75rem; padding: 5px 8px; }
-      .tech-box { font-size: 0.5rem; }
+      body {
+        padding: 8px 4px;
+      }
+      .controls {
+        flex-wrap: wrap;
+      }
+      .btn-toggle {
+        font-size: 0.75rem;
+        padding: 5px 8px;
+      }
+      .tech-box {
+        font-size: 0.5rem;
+      }
     }
   </style>
 </head>
@@ -329,18 +315,13 @@
     <button id="btn-dm" class="btn-toggle active-dm" onclick="toggleLayer('dm')">
       <span>●</span> DM (Déclencheurs)
     </button>
-    <button class="btn-toggle" onclick="toggleFullscreen()">
-      ⛶ Plein écran
-    </button>
   </div>
 
-  <div id="plan-wrapper" class="plan-wrapper" onclick="toggleFullscreen()">
-    <button class="btn-close-fullscreen" onclick="toggleFullscreen(event)">✕</button>
-
-    <div id="building-container" class="building-container">
+  <div id="plan-wrapper" class="plan-wrapper" onclick="toggleFullScreen(event)">
+    <div class="building-container">
 
       <!-- RANGÉE H -->
-      <div class="cell-box ch">
+      <div class="cell-box ch" onclick="clickCell('H', event)">
         <div class="cell-label">H</div>
         <div class="tag is-tag arrow-left" style="top: 10px; left: -10px;">12</div>
         <div class="tag is-tag arrow-right" style="top: 10px; right: -10px;">13</div>
@@ -350,35 +331,35 @@
       </div>
 
       <!-- RANGÉE D -->
-      <div class="cell-box cd">
+      <div class="cell-box cd" onclick="clickCell('D', event)">
         <div class="cell-label">D</div>
       </div>
 
       <!-- LOCAUX TECHNIQUES C2 -->
       <div class="tech-zone">
-        <div class="tech-box">
+        <div class="tech-box" onclick="clickCell('TGBT', event)">
           TGBT
           <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">5</div>
           <div class="tag dm-tag arrow-up" style="top: -24px; left: 50%; transform: translateX(-50%);">DM 5</div>
         </div>
-        <div class="tech-box">
+        <div class="tech-box" onclick="clickCell('Chaufferie', event)">
           Chauf.
           <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">6</div>
           <div class="tag dm-tag arrow-up" style="top: -24px; left: 50%; transform: translateX(-50%);">DM 6</div>
         </div>
-        <div class="tech-box">
+        <div class="tech-box" onclick="clickCell('Atelier Maintenance', event)">
           Atelier Maint.
           <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">7</div>
           <div class="tag dm-tag arrow-up" style="top: -24px; left: 50%; transform: translateX(-50%);">DM 7</div>
         </div>
-        <div class="tech-box">
+        <div class="tech-box" onclick="clickCell('Salle de Charge C2', event)">
           S. Charge C2
         </div>
       </div>
 
       <!-- CONTENEUR AU-DESSUS DE C6 -->
       <div class="c6-top-wrapper">
-        <div class="cell-box sc-c6">
+        <div class="cell-box sc-c6" onclick="clickCell('Salle de Charge C6', event)">
           <span style="font-size:0.55rem; font-weight:600; color:#ccc;">S. Charge C6</span>
           <div class="tag is-tag" style="top: 2px; left: -10px;">21</div>
           <div class="tag is-tag" style="top: 2px; right: -10px;">22</div>
@@ -387,7 +368,7 @@
       </div>
 
       <!-- CELLULE 1 -->
-      <div class="cell-box c1">
+      <div class="cell-box c1" onclick="clickCell('C1', event)">
         <div class="cell-label">C1</div>
         <div class="tag is-tag arrow-left" style="bottom: 30%; left: -10px;">1</div>
         <div class="tag is-tag arrow-left" style="top: 30%; left: -10px;">2</div>
@@ -401,7 +382,7 @@
       </div>
 
       <!-- CELLULE 2 -->
-      <div class="cell-box c2">
+      <div class="cell-box c2" onclick="clickCell('C2', event)">
         <div class="cell-label">C2</div>
         <div class="tag is-tag arrow-up" style="top: -10px; left: 10%;">4</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">27</div>
@@ -414,7 +395,7 @@
       </div>
 
       <!-- CELLULE 3 -->
-      <div class="cell-box c3">
+      <div class="cell-box c3" onclick="clickCell('C3', event)">
         <div class="cell-label">C3</div>
         <div class="tag is-tag arrow-up" style="top: -10px; left: 40%;">8</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">25</div>
@@ -425,7 +406,7 @@
       </div>
 
       <!-- CELLULE 4 -->
-      <div class="cell-box c4">
+      <div class="cell-box c4" onclick="clickCell('C4', event)">
         <div class="cell-label">C4</div>
         <div class="tag is-tag arrow-up" style="top: -10px; left: 40%;">9</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; right: 10%;">24</div>
@@ -435,7 +416,7 @@
       </div>
 
       <!-- CELLULE 5 -->
-      <div class="cell-box c5">
+      <div class="cell-box c5" onclick="clickCell('C5', event)">
         <div class="cell-label">C5</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 40%;">23</div>
         <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 15%;">DM 24</div>
@@ -443,7 +424,7 @@
       </div>
 
       <!-- CELLULE 6 -->
-      <div class="cell-box c6">
+      <div class="cell-box c6" onclick="clickCell('C6', event)">
         <div class="cell-label">C6</div>
         <div class="tag is-tag arrow-up" style="top: -10px; left: 10%;">15</div>
         <div class="tag is-tag arrow-up" style="top: -10px; right: 10%;">16</div>
@@ -491,9 +472,29 @@
       offMapContainer.classList.toggle('hide-dm', !showDM);
     }
 
-    function toggleFullscreen(e) {
-      if (e) e.stopPropagation();
-      planWrapper.classList.toggle('fullscreen');
+    function toggleFullScreen(event) {
+      // Empêche le basculement en plein écran si le clic provient d'une cellule spécifique
+      if (event && event.stopPropagationTarget) return;
+
+      if (!document.fullscreenElement) {
+        if (planWrapper.requestFullscreen) {
+          planWrapper.requestFullscreen();
+        } else if (planWrapper.webkitRequestFullscreen) { /* Safari */
+          planWrapper.webkitRequestFullscreen();
+        } else if (planWrapper.msRequestFullscreen) { /* IE11 */
+          planWrapper.msRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    function clickCell(name, event) {
+      // Évite de déclencher ou fermer le plein écran lors d'un clic sur une zone spécifique
+      if (event) event.stopPropagation();
+      console.log("Zone sélectionnée : " + name);
     }
   </script>
 
