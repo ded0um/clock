@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan des IS et DM</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --card-bg: #0b0b0b;
+      --border: #222222;
+      --cell-bg: #141414;
+      --cell-border: #333333;
+      --cell-hover: #1f1f1f;
+      --accent: #ff8c00;
+      
+      --is-bg: #000000;
+      --is-border: #10b981;
+      --is-color: #10b981;
+      
+      --dm-bg: #000000;
+      --dm-border: #ef4444;
+      --dm-color: #ef4444;
+
+      --text-muted: #9aa0a6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: #ffffff;
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      text-align: center;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      background: var(--card-bg);
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .btn-toggle {
+      background: #1a1a1a;
+      border: 1px solid #444;
+      color: #ccc;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-toggle:hover {
+      border-color: #666;
+      color: #fff;
+    }
+
+    .btn-toggle.active-is {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--is-border);
+      color: var(--is-color);
+    }
+
+    .btn-toggle.active-dm {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: var(--dm-border);
+      color: var(--dm-color);
+    }
+
+    .plan-wrapper {
+      width: 100%;
+      max-width: 1100px;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+      overflow-x: auto;
+    }
+
+    .building-container {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: 80px 80px 240px;
+      gap: 6px;
+      min-width: 900px;
+    }
+
+    .cell-box {
+      background-color: var(--cell-bg);
+      border: 1.5px solid var(--cell-border);
+      border-radius: 8px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .cell-box:hover {
+      background-color: var(--cell-hover);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .cell-label {
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 4px 12px;
+      background: rgba(255, 140, 0, 0.08);
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Zone technique C2 : commence à 10% de C2 et s'étend jusqu'à la fin de C2 (100%) */
+    .tech-zone {
+      grid-column: 2;
+      grid-row: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2px;
+      padding-bottom: 2px;
+      margin-left: 10%;
+      width: 90%;
+    }
+
+    .tech-box {
+      background-color: #1a1a1a;
+      border: 1px solid #444;
+      border-radius: 4px;
+      flex: 1;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 0.52rem;
+      font-weight: 600;
+      color: #cccccc;
+      position: relative;
+      cursor: pointer;
+      line-height: 1.1;
+      padding: 2px;
+    }
+
+    .tech-box:hover {
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .ch { grid-column: 5; grid-row: 1; }
+    .cd { grid-column: 5; grid-row: 2; }
+    
+    .c6-top-wrapper {
+      grid-column: 6;
+      grid-row: 2;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    /* Salle de charge C6 */
+    .sc-c6 {
+      position: absolute;
+      bottom: 2px;
+      left: 30%;
+      width: 50%;
+      height: 42px;
+    }
+
+    .c1 { grid-column: 1; grid-row: 3; }
+    .c2 { grid-column: 2; grid-row: 3; }
+    .c3 { grid-column: 3; grid-row: 3; }
+    .c4 { grid-column: 4; grid-row: 3; }
+    .c5 { grid-column: 5; grid-row: 3; }
+    .c6 { grid-column: 6; grid-row: 3; }
+
+    /* Pastilles */
+    .tag {
+      position: absolute;
+      background-color: var(--is-bg);
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 3px;
+      line-height: 1;
+      pointer-events: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.9);
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      z-index: 20;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .is-tag {
+      color: var(--is-color);
+      border: 1px solid var(--is-border);
+    }
+
+    .dm-tag {
+      color: var(--dm-color);
+      border: 1px solid var(--dm-border);
+      z-index: 25;
+    }
+
+    /* Flèches */
+    .arrow-up::after { content: " ⬆"; font-size: 0.6rem; }
+    .arrow-down::after { content: " ⬇"; font-size: 0.6rem; }
+    .arrow-left::before { content: "⬅ "; font-size: 0.6rem; }
+    .arrow-right::after { content: " ➡"; font-size: 0.6rem; }
+
+    /* Masquage dynamique */
+    .hide-is .is-tag { display: none !important; }
+    .hide-dm .dm-tag { display: none !important; }
+
+    .off-map-container {
+      width: 100%;
+      max-width: 1100px;
+      margin-top: 15px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .off-map-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .off-map-tags {
+      display: flex;
+      gap: 10px;
+      position: relative;
+    }
+
+    .off-map-tags .tag { position: relative; }
+  </style>
+</head>
+<body>
+
+  <h1>Plan d'Implantation - IS & DM</h1>
+
+  <div class="controls">
+    <button id="btn-is" class="btn-toggle active-is" onclick="toggleLayer('is')">
+      <span>●</span> IS (Issues de Secours)
+    </button>
+    <button id="btn-dm" class="btn-toggle active-dm" onclick="toggleLayer('dm')">
+      <span>●</span> DM (Déclencheurs Manuels)
+    </button>
+  </div>
+
+  <div id="plan-wrapper" class="plan-wrapper">
+    <div class="building-container">
+
+      <!-- RANGÉE H -->
+      <div class="cell-box ch" onclick="clickCell('H')">
+        <div class="cell-label">H</div>
+        <div class="tag is-tag arrow-left" style="top: 10px; left: -10px;">12</div>
+        <div class="tag is-tag arrow-right" style="top: 10px; right: -10px;">13</div>
+        <div class="tag dm-tag arrow-left" style="top: 35px; left: -10px;">DM 12</div>
+        <div class="tag dm-tag arrow-right" style="top: 35px; right: -10px;">DM 13</div>
+        <div class="tag dm-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">DM 14</div>
+      </div>
+
+      <!-- RANGÉE D -->
+      <div class="cell-box cd" onclick="clickCell('D')">
+        <div class="cell-label">D</div>
+      </div>
+
+      <!-- LOCAUX TECHNIQUES C2 -->
+      <div class="tech-zone">
+        <div class="tech-box" onclick="clickCell('TGBT')">
+          TGBT
+          <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">5</div>
+          <div class="tag dm-tag arrow-up" style="top: -24px; left: 50%; transform: translateX(-50%);">DM 5</div>
+        </div>
+        <div class="tech-box" onclick="clickCell('Chaufferie')">
+          Chauf.
+          <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">6</div>
+          <div class="tag dm-tag arrow-up" style="top: -24px; left: 50%; transform: translateX(-50%);">DM 6</div>
+        </div>
+        <div class="tech-box" onclick="clickCell('Atelier Maintenance')">
+          Atelier Maint.
+          <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">7</div>
+          <div class="tag dm-tag arrow-up" style="top: -24px; left: 50%; transform: translateX(-50%);">DM 7</div>
+        </div>
+        <div class="tech-box" onclick="clickCell('Salle de Charge C2')">
+          S. Charge C2
+        </div>
+      </div>
+
+      <!-- CONTENEUR AU-DESSUS DE C6 -->
+      <div class="c6-top-wrapper">
+        <div class="cell-box sc-c6" onclick="clickCell('Salle de Charge C6')">
+          <span style="font-size:0.55rem; font-weight:600; color:#ccc;">S. Charge C6</span>
+          <div class="tag is-tag" style="top: 2px; left: -10px;">21</div>
+          <div class="tag is-tag" style="top: 2px; right: -10px;">22</div>
+          <div class="tag is-tag" style="bottom: 2px; right: -10px;">23</div>
+        </div>
+      </div>
+
+      <!-- CELLULE 1 -->
+      <div class="cell-box c1" onclick="clickCell('C1')">
+        <div class="cell-label">C1</div>
+        <div class="tag is-tag arrow-left" style="bottom: 30%; left: -10px;">1</div>
+        <div class="tag is-tag arrow-left" style="top: 30%; left: -10px;">2</div>
+        <div class="tag is-tag arrow-up" style="top: -10px; left: 40%;">3</div>
+        <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">28</div>
+        <div class="tag dm-tag arrow-left" style="bottom: 15%; left: -10px;">DM 1</div>
+        <div class="tag dm-tag arrow-left" style="top: 15%; left: -10px;">DM 2</div>
+        <div class="tag dm-tag arrow-up" style="top: -10px; left: 65%;">DM 3</div>
+        <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 32%;">DM 33</div>
+        <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 58%;">DM 34</div>
+      </div>
+
+      <!-- CELLULE 2 -->
+      <div class="cell-box c2" onclick="clickCell('C2')">
+        <div class="cell-label">C2</div>
+        <div class="tag is-tag arrow-up" style="top: -10px; left: 10%;">4</div>
+        <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">27</div>
+        <div class="tag is-tag arrow-down" style="bottom: -10px; left: 40%;">31</div>
+        <div class="tag is-tag arrow-down" style="bottom: -10px; right: 10%;">26</div>
+        <div class="tag dm-tag arrow-up" style="top: -10px; left: 35%;">DM 4</div>
+        <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 25%;">DM 32</div>
+        <div class="tag dm-tag arrow-down" style="bottom: -10px; right: 28%;">DM 30</div>
+        <div class="tag dm-tag arrow-down" style="bottom: -10px; right: 45%;">DM 31</div>
+      </div>
+
+      <!-- CELLULE 3 -->
+      <div class="cell-box c3" onclick="clickCell('C3')">
+        <div class="cell-label">C3</div>
+        <div class="tag is-tag arrow-up" style="top: -10px; left: 40%;">8</div>
+        <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">25</div>
+        <div class="tag is-tag arrow-down" style="bottom: -10px; right: 10%;">30</div>
+        <div class="tag dm-tag arrow-up" style="top: -10px; left: 65%;">DM 8</div>
+        <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 32%;">DM 28</div>
+        <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 55%;">DM 29</div>
+      </div>
+
+      <!-- CELLULE 4 -->
+      <div class="cell-box c4" onclick="clickCell('C4')">
+        <div class="cell-label">C4</div>
+        <div class="tag is-tag arrow-up" style="top: -10px; left: 40%;">9</div>
+        <div class="tag is-tag arrow-down" style="bottom: -10px; right: 10%;">24</div>
+        <div class="tag dm-tag arrow-up" style="top: -10px; left: 65%;">DM 9</div>
+        <div class="tag dm-tag arrow-down" style="bottom: -10px; right: 32%;">DM 26</div>
+        <div class="tag dm-tag arrow-down" style="bottom: -10px; right: 55%;">DM 27</div>
+      </div>
+
+      <!-- CELLULE 5 -->
+      <div class="cell-box c5" onclick="clickCell('C5')">
+        <div class="cell-label">C5</div>
+        <div class="tag is-tag arrow-down" style="bottom: -10px; left: 40%;">23</div>
+        <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 15%;">DM 24</div>
+        <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 65%;">DM 25</div>
+      </div>
+
+      <!-- CELLULE 6 -->
+      <div class="cell-box c6" onclick="clickCell('C6')">
+        <div class="cell-label">C6</div>
+        <div class="tag is-tag arrow-up" style="top: -10px; left: 10%;">15</div>
+        <div class="tag is-tag arrow-up" style="top: -10px; right: 10%;">16</div>
+        <div class="tag is-tag arrow-right" style="top: 40%; right: -10px;">17</div>
+        <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">20</div>
+        <div class="tag is-tag arrow-down" style="bottom: -10px; right: 30%;">19</div>
+        <div class="tag dm-tag arrow-up" style="top: -10px; left: 35%;">DM 15</div>
+        <div class="tag dm-tag arrow-up" style="top: -10px; right: 35%;">DM 16</div>
+        <div class="tag dm-tag arrow-right" style="top: 25%; right: -10px;">DM 17</div>
+        <div class="tag dm-tag arrow-down" style="bottom: -10px; right: 10%;">DM 18</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="off-map-container" class="off-map-container">
+    <span class="off-map-title">Hors plan :</span>
+    <div class="off-map-tags">
+      <div class="tag dm-tag">DM 35 (Poste de garde)</div>
+    </div>
+  </div>
+
+  <script>
+    let showIS = true;
+    let showDM = true;
+
+    const planWrapper = document.getElementById('plan-wrapper');
+    const offMapContainer = document.getElementById('off-map-container');
+    const btnIS = document.getElementById('btn-is');
+    const btnDM = document.getElementById('btn-dm');
+
+    function toggleLayer(type) {
+      if (type === 'is') {
+        showIS = !showIS;
+        btnIS.classList.toggle('active-is', showIS);
+      } else if (type === 'dm') {
+        showDM = !showDM;
+        btnDM.classList.toggle('active-dm', showDM);
+      }
+
+      planWrapper.classList.toggle('hide-is', !showIS);
+      planWrapper.classList.toggle('hide-dm', !showDM);
+      
+      offMapContainer.classList.toggle('hide-is', !showIS);
+      offMapContainer.classList.toggle('hide-dm', !showDM);
+    }
+
+    function clickCell(name) {
+      console.log("Zone sélectionnée : " + name);
+    }
+  </script>
+
+</body>
+</html>
