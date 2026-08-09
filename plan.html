@@ -61,6 +61,7 @@
       width: 100%;
       max-width: 1100px;
       justify-content: center;
+      flex-wrap: wrap;
     }
 
     .btn-toggle {
@@ -103,8 +104,8 @@
       border-radius: 12px;
       border: 1px solid var(--border);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden; /* Empêche le débordement lors du zoom */
+      position: relative;
     }
 
     .building-container {
@@ -112,7 +113,9 @@
       grid-template-columns: repeat(6, 1fr);
       grid-template-rows: 80px 80px 240px;
       gap: 6px;
-      min-width: 850px; /* Garantit la structuration lisible sur écran étroit */
+      min-width: 850px;
+      transform-origin: 0 0;
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     .cell-box {
@@ -124,7 +127,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
     }
 
     .cell-box:hover {
@@ -143,7 +146,6 @@
       letter-spacing: 0.5px;
     }
 
-    /* Zone technique C2 : alignée de 10% à 100% de la largeur C2 */
     .tech-zone {
       grid-column: 2;
       grid-row: 2;
@@ -273,21 +275,10 @@
 
     .off-map-tags .tag { position: relative; }
 
-    /* Adaptations spécifiques aux petits écrans mobile */
     @media (max-width: 600px) {
-      body {
-        padding: 8px 4px;
-      }
-      .controls {
-        flex-wrap: wrap;
-      }
-      .btn-toggle {
-        font-size: 0.75rem;
-        padding: 5px 8px;
-      }
-      .tech-box {
-        font-size: 0.5rem;
-      }
+      body { padding: 8px 4px; }
+      .btn-toggle { font-size: 0.75rem; padding: 5px 8px; }
+      .tech-box { font-size: 0.5rem; }
     }
   </style>
 </head>
@@ -302,13 +293,16 @@
     <button id="btn-dm" class="btn-toggle active-dm" onclick="toggleLayer('dm')">
       <span>●</span> DM (Déclencheurs)
     </button>
+    <button class="btn-toggle" onclick="resetZoom()">
+      🔍 Vue globale
+    </button>
   </div>
 
   <div id="plan-wrapper" class="plan-wrapper">
-    <div class="building-container">
+    <div id="building-container" class="building-container">
 
       <!-- RANGÉE H -->
-      <div class="cell-box ch" onclick="clickCell('H')">
+      <div class="cell-box ch" onclick="zoomToElement(this, 'H')">
         <div class="cell-label">H</div>
         <div class="tag is-tag arrow-left" style="top: 10px; left: -10px;">12</div>
         <div class="tag is-tag arrow-right" style="top: 10px; right: -10px;">13</div>
@@ -318,35 +312,35 @@
       </div>
 
       <!-- RANGÉE D -->
-      <div class="cell-box cd" onclick="clickCell('D')">
+      <div class="cell-box cd" onclick="zoomToElement(this, 'D')">
         <div class="cell-label">D</div>
       </div>
 
       <!-- LOCAUX TECHNIQUES C2 -->
       <div class="tech-zone">
-        <div class="tech-box" onclick="clickCell('TGBT')">
+        <div class="tech-box" onclick="zoomToElement(this, 'TGBT')">
           TGBT
           <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">5</div>
           <div class="tag dm-tag arrow-up" style="top: -24px; left: 50%; transform: translateX(-50%);">DM 5</div>
         </div>
-        <div class="tech-box" onclick="clickCell('Chaufferie')">
+        <div class="tech-box" onclick="zoomToElement(this, 'Chaufferie')">
           Chauf.
           <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">6</div>
           <div class="tag dm-tag arrow-up" style="top: -24px; left: 50%; transform: translateX(-50%);">DM 6</div>
         </div>
-        <div class="tech-box" onclick="clickCell('Atelier Maintenance')">
+        <div class="tech-box" onclick="zoomToElement(this, 'Atelier Maintenance')">
           Atelier Maint.
           <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">7</div>
           <div class="tag dm-tag arrow-up" style="top: -24px; left: 50%; transform: translateX(-50%);">DM 7</div>
         </div>
-        <div class="tech-box" onclick="clickCell('Salle de Charge C2')">
+        <div class="tech-box" onclick="zoomToElement(this, 'Salle de Charge C2')">
           S. Charge C2
         </div>
       </div>
 
       <!-- CONTENEUR AU-DESSUS DE C6 -->
       <div class="c6-top-wrapper">
-        <div class="cell-box sc-c6" onclick="clickCell('Salle de Charge C6')">
+        <div class="cell-box sc-c6" onclick="zoomToElement(this, 'Salle de Charge C6')">
           <span style="font-size:0.55rem; font-weight:600; color:#ccc;">S. Charge C6</span>
           <div class="tag is-tag" style="top: 2px; left: -10px;">21</div>
           <div class="tag is-tag" style="top: 2px; right: -10px;">22</div>
@@ -355,7 +349,7 @@
       </div>
 
       <!-- CELLULE 1 -->
-      <div class="cell-box c1" onclick="clickCell('C1')">
+      <div class="cell-box c1" onclick="zoomToElement(this, 'C1')">
         <div class="cell-label">C1</div>
         <div class="tag is-tag arrow-left" style="bottom: 30%; left: -10px;">1</div>
         <div class="tag is-tag arrow-left" style="top: 30%; left: -10px;">2</div>
@@ -369,7 +363,7 @@
       </div>
 
       <!-- CELLULE 2 -->
-      <div class="cell-box c2" onclick="clickCell('C2')">
+      <div class="cell-box c2" onclick="zoomToElement(this, 'C2')">
         <div class="cell-label">C2</div>
         <div class="tag is-tag arrow-up" style="top: -10px; left: 10%;">4</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">27</div>
@@ -382,7 +376,7 @@
       </div>
 
       <!-- CELLULE 3 -->
-      <div class="cell-box c3" onclick="clickCell('C3')">
+      <div class="cell-box c3" onclick="zoomToElement(this, 'C3')">
         <div class="cell-label">C3</div>
         <div class="tag is-tag arrow-up" style="top: -10px; left: 40%;">8</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">25</div>
@@ -393,7 +387,7 @@
       </div>
 
       <!-- CELLULE 4 -->
-      <div class="cell-box c4" onclick="clickCell('C4')">
+      <div class="cell-box c4" onclick="zoomToElement(this, 'C4')">
         <div class="cell-label">C4</div>
         <div class="tag is-tag arrow-up" style="top: -10px; left: 40%;">9</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; right: 10%;">24</div>
@@ -403,7 +397,7 @@
       </div>
 
       <!-- CELLULE 5 -->
-      <div class="cell-box c5" onclick="clickCell('C5')">
+      <div class="cell-box c5" onclick="zoomToElement(this, 'C5')">
         <div class="cell-label">C5</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 40%;">23</div>
         <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 15%;">DM 24</div>
@@ -411,7 +405,7 @@
       </div>
 
       <!-- CELLULE 6 -->
-      <div class="cell-box c6" onclick="clickCell('C6')">
+      <div class="cell-box c6" onclick="zoomToElement(this, 'C6')">
         <div class="cell-label">C6</div>
         <div class="tag is-tag arrow-up" style="top: -10px; left: 10%;">15</div>
         <div class="tag is-tag arrow-up" style="top: -10px; right: 10%;">16</div>
@@ -437,8 +431,10 @@
   <script>
     let showIS = true;
     let showDM = true;
+    let activeElement = null;
 
     const planWrapper = document.getElementById('plan-wrapper');
+    const container = document.getElementById('building-container');
     const offMapContainer = document.getElementById('off-map-container');
     const btnIS = document.getElementById('btn-is');
     const btnDM = document.getElementById('btn-dm');
@@ -459,8 +455,42 @@
       offMapContainer.classList.toggle('hide-dm', !showDM);
     }
 
-    function clickCell(name) {
-      console.log("Zone sélectionnée : " + name);
+    function zoomToElement(element, name) {
+      // Deuxième clic sur la même zone = dezoom
+      if (activeElement === element) {
+        resetZoom();
+        return;
+      }
+
+      activeElement = element;
+
+      const wrapperRect = planWrapper.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const targetRect = element.getBoundingClientRect();
+
+      // Facteur d'échelle ajusté selon la zone (plus grand pour les petits locaux)
+      let scale = 1.8;
+      if (element.classList.contains('tech-box') || element.classList.contains('sc-c6')) {
+        scale = 2.4;
+      }
+
+      // Position relative de l'élément visé dans la vue parent
+      const elementCenterX = (targetRect.left + targetRect.width / 2) - containerRect.left;
+      const elementCenterY = (targetRect.top + targetRect.height / 2) - containerRect.top;
+
+      const wrapperCenterX = wrapperRect.width / 2;
+      const wrapperCenterY = wrapperRect.height / 2;
+
+      // Calcul de la translation requise pour centrer la zone
+      const translateX = wrapperCenterX - (elementCenterX * scale);
+      const translateY = wrapperCenterY - (elementCenterY * scale);
+
+      container.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+
+    function resetZoom() {
+      activeElement = null;
+      container.style.transform = 'translate(0px, 0px) scale(1)';
     }
   </script>
 
