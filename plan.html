@@ -106,12 +106,11 @@
       width: 100%;
       max-width: 1100px;
       background: var(--card-bg);
-      padding: 20px 15px;
+      padding: 55px 35px 45px 35px;
       border-radius: 12px;
       border: 1px solid var(--border);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
       cursor: pointer;
     }
 
@@ -120,12 +119,12 @@
       height: 100vh;
       max-width: none;
       border-radius: 0;
-      padding: 25px 20px;
+      padding: 60px 35px 45px 35px;
       display: flex;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       background-color: var(--bg);
-      overflow: auto;
+      overflow: hidden;
     }
 
     .building-container {
@@ -169,13 +168,22 @@
     .tech-zone {
       grid-column: 2;
       grid-row: 2;
+      position: relative;
+      width: 100%;
+      height: 100%;
       display: flex;
-      justify-content: space-between;
       align-items: flex-end;
-      gap: 2px;
-      padding-bottom: 2px;
-      margin-left: 5%;
-      width: 90%;
+    }
+
+    .tech-zone-inner {
+      position: absolute;
+      bottom: 2px;
+      right: 0;
+      width: 75%;
+      height: 42px;
+      display: flex;
+      justify-content: flex-start;
+      gap: 1px;
     }
 
     .tech-box {
@@ -183,12 +191,11 @@
       border: 1px solid #444;
       border-radius: 4px;
       flex: 1;
-      height: 42px;
+      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      font-size: 0.55rem;
       font-weight: 600;
       color: #cccccc;
       position: relative;
@@ -230,18 +237,26 @@
     .c5 { grid-column: 5; grid-row: 3; }
     .c6 { grid-column: 6; grid-row: 3; }
 
+    /* Conteneur groupé IS + DM pour un alignement parfait */
+    .device-group {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      z-index: 25;
+      pointer-events: none;
+    }
+
     /* Pastilles de base */
     .tag {
-      position: absolute;
       font-size: 0.6rem;
       font-weight: 800;
       line-height: 1;
-      pointer-events: none;
       box-shadow: 0 2px 4px rgba(0,0,0,0.9);
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 20;
       white-space: nowrap;
     }
 
@@ -268,7 +283,6 @@
       background-color: var(--dm-red-bg);
       color: var(--dm-red-color);
       border: 1px solid var(--dm-red-border);
-      z-index: 25;
     }
 
     /* DM Verts (Déverrouillage) */
@@ -276,7 +290,6 @@
       background-color: var(--dm-green-bg);
       color: var(--dm-green-color);
       border: 1px solid var(--dm-green-border);
-      z-index: 24;
     }
 
     /* Flèches pour IS uniquement */
@@ -325,12 +338,13 @@
       .controls {
         flex-wrap: wrap;
       }
+
       .btn-toggle {
         font-size: 0.75rem;
         padding: 5px 8px;
       }
       .tech-box {
-        font-size: 0.5rem;
+        font-size: 0.35rem;
       }
     }
   </style>
@@ -354,12 +368,20 @@
       <!-- RANGÉE H -->
       <div class="cell-box ch" onclick="clickCell('H', event)">
         <div class="cell-label">H</div>
-        <div class="tag is-tag arrow-left" style="bottom: 20%; left: -10px;">12</div>
-        <div class="tag is-tag arrow-right" style="bottom: 20%; right: -10px;">13</div>
-        <div class="tag dm-red-tag" style="top: 32px; left: -10px;">12</div>
-        <div class="tag dm-red-tag" style="top: 32px; right: -10px;">13</div>
-        <div class="tag dm-red-tag" style="top: -10px; left: 50%; transform: translateX(-50%);">14</div>
-        <div class="tag dm-green-tag" style="top: 54px; left: -10px;">12</div>
+        <!-- Paire IS 12 / DM 12 -->
+        <div class="device-group" style="bottom: 20%; left: -32px; flex-direction: row-reverse;">
+          <div class="tag is-tag arrow-left">12</div>
+          <div class="tag dm-red-tag">12</div>
+        </div>
+        
+        <!-- Paire IS 13 / DM 13 -->
+        <div class="device-group" style="bottom: 20%; right: -32px; flex-direction: row;">
+          <div class="tag is-tag arrow-right">13</div>
+          <div class="tag dm-red-tag">13</div>
+        </div>
+
+        <!-- DM 14 Rouge entre H et D -->
+        <div class="tag dm-red-tag" style="position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); z-index: 25;">14</div>
       </div>
 
       <!-- RANGÉE D -->
@@ -369,23 +391,23 @@
 
       <!-- LOCAUX TECHNIQUES C2 -->
       <div class="tech-zone">
-        <div class="tech-box" onclick="clickCell('TGBT', event)">
-          TGBT
-          <div class="tag dm-red-tag" style="top: -26px; left: 50%; transform: translateX(-50%);">5</div>
-        </div>
-        <div class="tech-box" onclick="clickCell('Chaufferie', event)">
-          Chauf.
-          <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">5</div>
-          <div class="tag dm-red-tag" style="top: -26px; left: 50%; transform: translateX(-50%);">6</div>
-        </div>
-        <div class="tech-box" onclick="clickCell('Atelier Maintenance', event)">
-          Atelier Maint.
-          <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">6</div>
-          <div class="tag dm-red-tag" style="top: -26px; left: 50%; transform: translateX(-50%);">7</div>
-        </div>
-        <div class="tech-box" onclick="clickCell('Salle de Charge C2', event)">
-          S. Charge C2
-          <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">7</div>
+        <div class="tech-zone-inner">
+          <div class="tech-box" onclick="clickCell('TGBT', event)">TGBT</div>
+          <div class="tech-box" onclick="clickCell('Chaufferie', event)">
+            Chauf.
+            <div class="tag is-tag arrow-up" style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 20;">5</div>
+            <div class="tag dm-red-tag" style="position: absolute; top: -28px; left: 50%; transform: translateX(-50%); z-index: 25;">7</div>
+          </div>
+          <div class="tech-box" onclick="clickCell('Atelier Maintenance', event)">
+            Atelier Maint.
+            <div class="tag is-tag arrow-up" style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 20;">6</div>
+            <div class="tag dm-red-tag" style="position: absolute; top: -28px; left: 50%; transform: translateX(-50%); z-index: 25;">8</div>
+          </div>
+          <div class="tech-box" onclick="clickCell('Salle de Charge C2', event)">
+            S. Charge C2
+            <div class="tag is-tag arrow-up" style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 20;">7</div>
+            <div class="tag dm-red-tag" style="position: absolute; top: -28px; left: 50%; transform: translateX(-50%); z-index: 25;">9</div>
+          </div>
         </div>
       </div>
 
@@ -393,79 +415,114 @@
       <div class="c6-top-wrapper">
         <div class="cell-box sc-c6" onclick="clickCell('Salle de Charge C6', event)">
           <span style="font-size:0.55rem; font-weight:600; color:#ccc;">S. Charge C6</span>
-          <div class="tag is-tag arrow-up" style="top: -10px; right: 10%;">16</div>
+          <!-- Paire IS 16 / DM 16 (IS 16 directement sur la bordure supérieure, DM 16 juste en dessous) -->
+          <div style="position: absolute; top: -20px; right: 10%; display: flex; flex-direction: column; align-items: center; z-index: 25;">
+            <div class="tag is-tag arrow-up">16</div>
+            <div class="tag dm-red-tag" style="margin-top: 2px;">16</div>
+          </div>
         </div>
       </div>
 
       <!-- CELLULE 1 -->
       <div class="cell-box c1" onclick="clickCell('C1', event)">
         <div class="cell-label">C1</div>
-        <div class="tag is-tag arrow-left" style="bottom: 30%; left: -10px;">1</div>
-        <div class="tag is-tag arrow-left" style="top: 30%; left: -10px;">2</div>
-        <div class="tag is-tag arrow-up" style="top: -10px; left: 40%;">3</div>
-        <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">28</div>
-        <div class="tag dm-red-tag" style="bottom: 12%; left: -10px;">1</div>
-        <div class="tag dm-red-tag" style="top: 12%; left: -10px;">2</div>
-        <div class="tag dm-red-tag" style="top: -10px; left: 65%;">3</div>
-        <div class="tag dm-red-tag" style="bottom: -10px; left: 32%;">33</div>
-        <div class="tag dm-red-tag" style="bottom: -10px; left: 58%;">34</div>
-        <div class="tag dm-green-tag" style="bottom: 48%; left: -10px;">1</div>
-        <div class="tag dm-green-tag" style="top: 48%; left: -10px;">2</div>
+        <!-- Paire IS 1 / DM 3 -->
+        <div class="device-group" style="bottom: 30%; left: -32px; flex-direction: row-reverse;">
+          <div class="tag is-tag arrow-left">1</div>
+          <div class="tag dm-red-tag">3</div>
+        </div>
+
+        <!-- Paire IS 2 / DM 4 -->
+        <div class="device-group" style="top: 30%; left: -32px; flex-direction: row-reverse;">
+          <div class="tag is-tag arrow-left">2</div>
+          <div class="tag dm-red-tag">4</div>
+        </div>
+
+        <!-- Paire IS 3 / DM 5 (IS en premier, puis DM en dessous) -->
+        <div class="device-group" style="top: -10px; left: 40%; flex-direction: column;">
+          <div class="tag is-tag arrow-up">3</div>
+          <div class="tag dm-red-tag">5</div>
+        </div>
+
+        <!-- IS 28 / DM 34 & 33 -->
+        <div class="tag is-tag arrow-down" style="position: absolute; bottom: -10px; left: 10%; z-index: 20;">28</div>
+        <div class="tag dm-green-tag" style="position: absolute; bottom: -28px; left: 10%; z-index: 25;">34</div>
+        <div class="tag dm-red-tag" style="position: absolute; bottom: -46px; left: 10%; z-index: 25;">33</div>
+        <!-- DM vert n°2 -->
+        <div class="tag dm-green-tag" style="position: absolute; bottom: 5px; left: -10px; z-index: 25;">2</div>
       </div>
 
       <!-- CELLULE 2 -->
       <div class="cell-box c2" onclick="clickCell('C2', event)">
         <div class="cell-label">C2</div>
-        <div class="tag is-tag arrow-up" style="top: -10px; left: 2%;">4</div>
-        <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">27</div>
-        <!-- IS 24 retiré de C2 -->
-        <div class="tag is-tag arrow-down" style="bottom: -10px; right: 10%;">26</div>
-        <div class="tag dm-red-tag" style="top: -10px; left: 35%;">4</div>
-        <div class="tag dm-red-tag" style="bottom: -10px; left: 25%;">32</div>
-        <div class="tag dm-red-tag" style="bottom: -10px; right: 28%;">30</div>
-        <div class="tag dm-red-tag" style="bottom: -10px; right: 45%;">31</div>
+        <!-- Paire IS 4 / DM 6 (IS en premier, puis DM en dessous) -->
+        <div class="device-group" style="top: -10px; left: 2%; flex-direction: column;">
+          <div class="tag is-tag arrow-up">4</div>
+          <div class="tag dm-red-tag">6</div>
+        </div>
+
+        <div class="tag is-tag arrow-down" style="position: absolute; bottom: -10px; left: 10%; z-index: 20;">27</div>
+        <div class="tag dm-green-tag" style="position: absolute; bottom: -28px; left: 10%; z-index: 25;">32</div>
+
+        <div class="tag is-tag arrow-down" style="position: absolute; bottom: -10px; right: 10%; z-index: 20;">26</div>
+        <div class="tag dm-green-tag" style="position: absolute; bottom: -28px; right: 10%; z-index: 25;">30</div>
+        <div class="tag dm-red-tag" style="position: absolute; bottom: -46px; right: 10%; z-index: 25;">31</div>
       </div>
 
       <!-- CELLULE 3 -->
       <div class="cell-box c3" onclick="clickCell('C3', event)">
         <div class="cell-label">C3</div>
-        <div class="tag is-tag arrow-up" style="top: -10px; left: 40%;">8</div>
-        <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">25</div>
-        <div class="tag dm-red-tag" style="top: -10px; left: 65%;">8</div>
-        <div class="tag dm-red-tag" style="bottom: -10px; left: 32%;">28</div>
-        <div class="tag dm-red-tag" style="bottom: -10px; left: 55%;">29</div>
+        <!-- Paire IS 8 / DM 10 (IS en premier, puis DM en dessous) -->
+        <div class="device-group" style="top: -10px; left: 40%; flex-direction: column;">
+          <div class="tag is-tag arrow-up">8</div>
+          <div class="tag dm-red-tag">10</div>
+        </div>
+
+        <div class="tag is-tag arrow-down" style="position: absolute; bottom: -10px; left: 10%; z-index: 20;">25</div>
+        <div class="tag dm-green-tag" style="position: absolute; bottom: -28px; left: 10%; z-index: 25;">28</div>
+        <div class="tag dm-red-tag" style="position: absolute; bottom: -46px; left: 10%; z-index: 25;">29</div>
       </div>
 
       <!-- CELLULE 4 -->
       <div class="cell-box c4" onclick="clickCell('C4', event)">
         <div class="cell-label">C4</div>
-        <div class="tag is-tag arrow-up" style="top: -10px; left: 40%;">9</div>
-        <!-- L'ancienne IS 25 renommée en IS 24 et légèrement déplacée vers la droite -->
-        <div class="tag is-tag arrow-down" style="bottom: -10px; right: 20%;">24</div>
-        <!-- IS 10 retiré -->
-        <div class="tag dm-red-tag" style="top: -10px; left: 65%;">9</div>
-        <div class="tag dm-red-tag" style="bottom: -10px; right: 32%;">26</div>
-        <div class="tag dm-red-tag" style="bottom: -10px; right: 55%;">27</div>
+        <!-- Paire IS 9 / DM 11 (IS en premier, puis DM en dessous) -->
+        <div class="device-group" style="top: -10px; left: 40%; flex-direction: column;">
+          <div class="tag is-tag arrow-up">9</div>
+          <div class="tag dm-red-tag">11</div>
+        </div>
+
+        <div class="tag is-tag arrow-down" style="position: absolute; bottom: -10px; right: 20%; z-index: 20;">24</div>
+        <div class="tag dm-green-tag" style="position: absolute; bottom: -28px; right: 20%; z-index: 25;">26</div>
+        <div class="tag dm-red-tag" style="position: absolute; bottom: -46px; right: 20%; z-index: 25;">27</div>
       </div>
 
       <!-- CELLULE 5 -->
       <div class="cell-box c5" onclick="clickCell('C5', event)">
         <div class="cell-label">C5</div>
-        <div class="tag is-tag arrow-down" style="bottom: -10px; left: 40%;">23</div>
-        <div class="tag dm-red-tag" style="bottom: -10px; left: 15%;">24</div>
-        <div class="tag dm-red-tag" style="bottom: -10px; left: 65%;">25</div>
+        <div class="tag is-tag arrow-down" style="position: absolute; bottom: -10px; left: 40%; z-index: 20;">23</div>
+        <div class="tag dm-green-tag" style="position: absolute; bottom: -28px; left: 40%; z-index: 25;">24</div>
+        <div class="tag dm-red-tag" style="position: absolute; bottom: -46px; left: 40%; z-index: 25;">25</div>
       </div>
 
       <!-- CELLULE 6 -->
       <div class="cell-box c6" onclick="clickCell('C6', event)">
         <div class="cell-label">C6</div>
-        <div class="tag is-tag arrow-up" style="top: -10px; left: 10%;">15</div>
-        <div class="tag is-tag arrow-right" style="top: 55%; right: -10px;">17</div>
-        <div class="tag is-tag arrow-down" style="bottom: -10px; right: 20%;">18</div>
-        <div class="tag dm-red-tag" style="top: -10px; left: 55%;">15</div>
-        <div class="tag dm-red-tag" style="top: 20%; right: -10px;">17</div>
-        <div class="tag dm-red-tag" style="bottom: -10px; right: 10%;">18</div>
-        <div class="tag dm-green-tag" style="top: 70%; right: -10px;">17</div>
+        <!-- Paire IS 15 / DM 15 (IS en premier, puis DM en dessous) -->
+        <div class="device-group" style="top: -10px; left: 10%; flex-direction: column;">
+          <div class="tag is-tag arrow-up">15</div>
+          <div class="tag dm-red-tag">15</div>
+        </div>
+        
+        <!-- Paire IS 17 / DM 17 -->
+        <div class="device-group" style="top: 55%; right: -32px; flex-direction: row; transform: translateY(-50%);">
+          <div class="tag is-tag arrow-right">17</div>
+          <div class="tag dm-red-tag">17</div>
+        </div>
+
+        <div class="tag is-tag arrow-down" style="position: absolute; bottom: -10px; right: 20%; z-index: 20;">18</div>
+        <div class="tag dm-green-tag" style="position: absolute; bottom: -28px; right: 20%; z-index: 25;">19</div>
+        <div class="tag dm-red-tag" style="position: absolute; bottom: -46px; right: 20%; z-index: 25;">18</div>
       </div>
 
     </div>
@@ -473,9 +530,7 @@
 
   <div id="off-map-container" class="off-map-container">
     <span class="off-map-title">Hors plan :</span>
-    <div class="off-map-tags">
-      <div class="tag dm-red-tag">35</div> <span style="font-size:0.75rem; color:#aaa; margin-right:8px;">Poste de garde</span>
-    </div>
+    <div class="off-map-tags"></div>
   </div>
 
   <script>
