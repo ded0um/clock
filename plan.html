@@ -13,32 +13,32 @@
    ============================================================ */
 
 :root {
-  --bg: #0b0b0b;
-  --card-bg: #111111;
-  --border: #303030;
+    --bg: #0b0b0b;
+    --card-bg: #111111;
+    --border: #303030;
 
-  --cell-bg: #151515;
-  --cell-border: #3a3a3a;
-  --cell-hover: #1d1d1d;
+    --cell-bg: #151515;
+    --cell-border: #3a3a3a;
+    --cell-hover: #1d1d1d;
 
-  --accent: #ff8c00;
+    --accent: #ff8c00;
 
-  /* IS en Jaune */
-  --is-bg: #141414;
-  --is-border: #eab308;
-  --is-color: #facc15;
+    /* IS en Jaune */
+    --is-bg: #141414;
+    --is-border: #eab308;
+    --is-color: #facc15;
 
-  /* DM Rouges (Incendie) */
-  --dm-red-bg: #141414;
-  --dm-red-border: #ef4444;
-  --dm-red-color: #ef4444;
+    /* DM Rouges (Incendie) */
+    --dm-red-bg: #141414;
+    --dm-red-border: #ef4444;
+    --dm-red-color: #ef4444;
 
-  /* DM Verts (Déverrouillage) */
-  --dm-green-bg: #141414;
-  --dm-green-border: #22c55e;
-  --dm-green-color: #22c55e;
+    /* DM Verts (Déverrouillage) */
+    --dm-green-bg: #141414;
+    --dm-green-border: #22c55e;
+    --dm-green-color: #22c55e;
 
-  --text-muted: #9aa0a6;
+    --text-muted: #9aa0a6;
 }
 
 
@@ -47,9 +47,9 @@
    ============================================================ */
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 
@@ -58,14 +58,16 @@
    ============================================================ */
 
 body {
-  font-family: Inter, system-ui, -apple-system, sans-serif;
-  background-color: var(--bg);
-  color: #ffffff;
-  padding: 10px 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+    background-color: var(--bg);
+    color: #ffffff;
+    padding: 10px 5px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    min-height: 100vh;
 }
 
 
@@ -74,11 +76,11 @@ body {
    ============================================================ */
 
 h1 {
-  font-size: 1.1rem;
-  margin-bottom: 12px;
-  text-align: center;
-  color: #ffffff;
-  font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    text-align: center;
+    color: #ffffff;
+    font-weight: 600;
 }
 
 
@@ -87,49 +89,62 @@ h1 {
    ============================================================ */
 
 .controls {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 15px;
-  background: var(--card-bg);
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  width: 100%;
-  max-width: 1100px;
-  justify-content: center;
-  flex-wrap: wrap;
+    display: flex;
+    gap: 8px;
+
+    margin-bottom: 15px;
+
+    background: var(--card-bg);
+
+    padding: 8px 12px;
+
+    border-radius: 8px;
+    border: 1px solid var(--border);
+
+    width: 100%;
+    max-width: 1100px;
+
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .btn-toggle {
-  background: #1a1a1a;
-  border: 1px solid #444;
-  color: #ccc;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+    background: #1a1a1a;
+    border: 1px solid #444;
+
+    color: #ccc;
+
+    padding: 6px 12px;
+
+    border-radius: 6px;
+
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .btn-toggle:hover {
-  border-color: #666;
-  color: #fff;
+    border-color: #666;
+    color: #fff;
 }
 
 .btn-toggle.active-is {
-  background: rgba(234, 179, 8, 0.15);
-  border-color: var(--is-border);
-  color: var(--is-color);
+    background: rgba(234, 179, 8, 0.15);
+    border-color: var(--is-border);
+    color: var(--is-color);
 }
 
 .btn-toggle.active-dm {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: var(--dm-red-border);
-  color: #ffffff;
+    background: rgba(239, 68, 68, 0.15);
+    border-color: var(--dm-red-border);
+    color: #ffffff;
 }
 
 
@@ -138,29 +153,44 @@ h1 {
    ============================================================ */
 
 .plan-wrapper {
-  width: 100%;
-  max-width: 1100px;
-  background: var(--card-bg);
-  padding: 55px 35px 45px 35px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  cursor: pointer;
+    width: 100%;
+    max-width: 1100px;
+
+    background: var(--card-bg);
+
+    padding: 55px 35px 45px 35px;
+
+    border-radius: 12px;
+
+    border: 1px solid var(--border);
+
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+
+    overflow-x: auto;
+
+    -webkit-overflow-scrolling: touch;
+
+    cursor: pointer;
 }
 
 .plan-wrapper:fullscreen {
-  width: 100vw;
-  height: 100vh;
-  max-width: none;
-  border-radius: 0;
-  padding: 60px 35px 45px 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--bg);
-  overflow: auto;
+    width: 100vw;
+    height: 100vh;
+
+    max-width: none;
+
+    border-radius: 0;
+
+    padding: 60px 35px 45px 35px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--bg);
+
+    overflow: auto;
 }
 
 
@@ -169,13 +199,22 @@ h1 {
    ============================================================ */
 
 .building-container {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: 80px 80px 240px;
-  gap: 6px;
-  min-width: 850px;
-  width: 100%;
-  margin: auto;
+    display: grid;
+
+    grid-template-columns: repeat(6, 1fr);
+
+    grid-template-rows:
+        80px
+        80px
+        240px;
+
+    gap: 6px;
+
+    min-width: 850px;
+
+    width: 100%;
+
+    margin: auto;
 }
 
 
@@ -184,31 +223,45 @@ h1 {
    ============================================================ */
 
 .cell-box {
-  background-color: var(--cell-bg);
-  border: 1.5px solid var(--cell-border);
-  border-radius: 8px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
+    background-color: var(--cell-bg);
+
+    border: 1.5px solid var(--cell-border);
+
+    border-radius: 8px;
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
 }
 
 .cell-box:hover {
-  background-color: var(--cell-hover);
-  border-color: var(--accent);
+    background-color: var(--cell-hover);
+    border-color: var(--accent);
 }
 
 .cell-label {
-  border: 1px solid var(--accent);
-  color: var(--accent);
-  padding: 4px 10px;
-  background: rgba(255, 140, 0, 0.08);
-  font-size: 0.95rem;
-  font-weight: 700;
-  border-radius: 6px;
-  letter-spacing: 0.5px;
+    border: 1px solid var(--accent);
+
+    color: var(--accent);
+
+    padding: 4px 10px;
+
+    background: rgba(255, 140, 0, 0.08);
+
+    font-size: 0.95rem;
+
+    font-weight: 700;
+
+    border-radius: 6px;
+
+    letter-spacing: 0.5px;
 }
 
 
@@ -217,47 +270,111 @@ h1 {
    ============================================================ */
 
 .tech-zone {
-  grid-column: 2;
-  grid-row: 2;
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: flex-end;
+    grid-column: 2;
+    grid-row: 2;
+
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    align-items: flex-end;
 }
 
+
+/*
+    IMPORTANT :
+
+    Les 4 locaux :
+
+    TGBT
+    + Chaufferie
+    + Atelier Maintenance
+    + Salle de Charge C2
+
+    occupent EXACTEMENT 80 % de la largeur de C2.
+
+    L'ensemble est aligné à droite.
+
+    La limite droite de la Salle de Charge C2
+    reste donc exactement à sa position actuelle.
+*/
+
 .tech-zone-inner {
-  position: absolute;
-  bottom: 2px;
-  right: 0;
-  width: 75%;
-  height: 42px;
-  display: flex;
-  justify-content: flex-start;
-  gap: 1px;
+    position: absolute;
+
+    bottom: 2px;
+    right: 0;
+
+    width: 80%;
+
+    height: 42px;
+
+    display: flex;
+
+    gap: 1px;
+
+    box-sizing: border-box;
 }
 
 .tech-box {
-  background-color: #1a1a1a;
-  border: 1px solid #444;
-  border-radius: 4px;
-  flex: 1;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-weight: 600;
-  color: #cccccc;
-  position: relative;
-  cursor: pointer;
-  line-height: 1.1;
-  padding: 2px;
+    background-color: #1a1a1a;
+
+    border: 1px solid #444;
+
+    border-radius: 4px;
+
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    font-weight: 600;
+
+    color: #cccccc;
+
+    position: relative;
+
+    cursor: pointer;
+
+    line-height: 1.1;
+
+    padding: 2px;
+
+    min-width: 0;
+}
+
+
+/*
+   Les proportions sont calculées à l'intérieur
+   des 80 % disponibles.
+*/
+
+.tech-box.tgbt {
+    flex: 0.7;
+}
+
+.tech-box.chauf {
+    flex: 0.8;
+}
+
+.tech-box.atelier {
+    flex: 1.2;
+}
+
+.tech-box.charge {
+    flex: 1.3;
 }
 
 .tech-box:hover {
-  border-color: var(--accent);
-  color: #ffffff;
+    border-color: var(--accent);
+    color: #ffffff;
 }
 
 
@@ -266,61 +383,69 @@ h1 {
    ============================================================ */
 
 .ch {
-  grid-column: 5;
-  grid-row: 1;
+    grid-column: 5;
+    grid-row: 1;
 }
 
 .cd {
-  grid-column: 5;
-  grid-row: 2;
+    grid-column: 5;
+    grid-row: 2;
 }
 
 .c6-top-wrapper {
-  grid-column: 6;
-  grid-row: 2;
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: flex-end;
+    grid-column: 6;
+    grid-row: 2;
+
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    align-items: flex-end;
 }
 
 .sc-c6 {
-  position: absolute;
-  bottom: 2px;
-  left: 30%;
-  width: 50%;
-  height: 42px;
+    position: absolute;
+
+    bottom: 2px;
+
+    left: 30%;
+
+    width: 50%;
+
+    height: 42px;
 }
 
 .c1 {
-  grid-column: 1;
-  grid-row: 3;
+    grid-column: 1;
+    grid-row: 3;
 }
 
 .c2 {
-  grid-column: 2;
-  grid-row: 3;
+    grid-column: 2;
+    grid-row: 3;
 }
 
 .c3 {
-  grid-column: 3;
-  grid-row: 3;
+    grid-column: 3;
+    grid-row: 3;
 }
 
 .c4 {
-  grid-column: 4;
-  grid-row: 3;
+    grid-column: 4;
+    grid-row: 3;
 }
 
 .c5 {
-  grid-column: 5;
-  grid-row: 3;
+    grid-column: 5;
+    grid-row: 3;
 }
 
 .c6 {
-  grid-column: 6;
-  grid-row: 3;
+    grid-column: 6;
+    grid-row: 3;
 }
 
 
@@ -329,15 +454,22 @@ h1 {
    ============================================================ */
 
 .tag {
-  font-size: 0.6rem;
-  font-weight: 800;
-  line-height: 1.1;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-  z-index: 30;
+    font-size: 0.6rem;
+
+    font-weight: 800;
+
+    line-height: 1.1;
+
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    white-space: nowrap;
+
+    z-index: 30;
 }
 
 
@@ -346,13 +478,19 @@ h1 {
    ============================================================ */
 
 .is-tag {
-  background-color: var(--is-bg);
-  color: var(--is-color);
-  border: 1px solid var(--is-border);
-  padding: 2px 0;
-  border-radius: 3px;
-  width: 38px;
-  text-align: center;
+    background-color: var(--is-bg);
+
+    color: var(--is-color);
+
+    border: 1px solid var(--is-border);
+
+    padding: 2px 0;
+
+    border-radius: 3px;
+
+    width: 38px;
+
+    text-align: center;
 }
 
 
@@ -362,29 +500,36 @@ h1 {
 
 .dm-red-tag,
 .dm-green-tag {
-  border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  min-width: 18px;
-  padding: 2px;
+    border-radius: 50%;
+
+    width: 18px;
+    height: 18px;
+
+    min-width: 18px;
+
+    padding: 2px;
 }
 
 
 /* DM Rouges */
 
 .dm-red-tag {
-  background-color: var(--dm-red-bg);
-  color: var(--dm-red-color);
-  border: 1px solid var(--dm-red-border);
+    background-color: var(--dm-red-bg);
+
+    color: var(--dm-red-color);
+
+    border: 1px solid var(--dm-red-border);
 }
 
 
 /* DM Verts */
 
 .dm-green-tag {
-  background-color: var(--dm-green-bg);
-  color: var(--dm-green-color);
-  border: 1px solid var(--dm-green-border);
+    background-color: var(--dm-green-bg);
+
+    color: var(--dm-green-color);
+
+    border: 1px solid var(--dm-green-border);
 }
 
 
@@ -393,23 +538,23 @@ h1 {
    ============================================================ */
 
 .is-tag.arrow-up::after {
-  content: " ⬆";
-  font-size: 0.55rem;
+    content: " ⬆";
+    font-size: 0.55rem;
 }
 
 .is-tag.arrow-down::after {
-  content: " ⬇";
-  font-size: 0.55rem;
+    content: " ⬇";
+    font-size: 0.55rem;
 }
 
 .is-tag.arrow-left::before {
-  content: "⬅ ";
-  font-size: 0.55rem;
+    content: "⬅ ";
+    font-size: 0.55rem;
 }
 
 .is-tag.arrow-right::after {
-  content: " ➡";
-  font-size: 0.55rem;
+    content: " ➡";
+    font-size: 0.55rem;
 }
 
 
@@ -418,11 +563,15 @@ h1 {
    ============================================================ */
 
 .device-cluster {
-  position: absolute;
-  z-index: 30;
-  display: flex;
-  pointer-events: none;
-  align-items: center;
+    position: absolute;
+
+    z-index: 30;
+
+    display: flex;
+
+    pointer-events: none;
+
+    align-items: center;
 }
 
 
@@ -431,24 +580,33 @@ h1 {
    ============================================================ */
 
 .cluster-top {
-  top: 0;
-  transform: translateX(-50%);
-  flex-direction: column;
-  align-items: center;
+    top: 0;
+
+    transform: translateX(-50%);
+
+    flex-direction: column;
+
+    align-items: center;
 }
 
 .cluster-top .is-tag {
-  transform: translateY(-50%);
-  order: 1;
-  width: auto;
-  padding: 2px 5px;
+    transform: translateY(-50%);
+
+    order: 1;
+
+    width: auto;
+
+    padding: 2px 5px;
 }
 
 .cluster-top .dm-subgroup {
-  order: 2;
-  transform: translateY(-8px);
-  display: flex;
-  gap: 2px;
+    order: 2;
+
+    transform: translateY(-8px);
+
+    display: flex;
+
+    gap: 2px;
 }
 
 
@@ -457,25 +615,35 @@ h1 {
    ============================================================ */
 
 .cluster-bottom {
-  bottom: 0;
-  transform: translateX(-50%);
-  flex-direction: column;
-  align-items: center;
+    bottom: 0;
+
+    transform: translateX(-50%);
+
+    flex-direction: column;
+
+    align-items: center;
 }
 
 .cluster-bottom .is-tag {
-  transform: translateY(50%);
-  order: 2;
-  width: auto;
-  padding: 2px 5px;
+    transform: translateY(50%);
+
+    order: 2;
+
+    width: auto;
+
+    padding: 2px 5px;
 }
 
 .cluster-bottom .dm-subgroup {
-  order: 1;
-  transform: translateY(7px);
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
+    order: 1;
+
+    transform: translateY(7px);
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1px;
 }
 
 
@@ -484,21 +652,27 @@ h1 {
    ============================================================ */
 
 .cluster-left {
-  left: 0;
-  transform: translateY(-50%);
-  flex-direction: row;
-  align-items: center;
-  gap: 0;
+    left: 0;
+
+    transform: translateY(-50%);
+
+    flex-direction: row;
+
+    align-items: center;
+
+    gap: 0;
 }
 
 .cluster-left .is-tag {
-  transform: translateX(-50%);
-  width: 42px;
-  padding: 2px 5px;
+    transform: translateX(-50%);
+
+    width: 42px;
+
+    padding: 2px 5px;
 }
 
 .cluster-left .dm-subgroup {
-  transform: translateX(-21px);
+    transform: translateX(-21px);
 }
 
 
@@ -507,21 +681,27 @@ h1 {
    ============================================================ */
 
 .cluster-right {
-  right: 0;
-  transform: translateY(-50%);
-  flex-direction: row-reverse;
-  align-items: center;
-  gap: 0;
+    right: 0;
+
+    transform: translateY(-50%);
+
+    flex-direction: row-reverse;
+
+    align-items: center;
+
+    gap: 0;
 }
 
 .cluster-right .is-tag {
-  transform: translateX(50%);
-  width: 42px;
-  padding: 2px 5px;
+    transform: translateX(50%);
+
+    width: 42px;
+
+    padding: 2px 5px;
 }
 
 .cluster-right .dm-subgroup {
-  transform: translateX(21px);
+    transform: translateX(21px);
 }
 
 
@@ -530,12 +710,12 @@ h1 {
    ============================================================ */
 
 .hide-is .is-tag {
-  display: none !important;
+    display: none !important;
 }
 
 .hide-dm .dm-red-tag,
 .hide-dm .dm-green-tag {
-  display: none !important;
+    display: none !important;
 }
 
 
@@ -544,33 +724,47 @@ h1 {
    ============================================================ */
 
 .off-map-container {
-  width: 100%;
-  max-width: 1100px;
-  margin-top: 12px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 15px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+    width: 100%;
+
+    max-width: 1100px;
+
+    margin-top: 12px;
+
+    background: var(--card-bg);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    padding: 10px 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
 }
 
 .off-map-title {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-muted);
+    font-size: 0.8rem;
+
+    font-weight: 600;
+
+    color: var(--text-muted);
 }
 
 .off-map-tags {
-  display: flex;
-  gap: 8px;
-  position: relative;
+    display: flex;
+
+    gap: 8px;
+
+    position: relative;
 }
 
 .off-map-tags .tag {
-  position: relative;
+    position: relative;
 }
 
 
@@ -580,25 +774,27 @@ h1 {
 
 @media (max-width: 600px) {
 
-  body {
-    padding: 8px 4px;
-  }
+    body {
+        padding: 8px 4px;
+    }
 
-  .controls {
-    flex-wrap: wrap;
-  }
+    .controls {
+        flex-wrap: wrap;
+    }
 
-  .btn-toggle {
-    font-size: 0.75rem;
-    padding: 5px 8px;
-  }
+    .btn-toggle {
+        font-size: 0.75rem;
+        padding: 5px 8px;
+    }
 
-  .tech-box {
-    font-size: 0.35rem;
-  }
+    .tech-box {
+        font-size: 0.35rem;
+    }
+
 }
 
 </style>
+
 </head>
 
 
@@ -618,28 +814,30 @@ h1 {
 
 <div class="controls">
 
-  <button
-    id="btn-is"
-    class="btn-toggle active-is"
-    onclick="toggleIS()"
-  >
-    🟡 IS
-  </button>
+    <button
+        id="btn-is"
+        class="btn-toggle active-is"
+        onclick="toggleIS()"
+    >
+        🟡 IS
+    </button>
 
-  <button
-    id="btn-dm"
-    class="btn-toggle active-dm"
-    onclick="toggleDM()"
-  >
-    🔴🟢 DM
-  </button>
 
-  <button
-    class="btn-toggle"
-    onclick="toggleFullscreen()"
-  >
-    ⛶ Plein écran
-  </button>
+    <button
+        id="btn-dm"
+        class="btn-toggle active-dm"
+        onclick="toggleDM()"
+    >
+        🔴🟢 DM
+    </button>
+
+
+    <button
+        class="btn-toggle"
+        onclick="toggleFullscreen()"
+    >
+        ⛶ Plein écran
+    </button>
 
 </div>
 
@@ -649,151 +847,152 @@ h1 {
      ============================================================ -->
 
 <div
-  class="plan-wrapper"
-  id="plan"
-  ondblclick="toggleFullscreen()"
+    class="plan-wrapper"
+    id="plan"
+    ondblclick="toggleFullscreen()"
 >
 
+<div class="building-container">
 
-  <div class="building-container">
+
+<!-- ========================================================
+     RANGÉE H
+     ======================================================== -->
+
+<div
+    class="cell-box ch"
+    onclick="clickCell('H', event)"
+>
+
+    <div class="cell-label">
+        H
+    </div>
 
 
-    <!-- ========================================================
-         RANGÉE H
-         ======================================================== -->
+    <!-- IS 12 + DM 12 (GAUCHE) -->
 
     <div
-      class="cell-box ch"
-      onclick="clickCell('H', event)"
-    >
-
-      <div class="cell-label">H</div>
-
-
-      <!-- IS 12 + DM 12 (GAUCHE) -->
-
-      <div
         class="device-cluster cluster-left"
         style="top: 20%; left: 0;"
-      >
-
-        <div class="tag is-tag arrow-left">
-          12
-        </div>
-
-        <div class="dm-subgroup">
-
-          <div class="tag dm-red-tag">
-            12
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- IS 13 + DM 13 (DROITE) -->
-
-      <div
-        class="device-cluster cluster-right"
-        style="top: 20%; right: 0;"
-      >
-
-        <div class="tag is-tag arrow-right">
-          13
-        </div>
-
-        <div class="dm-subgroup">
-
-          <div class="tag dm-red-tag">
-            13
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- DM 14 ENTRE H ET D -->
-
-      <div
-        class="tag dm-red-tag"
-        style="
-          position: absolute;
-          bottom: 4px;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 30;
-        "
-      >
-        14
-      </div>
-
-    </div>
-
-
-    <!-- ========================================================
-         RANGÉE D
-         ======================================================== -->
-
-    <div
-      class="cell-box cd"
-      onclick="clickCell('D', event)"
     >
 
-      <div class="cell-label">
-        D
-      </div>
+        <div class="tag is-tag arrow-left">
+            12
+        </div>
+
+        <div class="dm-subgroup">
+
+            <div class="tag dm-red-tag">
+                12
+            </div>
+
+        </div>
 
     </div>
 
 
-    <!-- ========================================================
-         LOCAUX TECHNIQUES C2
-         ======================================================== -->
+    <!-- IS 13 + DM 13 (DROITE) -->
 
-    <div class="tech-zone">
+    <div
+        class="device-cluster cluster-right"
+        style="top: 20%; right: 0;"
+    >
 
-      <div class="tech-zone-inner">
+        <div class="tag is-tag arrow-right">
+            13
+        </div>
+
+        <div class="dm-subgroup">
+
+            <div class="tag dm-red-tag">
+                13
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DM 14 ENTRE H ET D -->
+
+    <div
+        class="tag dm-red-tag"
+        style="
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+        "
+    >
+        14
+    </div>
+
+</div>
+
+
+<!-- ========================================================
+     RANGÉE D
+     ======================================================== -->
+
+<div
+    class="cell-box cd"
+    onclick="clickCell('D', event)"
+>
+
+    <div class="cell-label">
+        D
+    </div>
+
+</div>
+
+
+<!-- ========================================================
+     LOCAUX TECHNIQUES C2
+     ======================================================== -->
+
+<div class="tech-zone">
+
+    <div class="tech-zone-inner">
 
 
         <!-- TGBT -->
 
         <div
-          class="tech-box"
-          onclick="clickCell('TGBT', event)"
+            class="tech-box tgbt"
+            onclick="clickCell('TGBT', event)"
         >
-          TGBT
+            TGBT
         </div>
 
 
         <!-- CHAUFFERIE -->
 
         <div
-          class="tech-box"
-          onclick="clickCell('Chaufferie', event)"
+            class="tech-box chauf"
+            onclick="clickCell('Chaufferie', event)"
         >
 
-          Chauf.
+            Chauf.
 
-          <div
-            class="device-cluster cluster-top"
-            style="top: 0; left: 50%;"
-          >
+            <div
+                class="device-cluster cluster-top"
+                style="top: 0; left: 50%;"
+            >
 
-            <div class="tag is-tag arrow-up">
-              5
+                <div class="tag is-tag arrow-up">
+                    5
+                </div>
+
+                <div class="dm-subgroup">
+
+                    <div class="tag dm-red-tag">
+                        7
+                    </div>
+
+                </div>
+
             </div>
-
-            <div class="dm-subgroup">
-
-              <div class="tag dm-red-tag">
-                7
-              </div>
-
-            </div>
-
-          </div>
 
         </div>
 
@@ -801,30 +1000,30 @@ h1 {
         <!-- ATELIER MAINTENANCE -->
 
         <div
-          class="tech-box"
-          onclick="clickCell('Atelier Maintenance', event)"
+            class="tech-box atelier"
+            onclick="clickCell('Atelier Maintenance', event)"
         >
 
-          Atelier Maint.
+            Atelier Maint.
 
-          <div
-            class="device-cluster cluster-top"
-            style="top: 0; left: 50%;"
-          >
+            <div
+                class="device-cluster cluster-top"
+                style="top: 0; left: 50%;"
+            >
 
-            <div class="tag is-tag arrow-up">
-              6
+                <div class="tag is-tag arrow-up">
+                    6
+                </div>
+
+                <div class="dm-subgroup">
+
+                    <div class="tag dm-red-tag">
+                        8
+                    </div>
+
+                </div>
+
             </div>
-
-            <div class="dm-subgroup">
-
-              <div class="tag dm-red-tag">
-                8
-              </div>
-
-            </div>
-
-          </div>
 
         </div>
 
@@ -832,562 +1031,563 @@ h1 {
         <!-- SALLE DE CHARGE C2 -->
 
         <div
-          class="tech-box"
-          onclick="clickCell('Salle de Charge C2', event)"
+            class="tech-box charge"
+            onclick="clickCell('Salle de Charge C2', event)"
         >
 
-          S. Charge C2
+            S. Charge C2
 
-          <div
-            class="device-cluster cluster-top"
-            style="top: 0; left: 50%;"
-          >
+            <div
+                class="device-cluster cluster-top"
+                style="top: 0; left: 50%;"
+            >
 
-            <div class="tag is-tag arrow-up">
-              7
+                <div class="tag is-tag arrow-up">
+                    7
+                </div>
+
+                <div class="dm-subgroup">
+
+                    <div class="tag dm-red-tag">
+                        9
+                    </div>
+
+                </div>
+
             </div>
-
-            <div class="dm-subgroup">
-
-              <div class="tag dm-red-tag">
-                9
-              </div>
-
-            </div>
-
-          </div>
 
         </div>
 
-      </div>
-
     </div>
 
+</div>
 
-    <!-- ========================================================
-         SALLE DE CHARGE C6 AU-DESSUS DE C6
-         ======================================================== -->
 
-    <div class="c6-top-wrapper">
+<!-- ========================================================
+     SALLE DE CHARGE C6 AU-DESSUS DE C6
+     ======================================================== -->
 
-      <div
+<div class="c6-top-wrapper">
+
+    <div
         class="cell-box sc-c6"
         onclick="clickCell('Salle de Charge C6', event)"
-      >
+    >
 
         <span
-          style="
-            font-size:0.55rem;
-            font-weight:600;
-            color:#ccc;
-          "
+            style="
+                font-size:0.55rem;
+                font-weight:600;
+                color:#ccc;
+            "
         >
-          S. Charge C6
+            S. Charge C6
         </span>
 
 
         <div
-          class="device-cluster cluster-top"
-          style="top: 0; left: 50%;"
+            class="device-cluster cluster-top"
+            style="top: 0; left: 50%;"
         >
 
-          <div class="tag is-tag arrow-up">
-            16
-          </div>
-
-          <div class="dm-subgroup">
-
-            <div class="tag dm-red-tag">
-              16
+            <div class="tag is-tag arrow-up">
+                16
             </div>
 
-          </div>
+            <div class="dm-subgroup">
+
+                <div class="tag dm-red-tag">
+                    16
+                </div>
+
+            </div>
 
         </div>
 
-      </div>
+    </div>
 
+</div>
+
+
+<!-- ========================================================
+     CELLULE C1
+     ======================================================== -->
+
+<div
+    class="cell-box c1"
+    onclick="clickCell('C1', event)"
+>
+
+    <div class="cell-label">
+        C1
     </div>
 
 
-    <!-- ========================================================
-         CELLULE C1
-         ======================================================== -->
+    <!-- IS 1 + DM 3 -->
 
     <div
-      class="cell-box c1"
-      onclick="clickCell('C1', event)"
-    >
-
-      <div class="cell-label">
-        C1
-      </div>
-
-
-      <!-- IS 1 + DM 3 -->
-
-      <div
         class="device-cluster cluster-left"
         style="top: 30%; left: 0;"
-      >
+    >
 
         <div class="tag is-tag arrow-left">
-          1
+            1
         </div>
 
         <div class="dm-subgroup">
 
-          <div class="tag dm-red-tag">
-            3
-          </div>
+            <div class="tag dm-red-tag">
+                3
+            </div>
 
         </div>
 
-      </div>
+    </div>
 
 
-      <!-- IS 2 + DM 4 -->
+    <!-- IS 2 + DM 4 -->
 
-      <div
+    <div
         class="device-cluster cluster-left"
         style="top: 70%; left: 0;"
-      >
+    >
 
         <div class="tag is-tag arrow-left">
-          2
+            2
         </div>
 
         <div class="dm-subgroup">
 
-          <div class="tag dm-red-tag">
-            4
-          </div>
+            <div class="tag dm-red-tag">
+                4
+            </div>
 
         </div>
 
-      </div>
+    </div>
 
 
-      <!-- IS 3 + DM 5 -->
+    <!-- IS 3 + DM 5 -->
 
-      <div
+    <div
         class="device-cluster cluster-top"
         style="top: 0; left: 40%;"
-      >
+    >
 
         <div class="tag is-tag arrow-up">
-          3
+            3
         </div>
 
         <div class="dm-subgroup">
 
-          <div class="tag dm-red-tag">
-            5
-          </div>
+            <div class="tag dm-red-tag">
+                5
+            </div>
 
         </div>
 
-      </div>
+    </div>
 
 
-      <!-- IS 28 + DM 34 + DM 33 -->
+    <!-- IS 28 + DM 34 + DM 33 -->
 
-      <div
+    <div
         class="device-cluster cluster-bottom"
         style="bottom: 0; left: 10%;"
-      >
+    >
 
         <div class="tag is-tag arrow-down">
-          28
+            28
         </div>
 
         <div class="dm-subgroup">
 
-          <div class="tag dm-green-tag">
-            34
-          </div>
+            <div class="tag dm-green-tag">
+                34
+            </div>
 
-          <div class="tag dm-red-tag">
-            33
-          </div>
+            <div class="tag dm-red-tag">
+                33
+            </div>
 
         </div>
 
-      </div>
+    </div>
 
 
-      <!-- DM VERT N°2 -->
+    <!-- DM VERT N°2 -->
 
-      <div
+    <div
         class="tag dm-green-tag"
         style="
-          position: absolute;
-          bottom: 5px;
-          left: 4px;
-          z-index: 30;
+            position: absolute;
+            bottom: 5px;
+            left: 4px;
+            z-index: 30;
         "
-      >
+    >
         2
-      </div>
+    </div>
 
+</div>
+
+
+<!-- ========================================================
+     CELLULE C2
+     ======================================================== -->
+
+<div
+    class="cell-box c2"
+    onclick="clickCell('C2', event)"
+>
+
+    <div class="cell-label">
+        C2
     </div>
 
 
-    <!-- ========================================================
-         CELLULE C2
-         ======================================================== -->
+    <!-- IS 4 + DM 6 -->
 
     <div
-      class="cell-box c2"
-      onclick="clickCell('C2', event)"
-    >
-
-      <div class="cell-label">
-        C2
-      </div>
-
-
-      <!-- IS 4 + DM 6 -->
-
-      <div
         class="device-cluster cluster-top"
         style="top: 0; left: 15%;"
-      >
+    >
 
         <div class="tag is-tag arrow-up">
-          4
+            4
         </div>
 
         <div class="dm-subgroup">
 
-          <div class="tag dm-red-tag">
-            6
-          </div>
+            <div class="tag dm-red-tag">
+                6
+            </div>
 
         </div>
-
-      </div>
-
-
-      <!-- IS 27 + DM 32 -->
-
-      <div
-        class="device-cluster cluster-bottom"
-        style="bottom: 0; left: 15%;"
-      >
-
-        <div class="tag is-tag arrow-down">
-          27
-        </div>
-
-        <div class="dm-subgroup">
-
-          <div class="tag dm-green-tag">
-            32
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- IS 26 + DM 30 + DM 31 -->
-
-      <div
-        class="device-cluster cluster-bottom"
-        style="
-          bottom: 0;
-          right: 15%;
-          left: auto;
-        "
-      >
-
-        <div class="tag is-tag arrow-down">
-          26
-        </div>
-
-        <div class="dm-subgroup">
-
-          <div class="tag dm-green-tag">
-            30
-          </div>
-
-          <div class="tag dm-red-tag">
-            31
-          </div>
-
-        </div>
-
-      </div>
 
     </div>
 
 
-    <!-- ========================================================
-         CELLULE C3
-         ======================================================== -->
+    <!-- IS 27 + DM 32 -->
 
     <div
-      class="cell-box c3"
-      onclick="clickCell('C3', event)"
-    >
-
-      <div class="cell-label">
-        C3
-      </div>
-
-
-      <!-- IS 8 + DM 10 -->
-
-      <div
-        class="device-cluster cluster-top"
-        style="top: 0; left: 40%;"
-      >
-
-        <div class="tag is-tag arrow-up">
-          8
-        </div>
-
-        <div class="dm-subgroup">
-
-          <div class="tag dm-red-tag">
-            10
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- IS 25 + DM 28 + DM 29 -->
-
-      <div
         class="device-cluster cluster-bottom"
         style="bottom: 0; left: 15%;"
-      >
-
-        <div class="tag is-tag arrow-down">
-          25
-        </div>
-
-        <div class="dm-subgroup">
-
-          <div class="tag dm-green-tag">
-            28
-          </div>
-
-          <div class="tag dm-red-tag">
-            29
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- ========================================================
-         CELLULE C4
-         ======================================================== -->
-
-    <div
-      class="cell-box c4"
-      onclick="clickCell('C4', event)"
     >
 
-      <div class="cell-label">
-        C4
-      </div>
-
-
-      <!-- IS 9 + DM 11 -->
-
-      <div
-        class="device-cluster cluster-top"
-        style="top: 0; left: 40%;"
-      >
-
-        <div class="tag is-tag arrow-up">
-          9
-        </div>
-
-        <div class="dm-subgroup">
-
-          <div class="tag dm-red-tag">
-            11
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- IS 24 + DM 26 + DM 27 -->
-
-      <div
-        class="device-cluster cluster-bottom"
-        style="
-          bottom: 0;
-          right: 20%;
-          left: auto;
-        "
-      >
-
         <div class="tag is-tag arrow-down">
-          24
-        </div>
-
-        <div class="dm-subgroup">
-
-          <div class="tag dm-green-tag">
-            26
-          </div>
-
-          <div class="tag dm-red-tag">
             27
-          </div>
-
         </div>
 
-      </div>
+        <div class="dm-subgroup">
+
+            <div class="tag dm-green-tag">
+                32
+            </div>
+
+        </div>
 
     </div>
 
 
-    <!-- ========================================================
-         CELLULE C5
-         ======================================================== -->
+    <!-- IS 26 + DM 30 + DM 31 -->
 
     <div
-      class="cell-box c5"
-      onclick="clickCell('C5', event)"
+        class="device-cluster cluster-bottom"
+        style="
+            bottom: 0;
+            right: 15%;
+            left: auto;
+        "
     >
 
-      <div class="cell-label">
+        <div class="tag is-tag arrow-down">
+            26
+        </div>
+
+        <div class="dm-subgroup">
+
+            <div class="tag dm-green-tag">
+                30
+            </div>
+
+            <div class="tag dm-red-tag">
+                31
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================
+     CELLULE C3
+     ======================================================== -->
+
+<div
+    class="cell-box c3"
+    onclick="clickCell('C3', event)"
+>
+
+    <div class="cell-label">
+        C3
+    </div>
+
+
+    <!-- IS 8 + DM 10 -->
+
+    <div
+        class="device-cluster cluster-top"
+        style="top: 0; left: 40%;"
+    >
+
+        <div class="tag is-tag arrow-up">
+            8
+        </div>
+
+        <div class="dm-subgroup">
+
+            <div class="tag dm-red-tag">
+                10
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- IS 25 + DM 28 + DM 29 -->
+
+    <div
+        class="device-cluster cluster-bottom"
+        style="bottom: 0; left: 15%;"
+    >
+
+        <div class="tag is-tag arrow-down">
+            25
+        </div>
+
+        <div class="dm-subgroup">
+
+            <div class="tag dm-green-tag">
+                28
+            </div>
+
+            <div class="tag dm-red-tag">
+                29
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================
+     CELLULE C4
+     ======================================================== -->
+
+<div
+    class="cell-box c4"
+    onclick="clickCell('C4', event)"
+>
+
+    <div class="cell-label">
+        C4
+    </div>
+
+
+    <!-- IS 9 + DM 11 -->
+
+    <div
+        class="device-cluster cluster-top"
+        style="top: 0; left: 40%;"
+    >
+
+        <div class="tag is-tag arrow-up">
+            9
+        </div>
+
+        <div class="dm-subgroup">
+
+            <div class="tag dm-red-tag">
+                11
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- IS 24 + DM 26 + DM 27 -->
+
+    <div
+        class="device-cluster cluster-bottom"
+        style="
+            bottom: 0;
+            right: 20%;
+            left: auto;
+        "
+    >
+
+        <div class="tag is-tag arrow-down">
+            24
+        </div>
+
+        <div class="dm-subgroup">
+
+            <div class="tag dm-green-tag">
+                26
+            </div>
+
+            <div class="tag dm-red-tag">
+                27
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================
+     CELLULE C5
+     ======================================================== -->
+
+<div
+    class="cell-box c5"
+    onclick="clickCell('C5', event)"
+>
+
+    <div class="cell-label">
         C5
-      </div>
+    </div>
 
 
-      <!-- IS 23 + DM 24 + DM 25 -->
+    <!-- IS 23 + DM 24 + DM 25 -->
 
-      <div
+    <div
         class="device-cluster cluster-bottom"
         style="bottom: 0; left: 40%;"
-      >
-
-        <div class="tag is-tag arrow-down">
-          23
-        </div>
-
-        <div class="dm-subgroup">
-
-          <div class="tag dm-green-tag">
-            24
-          </div>
-
-          <div class="tag dm-red-tag">
-            25
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- ========================================================
-         CELLULE C6
-         ======================================================== -->
-
-    <div
-      class="cell-box c6"
-      onclick="clickCell('C6', event)"
     >
 
-      <div class="cell-label">
+        <div class="tag is-tag arrow-down">
+            23
+        </div>
+
+        <div class="dm-subgroup">
+
+            <div class="tag dm-green-tag">
+                24
+            </div>
+
+            <div class="tag dm-red-tag">
+                25
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================================
+     CELLULE C6
+     ======================================================== -->
+
+<div
+    class="cell-box c6"
+    onclick="clickCell('C6', event)"
+>
+
+    <div class="cell-label">
         C6
-      </div>
+    </div>
 
 
-      <!-- IS 15 + DM 15 -->
+    <!-- IS 15 + DM 15 -->
 
-      <div
+    <div
         class="device-cluster cluster-top"
         style="top: 0; left: 15%;"
-      >
+    >
 
         <div class="tag is-tag arrow-up">
-          15
-        </div>
-
-        <div class="dm-subgroup">
-
-          <div class="tag dm-red-tag">
             15
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- IS 17 + DM 17 -->
-
-      <div
-        class="device-cluster cluster-right"
-        style="top: 55%; right: 0;"
-      >
-
-        <div class="tag is-tag arrow-right">
-          17
         </div>
 
         <div class="dm-subgroup">
 
-          <div class="tag dm-red-tag">
-            17
-          </div>
+            <div class="tag dm-red-tag">
+                15
+            </div>
 
         </div>
-
-      </div>
-
-
-      <!-- IS 18 + DM 19 + DM 18 -->
-
-      <div
-        class="device-cluster cluster-bottom"
-        style="
-          bottom: 0;
-          right: 20%;
-          left: auto;
-        "
-      >
-
-        <div class="tag is-tag arrow-down">
-          18
-        </div>
-
-        <div class="dm-subgroup">
-
-          <div class="tag dm-green-tag">
-            19
-          </div>
-
-          <div class="tag dm-red-tag">
-            18
-          </div>
-
-        </div>
-
-      </div>
 
     </div>
 
 
-  </div>
+    <!-- IS 17 + DM 17 -->
+
+    <div
+        class="device-cluster cluster-right"
+        style="top: 55%; right: 0;"
+    >
+
+        <div class="tag is-tag arrow-right">
+            17
+        </div>
+
+        <div class="dm-subgroup">
+
+            <div class="tag dm-red-tag">
+                17
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- IS 18 + DM 19 + DM 18 -->
+
+    <div
+        class="device-cluster cluster-bottom"
+        style="
+            bottom: 0;
+            right: 20%;
+            left: auto;
+        "
+    >
+
+        <div class="tag is-tag arrow-down">
+            18
+        </div>
+
+        <div class="dm-subgroup">
+
+            <div class="tag dm-green-tag">
+                19
+            </div>
+
+            <div class="tag dm-red-tag">
+                18
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>
+
 </div>
 
 
@@ -1397,18 +1597,18 @@ h1 {
 
 <div class="off-map-container">
 
-  <div class="off-map-title">
-    DM hors plan :
-  </div>
+    <div class="off-map-title">
+        DM hors plan :
+    </div>
 
-  <div class="off-map-tags">
+    <div class="off-map-tags">
 
-    <!--
-       Ajoute ici les DM qui ne sont pas
-       positionnés directement sur le plan.
-    -->
+        <!--
+            Ajoute ici les DM qui ne sont pas
+            positionnés directement sur le plan.
+        -->
 
-  </div>
+    </div>
 
 </div>
 
@@ -1419,6 +1619,7 @@ h1 {
 
 <script>
 
+
 /* ============================================================
    AFFICHAGE / MASQUAGE DES IS
    ============================================================ */
@@ -1427,22 +1628,26 @@ let isVisible = true;
 
 function toggleIS() {
 
-  const plan = document.getElementById("plan");
-  const button = document.getElementById("btn-is");
+    const plan = document.getElementById("plan");
 
-  isVisible = !isVisible;
+    const button = document.getElementById("btn-is");
 
-  if (isVisible) {
+    isVisible = !isVisible;
 
-    plan.classList.remove("hide-is");
-    button.classList.add("active-is");
+    if (isVisible) {
 
-  } else {
+        plan.classList.remove("hide-is");
 
-    plan.classList.add("hide-is");
-    button.classList.remove("active-is");
+        button.classList.add("active-is");
 
-  }
+    } else {
+
+        plan.classList.add("hide-is");
+
+        button.classList.remove("active-is");
+
+    }
+
 }
 
 
@@ -1454,22 +1659,26 @@ let dmVisible = true;
 
 function toggleDM() {
 
-  const plan = document.getElementById("plan");
-  const button = document.getElementById("btn-dm");
+    const plan = document.getElementById("plan");
 
-  dmVisible = !dmVisible;
+    const button = document.getElementById("btn-dm");
 
-  if (dmVisible) {
+    dmVisible = !dmVisible;
 
-    plan.classList.remove("hide-dm");
-    button.classList.add("active-dm");
+    if (dmVisible) {
 
-  } else {
+        plan.classList.remove("hide-dm");
 
-    plan.classList.add("hide-dm");
-    button.classList.remove("active-dm");
+        button.classList.add("active-dm");
 
-  }
+    } else {
+
+        plan.classList.add("hide-dm");
+
+        button.classList.remove("active-dm");
+
+    }
+
 }
 
 
@@ -1479,21 +1688,26 @@ function toggleDM() {
 
 function toggleFullscreen() {
 
-  const plan = document.getElementById("plan");
+    const plan = document.getElementById("plan");
 
-  if (!document.fullscreenElement) {
+    if (!document.fullscreenElement) {
 
-    if (plan.requestFullscreen) {
-      plan.requestFullscreen();
+        if (plan.requestFullscreen) {
+
+            plan.requestFullscreen();
+
+        }
+
+    } else {
+
+        if (document.exitFullscreen) {
+
+            document.exitFullscreen();
+
+        }
+
     }
 
-  } else {
-
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    }
-
-  }
 }
 
 
@@ -1503,11 +1717,11 @@ function toggleFullscreen() {
 
 function clickCell(name, event) {
 
-  if (event) {
-    event.stopPropagation();
-  }
+    if (event) {
+        event.stopPropagation();
+    }
 
-  console.log("Cellule sélectionnée :", name);
+    console.log("Cellule sélectionnée :", name);
 
 }
 
@@ -1518,13 +1732,16 @@ function clickCell(name, event) {
 
 document.addEventListener("fullscreenchange", function() {
 
-  const plan = document.getElementById("plan");
+    const plan = document.getElementById("plan");
 
-  if (!document.fullscreenElement) {
-    plan.classList.remove("fullscreen-active");
-  }
+    if (!document.fullscreenElement) {
+
+        plan.classList.remove("fullscreen-active");
+
+    }
 
 });
+
 
 </script>
 
