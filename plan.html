@@ -237,17 +237,6 @@
     .c5 { grid-column: 5; grid-row: 3; }
     .c6 { grid-column: 6; grid-row: 3; }
 
-    /* Conteneur groupé IS + DM pour un alignement parfait */
-    .device-group {
-      position: absolute;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      z-index: 25;
-      pointer-events: none;
-    }
-
     /* Pastilles de base */
     .tag {
       font-size: 0.6rem;
@@ -297,6 +286,39 @@
     .is-tag.arrow-down::after { content: " ⬇"; font-size: 0.55rem; }
     .is-tag.arrow-left::before { content: "⬅ "; font-size: 0.55rem; }
     .is-tag.arrow-right::after { content: " ➡"; font-size: 0.55rem; }
+
+    /* ============================================================
+       IS exactement centrée sur la bordure, et DM accolés vers l'intérieur
+       ============================================================ */
+    .is-slot {
+      position: absolute;
+      z-index: 25;
+      pointer-events: none;
+    }
+    
+    .dm-stack {
+      position: absolute;
+      z-index: 25;
+      display: flex;
+      gap: 0;
+      pointer-events: none;
+    }
+
+    /* Bordure HAUT */
+    .is-slot.edge-top { top: 0; transform: translateY(-50%); }
+    .dm-stack.edge-top { top: 0; transform: translateY(50%); flex-direction: column; align-items: center; }
+
+    /* Bordure BAS */
+    .is-slot.edge-bottom { bottom: 0; transform: translateY(50%); }
+    .dm-stack.edge-bottom { bottom: 0; transform: translateY(-50%); flex-direction: column-reverse; align-items: center; }
+
+    /* Bordure GAUCHE */
+    .is-slot.edge-left { left: 0; transform: translateX(-50%); }
+    .dm-stack.edge-left { left: 0; transform: translateX(50%); flex-direction: row; align-items: center; }
+
+    /* Bordure DROITE */
+    .is-slot.edge-right { right: 0; transform: translateX(50%); }
+    .dm-stack.edge-right { right: 0; transform: translateX(-50%); flex-direction: row-reverse; align-items: center; }
 
     /* Masquage via JS */
     .hide-is .is-tag { display: none !important; }
@@ -369,14 +391,14 @@
       <div class="cell-box ch" onclick="clickCell('H', event)">
         <div class="cell-label">H</div>
         <!-- Paire IS 12 / DM 12 -->
-        <div class="device-group" style="bottom: 20%; left: -32px; flex-direction: row-reverse;">
-          <div class="tag is-tag arrow-left">12</div>
+        <div class="tag is-tag arrow-left is-slot edge-left" style="top: 50%; transform: translateY(-50%) translateX(-50%);">12</div>
+        <div class="dm-stack edge-left" style="top: 50%; transform: translateY(-50%) translateX(50%);">
           <div class="tag dm-red-tag">12</div>
         </div>
-        
+
         <!-- Paire IS 13 / DM 13 -->
-        <div class="device-group" style="bottom: 20%; right: -32px; flex-direction: row;">
-          <div class="tag is-tag arrow-right">13</div>
+        <div class="tag is-tag arrow-right is-slot edge-right" style="top: 50%; transform: translateY(-50%) translateX(50%);">13</div>
+        <div class="dm-stack edge-right" style="top: 50%; transform: translateY(-50%) translateX(-50%);">
           <div class="tag dm-red-tag">13</div>
         </div>
 
@@ -395,18 +417,24 @@
           <div class="tech-box" onclick="clickCell('TGBT', event)">TGBT</div>
           <div class="tech-box" onclick="clickCell('Chaufferie', event)">
             Chauf.
-            <div class="tag is-tag arrow-up" style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 20;">5</div>
-            <div class="tag dm-red-tag" style="position: absolute; top: -28px; left: 50%; transform: translateX(-50%); z-index: 25;">7</div>
+            <div class="tag is-tag arrow-up is-slot edge-top" style="left: 50%; transform: translateX(-50%) translateY(-50%);">5</div>
+            <div class="dm-stack edge-top" style="left: 50%; transform: translateX(-50%) translateY(50%);">
+              <div class="tag dm-red-tag">7</div>
+            </div>
           </div>
           <div class="tech-box" onclick="clickCell('Atelier Maintenance', event)">
             Atelier Maint.
-            <div class="tag is-tag arrow-up" style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 20;">6</div>
-            <div class="tag dm-red-tag" style="position: absolute; top: -28px; left: 50%; transform: translateX(-50%); z-index: 25;">8</div>
+            <div class="tag is-tag arrow-up is-slot edge-top" style="left: 50%; transform: translateX(-50%) translateY(-50%);">6</div>
+            <div class="dm-stack edge-top" style="left: 50%; transform: translateX(-50%) translateY(50%);">
+              <div class="tag dm-red-tag">8</div>
+            </div>
           </div>
           <div class="tech-box" onclick="clickCell('Salle de Charge C2', event)">
             S. Charge C2
-            <div class="tag is-tag arrow-up" style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 20;">7</div>
-            <div class="tag dm-red-tag" style="position: absolute; top: -28px; left: 50%; transform: translateX(-50%); z-index: 25;">9</div>
+            <div class="tag is-tag arrow-up is-slot edge-top" style="left: 50%; transform: translateX(-50%) translateY(-50%);">7</div>
+            <div class="dm-stack edge-top" style="left: 50%; transform: translateX(-50%) translateY(50%);">
+              <div class="tag dm-red-tag">9</div>
+            </div>
           </div>
         </div>
       </div>
@@ -415,10 +443,10 @@
       <div class="c6-top-wrapper">
         <div class="cell-box sc-c6" onclick="clickCell('Salle de Charge C6', event)">
           <span style="font-size:0.55rem; font-weight:600; color:#ccc;">S. Charge C6</span>
-          <!-- Paire IS 16 / DM 16 (IS 16 directement sur la bordure supérieure, DM 16 juste en dessous) -->
-          <div style="position: absolute; top: -20px; right: 10%; display: flex; flex-direction: column; align-items: center; z-index: 25;">
-            <div class="tag is-tag arrow-up">16</div>
-            <div class="tag dm-red-tag" style="margin-top: 2px;">16</div>
+          <!-- Paire IS 16 / DM 16 : IS16 sur la biordure (supérieure), DM 16 en dessous -->
+          <div class="tag is-tag arrow-up is-slot edge-top" style="left: 50%; transform: translateX(-50%) translateY(-50%);">16</div>
+          <div class="dm-stack edge-top" style="left: 50%; transform: translateX(-50%) translateY(50%);">
+            <div class="tag dm-red-tag">16</div>
           </div>
         </div>
       </div>
@@ -427,27 +455,30 @@
       <div class="cell-box c1" onclick="clickCell('C1', event)">
         <div class="cell-label">C1</div>
         <!-- Paire IS 1 / DM 3 -->
-        <div class="device-group" style="bottom: 30%; left: -32px; flex-direction: row-reverse;">
-          <div class="tag is-tag arrow-left">1</div>
+        <div class="tag is-tag arrow-left is-slot edge-left" style="top: 30%; transform: translateY(-50%) translateX(-50%);">1</div>
+        <div class="dm-stack edge-left" style="top: 30%; transform: translateY(-50%) translateX(50%);">
           <div class="tag dm-red-tag">3</div>
         </div>
 
         <!-- Paire IS 2 / DM 4 -->
-        <div class="device-group" style="top: 30%; left: -32px; flex-direction: row-reverse;">
-          <div class="tag is-tag arrow-left">2</div>
+        <div class="tag is-tag arrow-left is-slot edge-left" style="top: 70%; transform: translateY(-50%) translateX(-50%);">2</div>
+        <div class="dm-stack edge-left" style="top: 70%; transform: translateY(-50%) translateX(50%);">
           <div class="tag dm-red-tag">4</div>
         </div>
 
-        <!-- Paire IS 3 / DM 5 (IS en premier, puis DM en dessous) -->
-        <div class="device-group" style="top: -10px; left: 40%; flex-direction: column;">
-          <div class="tag is-tag arrow-up">3</div>
+        <!-- Paire IS 3 / DM 5 -->
+        <div class="tag is-tag arrow-up is-slot edge-top" style="left: 40%; transform: translateX(-50%) translateY(-50%);">3</div>
+        <div class="dm-stack edge-top" style="left: 40%; transform: translateX(-50%) translateY(50%);">
           <div class="tag dm-red-tag">5</div>
         </div>
 
-        <!-- IS 28 / DM 34 & 33 -->
-        <div class="tag is-tag arrow-down" style="position: absolute; bottom: -10px; left: 10%; z-index: 20;">28</div>
-        <div class="tag dm-green-tag" style="position: absolute; bottom: -28px; left: 10%; z-index: 25;">34</div>
-        <div class="tag dm-red-tag" style="position: absolute; bottom: -46px; left: 10%; z-index: 25;">33</div>
+        <!-- Paire IS 28 / DM 34 & 33 -->
+        <div class="tag is-tag arrow-down is-slot edge-bottom" style="left: 10%; transform: translateX(-50%) translateY(50%);">28</div>
+        <div class="dm-stack edge-bottom" style="left: 10%; transform: translateX(-50%) translateY(-50%);">
+          <div class="tag dm-green-tag">34</div>
+          <div class="tag dm-red-tag">33</div>
+        </div>
+
         <!-- DM vert n°2 -->
         <div class="tag dm-green-tag" style="position: absolute; bottom: 5px; left: -10px; z-index: 25;">2</div>
       </div>
@@ -455,74 +486,92 @@
       <!-- CELLULE 2 -->
       <div class="cell-box c2" onclick="clickCell('C2', event)">
         <div class="cell-label">C2</div>
-        <!-- Paire IS 4 / DM 6 (IS en premier, puis DM en dessous) -->
-        <div class="device-group" style="top: -10px; left: 2%; flex-direction: column;">
-          <div class="tag is-tag arrow-up">4</div>
+        <!-- Paire IS 4 / DM 6 -->
+        <div class="tag is-tag arrow-up is-slot edge-top" style="left: 15%; transform: translateX(-50%) translateY(-50%);">4</div>
+        <div class="dm-stack edge-top" style="left: 15%; transform: translateX(-50%) translateY(50%);">
           <div class="tag dm-red-tag">6</div>
         </div>
 
-        <div class="tag is-tag arrow-down" style="position: absolute; bottom: -10px; left: 10%; z-index: 20;">27</div>
-        <div class="tag dm-green-tag" style="position: absolute; bottom: -28px; left: 10%; z-index: 25;">32</div>
+        <!-- Paire IS 27 / DM 32 -->
+        <div class="tag is-tag arrow-down is-slot edge-bottom" style="left: 15%; transform: translateX(-50%) translateY(50%);">27</div>
+        <div class="dm-stack edge-bottom" style="left: 15%; transform: translateX(-50%) translateY(-50%);">
+          <div class="tag dm-green-tag">32</div>
+        </div>
 
-        <div class="tag is-tag arrow-down" style="position: absolute; bottom: -10px; right: 10%; z-index: 20;">26</div>
-        <div class="tag dm-green-tag" style="position: absolute; bottom: -28px; right: 10%; z-index: 25;">30</div>
-        <div class="tag dm-red-tag" style="position: absolute; bottom: -46px; right: 10%; z-index: 25;">31</div>
+        <!-- Paire IS 26 / DM 30 & 31 -->
+        <div class="tag is-tag arrow-down is-slot edge-bottom" style="right: 15%; transform: translateX(50%) translateY(50%);">26</div>
+        <div class="dm-stack edge-bottom" style="right: 15%; transform: translateX(50%) translateY(-50%);">
+          <div class="tag dm-green-tag">30</div>
+          <div class="tag dm-red-tag">31</div>
+        </div>
       </div>
 
       <!-- CELLULE 3 -->
       <div class="cell-box c3" onclick="clickCell('C3', event)">
         <div class="cell-label">C3</div>
-        <!-- Paire IS 8 / DM 10 (IS en premier, puis DM en dessous) -->
-        <div class="device-group" style="top: -10px; left: 40%; flex-direction: column;">
-          <div class="tag is-tag arrow-up">8</div>
+        <!-- Paire IS 8 / DM 10 -->
+        <div class="tag is-tag arrow-up is-slot edge-top" style="left: 40%; transform: translateX(-50%) translateY(-50%);">8</div>
+        <div class="dm-stack edge-top" style="left: 40%; transform: translateX(-50%) translateY(50%);">
           <div class="tag dm-red-tag">10</div>
         </div>
 
-        <div class="tag is-tag arrow-down" style="position: absolute; bottom: -10px; left: 10%; z-index: 20;">25</div>
-        <div class="tag dm-green-tag" style="position: absolute; bottom: -28px; left: 10%; z-index: 25;">28</div>
-        <div class="tag dm-red-tag" style="position: absolute; bottom: -46px; left: 10%; z-index: 25;">29</div>
+        <!-- Paire IS 25 / DM 28 & 29 -->
+        <div class="tag is-tag arrow-down is-slot edge-bottom" style="left: 15%; transform: translateX(-50%) translateY(50%);">25</div>
+        <div class="dm-stack edge-bottom" style="left: 15%; transform: translateX(-50%) translateY(-50%);">
+          <div class="tag dm-green-tag">28</div>
+          <div class="tag dm-red-tag">29</div>
+        </div>
       </div>
 
       <!-- CELLULE 4 -->
       <div class="cell-box c4" onclick="clickCell('C4', event)">
         <div class="cell-label">C4</div>
-        <!-- Paire IS 9 / DM 11 (IS en premier, puis DM en dessous) -->
-        <div class="device-group" style="top: -10px; left: 40%; flex-direction: column;">
-          <div class="tag is-tag arrow-up">9</div>
+        <!-- Paire IS 9 / DM 11 -->
+        <div class="tag is-tag arrow-up is-slot edge-top" style="left: 40%; transform: translateX(-50%) translateY(-50%);">9</div>
+        <div class="dm-stack edge-top" style="left: 40%; transform: translateX(-50%) translateY(50%);">
           <div class="tag dm-red-tag">11</div>
         </div>
 
-        <div class="tag is-tag arrow-down" style="position: absolute; bottom: -10px; right: 20%; z-index: 20;">24</div>
-        <div class="tag dm-green-tag" style="position: absolute; bottom: -28px; right: 20%; z-index: 25;">26</div>
-        <div class="tag dm-red-tag" style="position: absolute; bottom: -46px; right: 20%; z-index: 25;">27</div>
+        <!-- Paire IS 24 / DM 26 & 27 -->
+        <div class="tag is-tag arrow-down is-slot edge-bottom" style="right: 20%; transform: translateX(50%) translateY(50%);">24</div>
+        <div class="dm-stack edge-bottom" style="right: 20%; transform: translateX(50%) translateY(-50%);">
+          <div class="tag dm-green-tag">26</div>
+          <div class="tag dm-red-tag">27</div>
+        </div>
       </div>
 
       <!-- CELLULE 5 -->
       <div class="cell-box c5" onclick="clickCell('C5', event)">
         <div class="cell-label">C5</div>
-        <div class="tag is-tag arrow-down" style="position: absolute; bottom: -10px; left: 40%; z-index: 20;">23</div>
-        <div class="tag dm-green-tag" style="position: absolute; bottom: -28px; left: 40%; z-index: 25;">24</div>
-        <div class="tag dm-red-tag" style="position: absolute; bottom: -46px; left: 40%; z-index: 25;">25</div>
+        <!-- Paire IS 23 / DM 24 & 25 -->
+        <div class="tag is-tag arrow-down is-slot edge-bottom" style="left: 40%; transform: translateX(-50%) translateY(50%);">23</div>
+        <div class="dm-stack edge-bottom" style="left: 40%; transform: translateX(-50%) translateY(-50%);">
+          <div class="tag dm-green-tag">24</div>
+          <div class="tag dm-red-tag">25</div>
+        </div>
       </div>
 
       <!-- CELLULE 6 -->
       <div class="cell-box c6" onclick="clickCell('C6', event)">
         <div class="cell-label">C6</div>
-        <!-- Paire IS 15 / DM 15 (IS en premier, puis DM en dessous) -->
-        <div class="device-group" style="top: -10px; left: 10%; flex-direction: column;">
-          <div class="tag is-tag arrow-up">15</div>
+        <!-- Paire IS 15 / DM 15 -->
+        <div class="tag is-tag arrow-up is-slot edge-top" style="left: 15%; transform: translateX(-50%) translateY(-50%);">15</div>
+        <div class="dm-stack edge-top" style="left: 15%; transform: translateX(-50%) translateY(50%);">
           <div class="tag dm-red-tag">15</div>
         </div>
         
         <!-- Paire IS 17 / DM 17 -->
-        <div class="device-group" style="top: 55%; right: -32px; flex-direction: row; transform: translateY(-50%);">
-          <div class="tag is-tag arrow-right">17</div>
+        <div class="tag is-tag arrow-right is-slot edge-right" style="top: 55%; transform: translateY(-50%) translateX(50%);">17</div>
+        <div class="dm-stack edge-right" style="top: 55%; transform: translateY(-50%) translateX(-50%);">
           <div class="tag dm-red-tag">17</div>
         </div>
 
-        <div class="tag is-tag arrow-down" style="position: absolute; bottom: -10px; right: 20%; z-index: 20;">18</div>
-        <div class="tag dm-green-tag" style="position: absolute; bottom: -28px; right: 20%; z-index: 25;">19</div>
-        <div class="tag dm-red-tag" style="position: absolute; bottom: -46px; right: 20%; z-index: 25;">18</div>
+        <!-- Paire IS 18 / DM 19 & 18 -->
+        <div class="tag is-tag arrow-down is-slot edge-bottom" style="right: 20%; transform: translateX(50%) translateY(50%);">18</div>
+        <div class="dm-stack edge-bottom" style="right: 20%; transform: translateX(50%) translateY(-50%);">
+          <div class="tag dm-green-tag">19</div>
+          <div class="tag dm-red-tag">18</div>
+        </div>
       </div>
 
     </div>
