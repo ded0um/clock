@@ -354,14 +354,11 @@
       <!-- RANGÉE H -->
       <div class="cell-box ch" onclick="clickCell('H', event)">
         <div class="cell-label">H</div>
-        <!-- IS 12 et 13 centrées à 20% du bas -->
         <div class="tag is-tag arrow-left" style="bottom: 20%; left: -10px;">12</div>
         <div class="tag is-tag arrow-right" style="bottom: 20%; right: -10px;">13</div>
-        <!-- DM Rouges -->
         <div class="tag dm-red-tag" style="top: 32px; left: -10px;">12</div>
         <div class="tag dm-red-tag" style="top: 32px; right: -10px;">13</div>
         <div class="tag dm-red-tag" style="top: -10px; left: 50%; transform: translateX(-50%);">14</div>
-        <!-- DM Vert -->
         <div class="tag dm-green-tag" style="top: 54px; left: -10px;">12</div>
       </div>
 
@@ -378,28 +375,24 @@
         </div>
         <div class="tech-box" onclick="clickCell('Chaufferie', event)">
           Chauf.
-          <!-- IS 5 en Chaufferie -->
           <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">5</div>
           <div class="tag dm-red-tag" style="top: -26px; left: 50%; transform: translateX(-50%);">6</div>
         </div>
         <div class="tech-box" onclick="clickCell('Atelier Maintenance', event)">
           Atelier Maint.
-          <!-- IS 6 en Atelier Maintenance -->
           <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">6</div>
           <div class="tag dm-red-tag" style="top: -26px; left: 50%; transform: translateX(-50%);">7</div>
         </div>
         <div class="tech-box" onclick="clickCell('Salle de Charge C2', event)">
           S. Charge C2
-          <!-- IS 7 en Salle de Charge C2 -->
           <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">7</div>
         </div>
       </div>
 
-      <!-- CONTENEUR AU-DESSUS DE C6 (SALLE DE CHARGE C6) -->
+      <!-- CONTENEUR AU-DESSUS DE C6 -->
       <div class="c6-top-wrapper">
         <div class="cell-box sc-c6" onclick="clickCell('Salle de Charge C6', event)">
           <span style="font-size:0.55rem; font-weight:600; color:#ccc;">S. Charge C6</span>
-          <!-- IS 16 à 10% du côté droit -->
           <div class="tag is-tag arrow-up" style="top: -10px; right: 10%;">16</div>
         </div>
       </div>
@@ -407,18 +400,15 @@
       <!-- CELLULE 1 -->
       <div class="cell-box c1" onclick="clickCell('C1', event)">
         <div class="cell-label">C1</div>
-        <!-- IS -->
         <div class="tag is-tag arrow-left" style="bottom: 30%; left: -10px;">1</div>
         <div class="tag is-tag arrow-left" style="top: 30%; left: -10px;">2</div>
         <div class="tag is-tag arrow-up" style="top: -10px; left: 40%;">3</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">28</div>
-        <!-- DM Rouges -->
         <div class="tag dm-red-tag" style="bottom: 12%; left: -10px;">1</div>
         <div class="tag dm-red-tag" style="top: 12%; left: -10px;">2</div>
         <div class="tag dm-red-tag" style="top: -10px; left: 65%;">3</div>
         <div class="tag dm-red-tag" style="bottom: -10px; left: 32%;">33</div>
         <div class="tag dm-red-tag" style="bottom: -10px; left: 58%;">34</div>
-        <!-- DM Verts -->
         <div class="tag dm-green-tag" style="bottom: 48%; left: -10px;">1</div>
         <div class="tag dm-green-tag" style="top: 48%; left: -10px;">2</div>
       </div>
@@ -426,12 +416,10 @@
       <!-- CELLULE 2 -->
       <div class="cell-box c2" onclick="clickCell('C2', event)">
         <div class="cell-label">C2</div>
-        <!-- IS 4 : Sortie vers l'extérieur (haut) -->
         <div class="tag is-tag arrow-up" style="top: -10px; left: 10%;">4</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">27</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 40%;">31</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; right: 10%;">26</div>
-        <!-- DM Rouges -->
         <div class="tag dm-red-tag" style="top: -10px; left: 35%;">4</div>
         <div class="tag dm-red-tag" style="bottom: -10px; left: 25%;">32</div>
         <div class="tag dm-red-tag" style="bottom: -10px; right: 28%;">30</div>
@@ -454,6 +442,8 @@
         <div class="cell-label">C4</div>
         <div class="tag is-tag arrow-up" style="top: -10px; left: 40%;">9</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; right: 10%;">24</div>
+        <!-- IS 10 repositionné en bas vers la droite selon l'image -->
+        <div class="tag is-tag arrow-right" style="bottom: 20%; right: -10px;">10</div>
         <div class="tag dm-red-tag" style="top: -10px; left: 65%;">9</div>
         <div class="tag dm-red-tag" style="bottom: -10px; right: 32%;">26</div>
         <div class="tag dm-red-tag" style="bottom: -10px; right: 55%;">27</div>
@@ -471,13 +461,13 @@
       <div class="cell-box c6" onclick="clickCell('C6', event)">
         <div class="cell-label">C6</div>
         <div class="tag is-tag arrow-up" style="top: -10px; left: 30%;">15</div>
-        <div class="tag is-tag arrow-right" style="top: 35%; right: -10px;">17</div>
-        <!-- IS 19 et 20 supprimées -->
+        <!-- IS 17 et IS 29 alignés selon l'image -->
+        <div class="tag is-tag arrow-right" style="top: 35%; right: -10px;">29</div>
+        <div class="tag is-tag arrow-right" style="top: 55%; right: -10px;">17</div>
         <div class="tag dm-red-tag" style="top: -10px; left: 55%;">15</div>
         <div class="tag dm-red-tag" style="top: 20%; right: -10px;">17</div>
         <div class="tag dm-red-tag" style="bottom: -10px; right: 10%;">18</div>
-        <!-- DM Vert -->
-        <div class="tag dm-green-tag" style="top: 55%; right: -10px;">17</div>
+        <div class="tag dm-green-tag" style="top: 70%; right: -10px;">17</div>
       </div>
 
     </div>
