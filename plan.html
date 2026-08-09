@@ -3,155 +3,146 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Contrôles — IS & DM</title>
-
+<title>BAES — IS & DM</title>
 <style>
-
 /* ============================================================
     VARIABLES
    ============================================================ */
-
 :root {
-    --bg: #0b0b0b;
-    --card-bg: #111111;
-    --border: #303030;
-
-    --cell-bg: #151515;
-    --cell-border: #3a3a3a;
-    --cell-hover: #1d1d1d;
-
+    --bg: #000000;
+    --card-bg: #0b0b0b;
+    --border: #222222;
+    --cell-bg: #1a1a1a;
+    --cell-border: #444444;
+    --cell-hover: #262626;
     --accent: #ff8c00;
-
     /* IS en Jaune */
     --is-bg: #141414;
     --is-border: #eab308;
     --is-color: #facc15;
-
     /* DM Rouges (Incendie) */
     --dm-red-bg: #141414;
     --dm-red-border: #ef4444;
     --dm-red-color: #ef4444;
-
     /* DM Verts (Déverrouillage) */
     --dm-green-bg: #141414;
     --dm-green-border: #22c55e;
     --dm-green-color: #22c55e;
-
     --text-muted: #9aa0a6;
 }
-
-
 /* ============================================================
     RESET
    ============================================================ */
-
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
-
-
 /* ============================================================
     BODY
    ============================================================ */
-
 body {
     font-family: Inter, system-ui, -apple-system, sans-serif;
     background-color: var(--bg);
     color: #ffffff;
-    padding: 10px 5px;
-
+    padding: 15px 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-
     min-height: 100vh;
 }
-
-
 /* ============================================================
-    TITRE
+    EN-TÊTE PRINCIPAL
    ============================================================ */
-
+.top-header {
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
 h1 {
     font-size: 1.1rem;
-    margin-bottom: 12px;
-    text-align: center;
     color: #ffffff;
     font-weight: 600;
 }
-
-
+.header-actions {
+    display: flex;
+    gap: 8px;
+}
+.btn-action {
+    background: #000000;
+    border: 1px solid #333333;
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-action:hover {
+    border-color: #666;
+    opacity: 0.9;
+}
+.btn-action.btn-report {
+    background: #000000;
+    border-color: #333333;
+    color: #ffffff;
+}
+.btn-action.btn-reset {
+    color: #9aa0a6;
+}
 /* ============================================================
-    CONTROLES
+    BARRE DE CONTRÔLES (IS / DM)
    ============================================================ */
-
 .controls {
     display: flex;
     gap: 8px;
-
     margin-bottom: 15px;
-
     background: var(--card-bg);
-
     padding: 8px 12px;
-
     border-radius: 8px;
     border: 1px solid var(--border);
-
     width: 100%;
     max-width: 1100px;
-
     justify-content: center;
     flex-wrap: wrap;
 }
-
 .btn-toggle {
     background: #1a1a1a;
     border: 1px solid #444;
-
     color: #ccc;
-
     padding: 6px 12px;
-
     border-radius: 6px;
-
     font-size: 0.8rem;
     font-weight: 600;
-
     cursor: pointer;
-
     transition: all 0.2s ease;
-
     display: flex;
     align-items: center;
     gap: 6px;
 }
-
 .btn-toggle:hover {
     border-color: #666;
     color: #fff;
 }
-
 .btn-toggle.active-is {
     background: rgba(234, 179, 8, 0.15);
     border-color: var(--is-border);
     color: var(--is-color);
 }
-
 .btn-toggle.active-dm {
     background: rgba(239, 68, 68, 0.15);
     border-color: var(--dm-red-border);
     color: #ffffff;
 }
-
-
 /* ============================================================
-    PANNEAU DE CONTRÔLE (MODALE EN SURIMPRESSION PAR-DESSUS)
+    PANNEAU DE CONTRÔLE / MODALES
    ============================================================ */
-
 .inspection-overlay {
     position: fixed;
     top: 0;
@@ -166,21 +157,20 @@ h1 {
     justify-content: center;
     padding: 15px;
 }
-
 .inspection-overlay.visible {
     display: flex;
 }
-
 .inspection-panel {
     width: 100%;
-    max-width: 450px;
+    max-width: 480px;
     background: #181818;
-    border: 1px solid var(--accent);
+    border: 1px solid #ffffff;
     border-radius: 10px;
     padding: 20px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 140, 0, 0.2);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 255, 255, 0.1);
+    max-height: 90vh;
+    overflow-y: auto;
 }
-
 .inspection-header {
     display: flex;
     justify-content: space-between;
@@ -189,13 +179,11 @@ h1 {
     border-bottom: 1px solid #333;
     padding-bottom: 10px;
 }
-
 .inspection-title {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--accent);
+    color: #ffffff;
 }
-
 .inspection-close {
     background: transparent;
     border: none;
@@ -203,40 +191,65 @@ h1 {
     font-size: 1.2rem;
     cursor: pointer;
 }
-
 .inspection-close:hover {
     color: #fff;
 }
-
 .inspection-body {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
 }
-
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.form-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #ccc;
+}
+.radio-group {
+    display: flex;
+    gap: 15px;
+    background: #111;
+    padding: 8px 10px;
+    border: 1px solid #444;
+    border-radius: 6px;
+}
+.radio-label {
+    font-size: 0.85rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+.radio-label input {
+    accent-color: var(--accent);
+    cursor: pointer;
+}
 .inspection-notes {
     width: 100%;
-    padding: 10px;
+    padding: 8px 10px;
     background: #111;
     border: 1px solid #444;
     border-radius: 6px;
     color: #fff;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     resize: vertical;
-    min-height: 80px;
+    min-height: 60px;
 }
-
 .inspection-notes:focus {
     outline: none;
-    border-color: var(--accent);
+    border-color: #ffffff;
 }
-
 .inspection-footer {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+    margin-top: 5px;
 }
-
 .btn-cancel {
     background: #2a2a2a;
     color: #ccc;
@@ -247,15 +260,13 @@ h1 {
     font-size: 0.85rem;
     cursor: pointer;
 }
-
 .btn-cancel:hover {
     background: #333;
     color: #fff;
 }
-
 .btn-save {
-    background: var(--accent);
-    color: #000;
+    background: #ffffff;
+    color: #000000;
     border: none;
     padding: 8px 16px;
     border-radius: 6px;
@@ -263,1650 +274,823 @@ h1 {
     font-size: 0.85rem;
     cursor: pointer;
 }
-
 .btn-save:hover {
     opacity: 0.9;
 }
 
+/* Style de la boîte de rapport (Compte rendu) */
+.report-textarea {
+    width: 100%;
+    background: #111111;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: #ffffff;
+    font-family: monospace;
+    font-size: 0.8rem;
+    padding: 10px;
+    resize: none;
+    height: 180px;
+}
+.report-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+.btn-copy {
+    background: #2a2a2a;
+    color: #ffffff;
+    border: 1px solid #444;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-copy:hover {
+    background: #333;
+}
+.btn-share {
+    background: var(--accent);
+    color: #000000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-share:hover {
+    opacity: 0.9;
+}
 
 /* ============================================================
-    PLAN
+    PLAN ET GRILLE
    ============================================================ */
-
 .plan-wrapper {
     width: 100%;
     max-width: 1100px;
-
     background: var(--card-bg);
-
     padding: 55px 35px 45px 35px;
-
     border-radius: 12px;
-
     border: 1px solid var(--border);
-
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-
     overflow-x: auto;
-
     -webkit-overflow-scrolling: touch;
-
-    cursor: pointer;
 }
-
-.plan-wrapper:fullscreen {
-    width: 100vw;
-    height: 100vh;
-
-    max-width: none;
-
-    border-radius: 0;
-
-    padding: 60px 35px 45px 35px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    background-color: var(--bg);
-
-    overflow: auto;
-}
-
-
-/* ============================================================
-    GRILLE DU BATIMENT
-   ============================================================ */
-
 .building-container {
     display: grid;
-
     grid-template-columns: repeat(6, 1fr);
-
-    grid-template-rows:
-        80px
-        80px
-        240px;
-
+    grid-template-rows: 80px 80px 240px;
     gap: 6px;
-
     min-width: 850px;
-
     width: 100%;
-
     margin: auto;
 }
-
-
-/* ============================================================
-    CELLULES
-   ============================================================ */
-
 .cell-box {
     background-color: var(--cell-bg);
-
     border: 1.5px solid var(--cell-border);
-
     border-radius: 8px;
-
     position: relative;
-
     display: flex;
-
     align-items: center;
     justify-content: center;
-
     cursor: pointer;
-
     transition: all 0.2s ease;
 }
-
 .cell-box:hover {
     background-color: var(--cell-hover);
     border-color: var(--accent);
 }
-
 .cell-label {
     border: 1px solid var(--accent);
-
     color: var(--accent);
-
     padding: 4px 10px;
-
     background: rgba(255, 140, 0, 0.08);
-
     font-size: 0.95rem;
-
     font-weight: 700;
-
     border-radius: 6px;
-
     letter-spacing: 0.5px;
 }
-
-
 /* ============================================================
     LOCAUX TECHNIQUES
    ============================================================ */
-
 .tech-zone {
     grid-column: 2;
     grid-row: 2;
-
     position: relative;
-
     width: 100%;
     height: 100%;
-
     display: flex;
-
     align-items: flex-end;
 }
-
 .tech-zone-inner {
     position: absolute;
-
     bottom: 0px;
     right: 0;
-
     width: 80%;
-
     height: 42px;
-
     display: flex;
-
     gap: 6px;
-
     box-sizing: border-box;
 }
-
 .tech-box {
     background-color: #1a1a1a;
-
     border: 1px solid #444;
-
     border-radius: 4px;
-
     height: 100%;
-
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
     justify-content: center;
-
     text-align: center;
-
     font-weight: 600;
     font-size: 0.55rem;
-
     color: #cccccc;
-
     position: relative;
-
     cursor: pointer;
-
     line-height: 1.1;
-
     padding: 2px;
-
     min-width: 0;
+    transition: all 0.2s ease;
 }
-
-.tech-box.tgbt {
-    flex: 0.7;
-}
-
-.tech-box.chauf {
-    flex: 0.8;
-}
-
-.tech-box.atelier {
-    flex: 1.2;
-}
-
-.tech-box.charge {
-    flex: 1.3;
-}
-
+.tech-box.tgbt { flex: 0.7; }
+.tech-box.chauf { flex: 0.8; }
+.tech-box.atelier { flex: 1.2; }
+.tech-box.charge { flex: 1.3; }
 .tech-box:hover {
     border-color: var(--accent);
     color: #ffffff;
+    background-color: var(--cell-hover);
 }
-
-
 /* ============================================================
-    POSITIONS
+    POSITIONS & PASTILLES
    ============================================================ */
-
-.ch {
-    grid-column: 5;
-    grid-row: 1;
-}
-
-.cd {
-    grid-column: 5;
-    grid-row: 2;
-}
-
+.ch { grid-column: 5; grid-row: 1; }
+.cd { grid-column: 5; grid-row: 2; }
 .c6-top-wrapper {
     grid-column: 6;
     grid-row: 2;
-
     position: relative;
-
     width: 100%;
     height: 100%;
-
     display: flex;
-
     align-items: flex-end;
 }
-
 .sc-c6 {
     position: absolute;
-
     bottom: 0px;
-
     left: 30%;
-
     width: 50%;
-
     height: 42px;
-
     background-color: #1a1a1a;
-
     border: 1px solid #444;
-
     border-radius: 4px;
-
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
     justify-content: center;
-
     text-align: center;
-
     font-weight: 600;
     font-size: 0.55rem;
-
     color: #cccccc;
-
     cursor: pointer;
-
     line-height: 1.1;
-
     padding: 2px;
+    transition: all 0.2s ease;
 }
-
 .sc-c6:hover {
     border-color: var(--accent);
     color: #ffffff;
+    background-color: var(--cell-hover);
 }
-
-.c1 {
-    grid-column: 1;
-    grid-row: 3;
-}
-
-.c2 {
-    grid-column: 2;
-    grid-row: 3;
-}
-
-.c3 {
-    grid-column: 3;
-    grid-row: 3;
-}
-
-.c4 {
-    grid-column: 4;
-    grid-row: 3;
-}
-
-.c5 {
-    grid-column: 5;
-    grid-row: 3;
-}
-
-.c6 {
-    grid-column: 6;
-    grid-row: 3;
-}
-
-
-/* ============================================================
-    PASTILLES (BOUTONS INTERACTIFS)
-   ============================================================ */
+.c1 { grid-column: 1; grid-row: 3; }
+.c2 { grid-column: 2; grid-row: 3; }
+.c3 { grid-column: 3; grid-row: 3; }
+.c4 { grid-column: 4; grid-row: 3; }
+.c5 { grid-column: 5; grid-row: 3; }
+.c6 { grid-column: 6; grid-row: 3; }
 
 .tag {
     font-size: 0.6rem;
-
     font-weight: 800;
-
     line-height: 1.1;
-
     box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-
     display: flex;
-
     align-items: center;
     justify-content: center;
-
     white-space: nowrap;
-
     z-index: 30;
     cursor: pointer;
-    transition: transform 0.1s ease, filter 0.2s ease, border-color 0.2s;
+    transition: transform 0.2s ease, filter 0.2s ease, border-color 0.2s, background-color 0.2s;
 }
-
 .tag:hover {
     transform: scale(1.15);
     filter: brightness(1.2);
+    background-color: var(--cell-hover) !important;
 }
-
-/* État signalé défectueux */
 .tag.has-defect {
     border-color: #ef4444 !important;
     background-color: rgba(239, 68, 68, 0.25) !important;
     color: #ffffff !important;
     box-shadow: 0 0 8px #ef4444;
 }
-
-
-/* ============================================================
-    IS
-   ============================================================ */
-
 .is-tag {
     background-color: var(--is-bg);
-
     color: var(--is-color);
-
     border: 1px solid var(--is-border);
-
     padding: 2px 0;
-
     border-radius: 3px;
-
     width: 38px;
-
     text-align: center;
 }
+.cluster-top .is-tag:hover,
+.cluster-bottom .is-tag:hover,
+.cluster-left .is-tag:hover,
+.cluster-right .is-tag:hover,
+.is-tag:hover {
+    transform: scale(1.15) !important;
+    background-color: var(--cell-hover) !important;
+}
+.cluster-top .is-tag:hover { transform: translateY(-50%) scale(1.15) !important; }
+.cluster-bottom .is-tag:hover { transform: translateY(50%) scale(1.15) !important; }
+.cluster-left .is-tag:hover { transform: translateX(-50%) scale(1.15) !important; }
+.cluster-right .is-tag:hover { transform: translateX(50%) scale(1.15) !important; }
 
-
-/* ============================================================
-    DM
-   ============================================================ */
-
-.dm-red-tag,
-.dm-green-tag {
+.dm-red-tag, .dm-green-tag {
     border-radius: 50%;
-
     width: 18px;
     height: 18px;
-
     min-width: 18px;
-
     padding: 2px;
 }
-
-
-/* DM Rouges */
-
 .dm-red-tag {
     background-color: var(--dm-red-bg);
-
     color: var(--dm-red-color);
-
     border: 1px solid var(--dm-red-border);
 }
-
-
-/* DM Verts */
-
 .dm-green-tag {
     background-color: var(--dm-green-bg);
-
     color: var(--dm-green-color);
-
     border: 1px solid var(--dm-green-border);
 }
-
-
-/* ============================================================
-    FLECHES DES IS
-   ============================================================ */
-
-.is-tag.arrow-up::after {
-    content: " ⬆";
-    font-size: 0.55rem;
-}
-
-.is-tag.arrow-down::after {
-    content: " ⬇";
-    font-size: 0.55rem;
-}
-
-.is-tag.arrow-left::before {
-    content: "⬅ ";
-    font-size: 0.55rem;
-}
-
-.is-tag.arrow-right::after {
-    content: " ➡";
-    font-size: 0.55rem;
-}
-
-
-/* ============================================================
-    CONTENEUR UNIFIE
-   ============================================================ */
+.is-tag.arrow-up::after { content: " ⬆"; font-size: 0.55rem; }
+.is-tag.arrow-down::after { content: " ⬇"; font-size: 0.55rem; }
+.is-tag.arrow-left::before { content: "⬅ "; font-size: 0.55rem; }
+.is-tag.arrow-right::after { content: " ➡"; font-size: 0.55rem; }
 
 .device-cluster {
     position: absolute;
-
     z-index: 30;
-
     display: flex;
-
     pointer-events: auto;
-
     align-items: center;
 }
+.cluster-top { top: 0; transform: translateX(-50%); flex-direction: column; align-items: center; }
+.cluster-top .is-tag { transform: translateY(-50%); order: 1; width: auto; padding: 2px 5px; }
+.cluster-top .dm-subgroup { order: 2; transform: translateY(-8px); display: flex; gap: 2px; }
 
+.cluster-bottom { bottom: 0; transform: translateX(-50%); flex-direction: column; align-items: center; }
+.cluster-bottom .is-tag { transform: translateY(50%); order: 2; width: auto; padding: 2px 5px; }
+.cluster-bottom .dm-subgroup { order: 1; transform: translateY(7px); display: flex; flex-direction: column; gap: 1px; }
 
-/* ============================================================
-    CLUSTERS HAUT
-   ============================================================ */
+.cluster-left { left: 0; transform: translateY(-50%); flex-direction: row; align-items: center; gap: 0; }
+.cluster-left .is-tag { transform: translateX(-50%); width: 42px; padding: 2px 5px; }
+.cluster-left .dm-subgroup { transform: translateX(-21px); }
 
-.cluster-top {
-    top: 0;
+.cluster-right { right: 0; transform: translateY(-50%); flex-direction: row-reverse; align-items: center; gap: 0; }
+.cluster-right .is-tag { transform: translateX(50%); width: 42px; padding: 2px 5px; }
+.cluster-right .dm-subgroup { transform: translateX(21px); }
 
-    transform: translateX(-50%);
-
-    flex-direction: column;
-
-    align-items: center;
-}
-
-.cluster-top .is-tag {
-    transform: translateY(-50%);
-
-    order: 1;
-
-    width: auto;
-
-    padding: 2px 5px;
-}
-
-.cluster-top .dm-subgroup {
-    order: 2;
-
-    transform: translateY(-8px);
-
-    display: flex;
-
-    gap: 2px;
-}
-
-
-/* ============================================================
-    CLUSTERS BAS
-   ============================================================ */
-
-.cluster-bottom {
-    bottom: 0;
-
-    transform: translateX(-50%);
-
-    flex-direction: column;
-
-    align-items: center;
-}
-
-.cluster-bottom .is-tag {
-    transform: translateY(50%);
-
-    order: 2;
-
-    width: auto;
-
-    padding: 2px 5px;
-}
-
-.cluster-bottom .dm-subgroup {
-    order: 1;
-
-    transform: translateY(7px);
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 1px;
-}
-
-
-/* ============================================================
-    CLUSTERS GAUCHE
-   ============================================================ */
-
-.cluster-left {
-    left: 0;
-
-    transform: translateY(-50%);
-
-    flex-direction: row;
-
-    align-items: center;
-
-    gap: 0;
-}
-
-.cluster-left .is-tag {
-    transform: translateX(-50%);
-
-    width: 42px;
-
-    padding: 2px 5px;
-}
-
-.cluster-left .dm-subgroup {
-    transform: translateX(-21px);
-}
-
-
-/* ============================================================
-    CLUSTERS DROITE
-   ============================================================ */
-
-.cluster-right {
-    right: 0;
-
-    transform: translateY(-50%);
-
-    flex-direction: row-reverse;
-
-    align-items: center;
-
-    gap: 0;
-}
-
-.cluster-right .is-tag {
-    transform: translateX(50%);
-
-    width: 42px;
-
-    padding: 2px 5px;
-}
-
-.cluster-right .dm-subgroup {
-    transform: translateX(21px);
-}
-
-
-/* ============================================================
-    MASQUAGE IS / DM
-   ============================================================ */
-
-.hide-is .is-tag {
-    display: none !important;
-}
-
-.hide-dm .dm-red-tag,
-.hide-dm .dm-green-tag {
-    display: none !important;
-}
-
-
-/* ============================================================
-    DM HORS PLAN
-   ============================================================ */
+.hide-is .is-tag { display: none !important; }
+.hide-dm .dm-red-tag, .hide-dm .dm-green-tag { display: none !important; }
 
 .off-map-container {
     width: 100%;
-
     max-width: 1100px;
-
     margin-top: 12px;
-
     background: var(--card-bg);
-
     border: 1px solid var(--border);
-
     border-radius: 8px;
-
     padding: 10px 15px;
-
     display: flex;
-
     align-items: center;
-
     gap: 12px;
-
     flex-wrap: wrap;
 }
-
-.off-map-title {
-    font-size: 0.8rem;
-
-    font-weight: 600;
-
-    color: var(--text-muted);
-}
-
-.off-map-tags {
-    display: flex;
-
-    gap: 8px;
-
-    position: relative;
-}
-
-.off-map-tags .tag {
-    position: relative;
-}
-
-
-/* ============================================================
-    RESPONSIVE
-   ============================================================ */
+.off-map-title { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+.off-map-tags { display: flex; gap: 8px; position: relative; }
 
 @media (max-width: 600px) {
-
-    body {
-        padding: 8px 4px;
-    }
-
-    .controls {
-        flex-wrap: wrap;
-    }
-
-    .btn-toggle {
-        font-size: 0.75rem;
-        padding: 5px 8px;
-    }
-
-    .tech-box,
-    .sc-c6 {
-        font-size: 0.45rem;
-    }
-
+    body { padding: 8px 4px; }
+    .controls { flex-wrap: wrap; }
+    .btn-toggle, .btn-action { font-size: 0.75rem; padding: 5px 8px; }
+    .tech-box, .sc-c6 { font-size: 0.45rem; }
 }
-
 </style>
-
 </head>
-
-
 <body>
 
-
-<!-- ============================================================
-      TITRE
-      ============================================================ -->
-
-<h1>Contrôles — IS & DM</h1>
-
-
-<!-- ============================================================
-      CONTROLES PRINCIPAUX
-      ============================================================ -->
-
-<div class="controls">
-
-    <button
-        id="btn-is"
-        class="btn-toggle active-is"
-        onclick="toggleIS()"
-    >
-        🟡 IS
-    </button>
-
-
-    <button
-        id="btn-dm"
-        class="btn-toggle active-dm"
-        onclick="toggleDM()"
-    >
-        🔴🟢 DM
-    </button>
-
-
-    <button
-        class="btn-toggle"
-        onclick="toggleFullscreen()"
-    >
-        ⛶ Plein écran
-    </button>
-
+<div class="top-header">
+    <h1>BAES — IS & DM</h1>
+    <div class="header-actions">
+        <button class="btn-action btn-report" onclick="generateReport()">Générer Rapport</button>
+        <button class="btn-action btn-reset" onclick="resetAll()">Réinitialiser</button>
+    </div>
 </div>
 
+<div class="controls">
+    <button id="btn-is" class="btn-toggle active-is" onclick="toggleIS()">🟡 IS</button>
+    <button id="btn-dm" class="btn-toggle active-dm" onclick="toggleDM()">🔴🟢 DM</button>
+</div>
 
-<!-- ============================================================
-      PANNEAU DE CONTRÔLE (MODALE EN SURIMPRESSION)
-      ============================================================ -->
-
+<!-- PANNEAU DE CONTRÔLE (MODALE INDividuelle) -->
 <div id="inspection-overlay" class="inspection-overlay">
     <div class="inspection-panel">
         <div class="inspection-header">
-            <span id="panel-title" class="inspection-title">Signaler une anomalie</span>
+            <span id="panel-title" class="inspection-title">Contrôle</span>
             <button class="inspection-close" onclick="closePanel()">✕</button>
         </div>
+        <div id="inspection-body-content" class="inspection-body"></div>
+    </div>
+</div>
+
+<!-- PANNEAU RAPPORT / COMPTE RENDU -->
+<div id="report-overlay" class="inspection-overlay">
+    <div class="inspection-panel">
+        <div class="inspection-header">
+            <span class="inspection-title">Compte rendu — IS & DM</span>
+            <button class="inspection-close" onclick="closeReport()">✕</button>
+        </div>
         <div class="inspection-body">
-            <textarea id="panel-notes" class="inspection-notes" placeholder="Décrivez le problème constaté (ex: voyant éteint, défaut de batterie, boîtier cassé...)"></textarea>
-            <div class="inspection-footer">
-                <button type="button" class="btn-cancel" onclick="closePanel()">Annuler</button>
-                <button type="button" class="btn-save" onclick="saveInspection()">Signaler le défaut</button>
+            <textarea id="report-content-text" class="report-textarea" readonly></textarea>
+            <div class="report-footer">
+                <button type="button" class="btn-copy" onclick="copyReport()">📋 Copier</button>
+                <button type="button" class="btn-share" onclick="shareReport()">📤 Partager</button>
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- ============================================================
-      PLAN
-      ============================================================ -->
-
-<div
-    class="plan-wrapper"
-    id="plan"
-    ondblclick="toggleFullscreen()"
->
-
+<div class="plan-wrapper" id="plan">
 <div class="building-container">
-
-
-<!-- ========================================================
-      RANGÉE H
-      ======================================================== -->
-
-<div
-    class="cell-box ch"
-    onclick="clickCell('H', event)"
->
-
-    <div class="cell-label">
-        H
-    </div>
-
-
-    <!-- IS 12 + DM 12 (GAUCHE) -->
-
+<!-- RANGÉE H -->
+<div class="cell-box ch" onclick="clickCell('H', event)">
+    <div class="cell-label">H</div>
     <div class="device-cluster cluster-left" style="top: 80%; left: 0;">
-
-        <div class="tag is-tag arrow-left" onclick="openInspection('IS 12', event)">
-            12
-        </div>
-
-        <div class="dm-subgroup">
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 12', event)">
-                12
-            </div>
-
-        </div>
-
+        <div class="tag is-tag arrow-left" onclick="openInspection('IS 12', 'IS', event)">12</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 12', 'DM', event)">12</div></div>
     </div>
-
-
-    <!-- IS 13 + DM 13 (DROITE) -->
-
     <div class="device-cluster cluster-right" style="top: 80%; right: 0;">
-
-        <div class="tag is-tag arrow-right" onclick="openInspection('IS 13', event)">
-            13
-        </div>
-
-        <div class="dm-subgroup">
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 13', event)">
-                13
-            </div>
-
-        </div>
-
+        <div class="tag is-tag arrow-right" onclick="openInspection('IS 13', 'IS', event)">13</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 13', 'DM', event)">13</div></div>
     </div>
-
-
-    <!-- DM 14 ENTRE H ET D -->
-
-    <div class="tag dm-red-tag" onclick="openInspection('DM 14', event)" style="
-            position: absolute;
-            bottom: -13px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 30;
-        ">
-        14
-    </div>
-
+    <div class="tag dm-red-tag" onclick="openInspection('DM 14', 'DM', event)" style="position: absolute; bottom: -13px; left: 50%; transform: translateX(-50%); z-index: 30;">14</div>
 </div>
 
+<!-- RANGÉE D -->
+<div class="cell-box cd" onclick="clickCell('D', event)"><div class="cell-label">D</div></div>
 
-<!-- ========================================================
-      RANGÉE D
-      ======================================================== -->
-
-<div
-    class="cell-box cd"
-    onclick="clickCell('D', event)"
->
-
-    <div class="cell-label">
-        D
-    </div>
-
-</div>
-
-
-<!-- ========================================================
-      LOCAUX TECHNIQUES C2
-      ======================================================== -->
-
+<!-- LOCAUX TECHNIQUES C2 -->
 <div class="tech-zone">
-
     <div class="tech-zone-inner">
-
-
-        <!-- TGBT -->
-
-        <div
-            class="tech-box tgbt"
-            onclick="openInspection('TGBT', event)"
-        >
-            TGBT
-        </div>
-
-
-        <!-- CHAUFFERIE -->
-
-        <div
-            class="tech-box chauf"
-            onclick="openInspection('Chaufferie', event)"
-        >
-
+        <div class="tech-box tgbt" onclick="openInspection('TGBT', 'IS', event)">TGBT</div>
+        <div class="tech-box chauf" onclick="openInspection('Chaufferie', 'IS', event)">
             Chauf.
-
-            <div
-                class="device-cluster cluster-top"
-                style="top: 0; left: 50%;"
-            >
-
-                <div class="tag is-tag arrow-up" onclick="openInspection('IS 5', event)">
-                    5
-                </div>
-
-                <div class="dm-subgroup">
-
-                    <div class="tag dm-red-tag" onclick="openInspection('DM 7', event)">
-                        7
-                    </div>
-
-                </div>
-
+            <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
+                <div class="tag is-tag arrow-up" onclick="openInspection('IS 5', 'IS', event)">5</div>
+                <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 7', 'DM', event)">7</div></div>
             </div>
-
         </div>
-
-
-        <!-- ATELIER MAINTENANCE -->
-
-        <div
-            class="tech-box atelier"
-            onclick="openInspection('Atelier Maintenance', event)"
-        >
-
+        <div class="tech-box atelier" onclick="openInspection('Atelier Maintenance', 'IS', event)">
             Atelier
-
-            <div
-                class="device-cluster cluster-top"
-                style="top: 0; left: 50%;"
-            >
-
-                <div class="tag is-tag arrow-up" onclick="openInspection('IS 6', event)">
-                    6
-                </div>
-
-                <div class="dm-subgroup">
-
-                    <div class="tag dm-red-tag" onclick="openInspection('DM 8', event)">
-                        8
-                    </div>
-
-                </div>
-
+            <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
+                <div class="tag is-tag arrow-up" onclick="openInspection('IS 6', 'IS', event)">6</div>
+                <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 8', 'DM', event)">8</div></div>
             </div>
-
         </div>
-
-
-        <!-- SALLE DE CHARGE C2 -->
-
-        <div
-            class="tech-box charge"
-            onclick="openInspection('Salle de Charge C2', event)"
-        >
-
+        <div class="tech-box charge" onclick="openInspection('Salle de Charge C2', 'IS', event)">
             S. Charge
-
-            <div
-                class="device-cluster cluster-top"
-                style="top: 0; left: 50%;"
-            >
-
-                <div class="tag is-tag arrow-up" onclick="openInspection('IS 7', event)">
-                    7
-                </div>
-
-                <div class="dm-subgroup">
-
-                    <div class="tag dm-red-tag" onclick="openInspection('DM 9', event)">
-                        9
-                    </div>
-
-                </div>
-
+            <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
+                <div class="tag is-tag arrow-up" onclick="openInspection('IS 7', 'IS', event)">7</div>
+                <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 9', 'DM', event)">9</div></div>
             </div>
-
         </div>
-
     </div>
-
 </div>
 
-
-<!-- ========================================================
-      SALLE DE CHARGE C6 AU-DESSUS DE C6
-      ======================================================== -->
-
+<!-- C6 TOP -->
 <div class="c6-top-wrapper">
-
-    <div
-        class="sc-c6"
-        onclick="openInspection('Salle de Charge C6', event)"
-    >
-
+    <div class="sc-c6" onclick="openInspection('Salle de Charge C6', 'IS', event)">
         S. Charge
-
-
-        <!-- IS 16 + DM 16 -->
-
         <div class="device-cluster cluster-top" style="top: 0; left: 80%;">
-
-            <div class="tag is-tag arrow-up" onclick="openInspection('IS 16', event)">
-                16
-            </div>
-
-            <div class="dm-subgroup">
-
-                <div class="tag dm-red-tag" onclick="openInspection('DM 16', event)">
-                    16
-                </div>
-
-            </div>
-
+            <div class="tag is-tag arrow-up" onclick="openInspection('IS 16', 'IS', event)">16</div>
+            <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 16', 'DM', event)">16</div></div>
         </div>
-
     </div>
-
 </div>
 
-
-<!-- ========================================================
-      CELLULE C1
-      ======================================================== -->
-
-<div
-    class="cell-box c1"
-    onclick="clickCell('C1', event)"
->
-
-    <div class="cell-label">
-        C1
+<!-- C1 -->
+<div class="cell-box c1" onclick="clickCell('C1', event)">
+    <div class="cell-label">C1</div>
+    <div class="device-cluster cluster-left" style="top: 30%; left: 0;">
+        <div class="tag is-tag arrow-left" onclick="openInspection('IS 2', 'IS', event)">2</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 4', 'DM', event)">4</div></div>
     </div>
-
-
-    <!-- IS 2 + DM 4 -->
-
-    <div
-        class="device-cluster cluster-left"
-        style="top: 30%; left: 0;"
-    >
-
-        <div class="tag is-tag arrow-left" onclick="openInspection('IS 2', event)">
-            2
-        </div>
-
-        <div class="dm-subgroup">
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 4', event)">
-                4
-            </div>
-
-        </div>
-
+    <div class="device-cluster cluster-left" style="top: 70%; left: 0;">
+        <div class="tag is-tag arrow-left" onclick="openInspection('IS 1', 'IS', event)">1</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 3', 'DM', event)">3</div></div>
     </div>
-
-
-    <!-- IS 1 + DM 3 -->
-
-    <div
-        class="device-cluster cluster-left"
-        style="top: 70%; left: 0;"
-    >
-
-        <div class="tag is-tag arrow-left" onclick="openInspection('IS 1', event)">
-            1
-        </div>
-
-        <div class="dm-subgroup">
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 3', event)">
-                3
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- IS 3 + DM 5 -->
-
     <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
-
-        <div class="tag is-tag arrow-up" onclick="openInspection('IS 3', event)">
-            3
-        </div>
-
-        <div class="dm-subgroup">
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 5', event)">
-                5
-            </div>
-
-        </div>
-
+        <div class="tag is-tag arrow-up" onclick="openInspection('IS 3', 'IS', event)">3</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 5', 'DM', event)">5</div></div>
     </div>
-
-
-    <!-- IS 28 + DM 34 + DM 33 -->
-
     <div class="device-cluster cluster-bottom" style="bottom: 0; left: 20%;">
-
-        <div class="tag is-tag arrow-down" onclick="openInspection('IS 28', event)">
-            28
-        </div>
-
+        <div class="tag is-tag arrow-down" onclick="openInspection('IS 28', 'IS', event)">28</div>
         <div class="dm-subgroup">
-
-            <div class="tag dm-green-tag" onclick="openInspection('DM 34', event)">
-                34
-            </div>
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 33', event)">
-                33
-            </div>
-
+            <div class="tag dm-green-tag" onclick="openInspection('DM 34', 'DM', event)">34</div>
+            <div class="tag dm-red-tag" onclick="openInspection('DM 33', 'DM', event)">33</div>
         </div>
-
     </div>
-
-
-    <!-- DM VERT N°2 -->
-
-    <div
-        class="tag dm-green-tag"
-        onclick="openInspection('DM Vert 2', event)"
-        style="
-            position: absolute;
-            bottom: 5px;
-            left: -9px;
-            z-index: 30;
-        "
-    >
-        2
-    </div>
-
+    <div class="tag dm-green-tag" onclick="openInspection('DM 2', 'DM', event)" style="position: absolute; bottom: 5px; left: -9px; z-index: 30;">2</div>
 </div>
 
-
-<!-- ========================================================
-      CELLULE C2
-      ======================================================== -->
-
-<div
-    class="cell-box c2"
-    onclick="clickCell('C2', event)"
->
-
-    <div class="cell-label">
-        C2
+<!-- C2 -->
+<div class="cell-box c2" onclick="clickCell('C2', event)">
+    <div class="cell-label">C2</div>
+    <div class="device-cluster cluster-top" style="top: 0; left: 15%;">
+        <div class="tag is-tag arrow-up" onclick="openInspection('IS 4', 'IS', event)">4</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 6', 'DM', event)">6</div></div>
     </div>
-
-
-    <!-- IS 4 + DM 6 -->
-
-    <div
-        class="device-cluster cluster-top"
-        style="top: 0; left: 15%;"
-    >
-
-        <div class="tag is-tag arrow-up" onclick="openInspection('IS 4', event)">
-            4
-        </div>
-
+    <div class="device-cluster cluster-bottom" style="bottom: 0; left: 15%;">
+        <div class="tag is-tag arrow-down" onclick="openInspection('IS 27', 'IS', event)">27</div>
+        <div class="dm-subgroup"><div class="tag dm-green-tag" onclick="openInspection('DM 32', 'DM', event)">32</div></div>
+    </div>
+    <div class="device-cluster cluster-bottom" style="bottom: 0; right: 15%; left: auto;">
+        <div class="tag is-tag arrow-down" onclick="openInspection('IS 26', 'IS', event)">26</div>
         <div class="dm-subgroup">
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 6', event)">
-                6
-            </div>
-
+            <div class="tag dm-green-tag" onclick="openInspection('DM 30', 'DM', event)">30</div>
+            <div class="tag dm-red-tag" onclick="openInspection('DM 31', 'DM', event)">31</div>
         </div>
-
     </div>
-
-
-    <!-- IS 27 + DM 32 -->
-
-    <div
-        class="device-cluster cluster-bottom"
-        style="bottom: 0; left: 15%;"
-    >
-
-        <div class="tag is-tag arrow-down" onclick="openInspection('IS 27', event)">
-            27
-        </div>
-
-        <div class="dm-subgroup">
-
-            <div class="tag dm-green-tag" onclick="openInspection('DM 32', event)">
-                32
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- IS 26 + DM 30 + DM 31 -->
-
-    <div
-        class="device-cluster cluster-bottom"
-        style="
-            bottom: 0;
-            right: 15%;
-            left: auto;
-        "
-    >
-
-        <div class="tag is-tag arrow-down" onclick="openInspection('IS 26', event)">
-            26
-        </div>
-
-        <div class="dm-subgroup">
-
-            <div class="tag dm-green-tag" onclick="openInspection('DM 30', event)">
-                30
-            </div>
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 31', event)">
-                31
-            </div>
-
-        </div>
-
-    </div>
-
 </div>
 
-
-<!-- ========================================================
-      CELLULE C3
-      ======================================================== -->
-
-<div
-    class="cell-box c3"
-    onclick="clickCell('C3', event)"
->
-
-    <div class="cell-label">
-        C3
-    </div>
-
-
-    <!-- IS 8 + DM 10 -->
-
+<!-- C3 -->
+<div class="cell-box c3" onclick="clickCell('C3', event)">
+    <div class="cell-label">C3</div>
     <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
-
-        <div class="tag is-tag arrow-up" onclick="openInspection('IS 8', event)">
-            8
-        </div>
-
-        <div class="dm-subgroup">
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 10', event)">
-                10
-            </div>
-
-        </div>
-
+        <div class="tag is-tag arrow-up" onclick="openInspection('IS 8', 'IS', event)">8</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 10', 'DM', event)">10</div></div>
     </div>
-
-
-    <!-- IS 25 + DM 28 + DM 29 -->
-
     <div class="device-cluster cluster-bottom" style="bottom: 0; left: 35%;">
-
-        <div class="tag is-tag arrow-down" onclick="openInspection('IS 25', event)">
-            25
-        </div>
-
+        <div class="tag is-tag arrow-down" onclick="openInspection('IS 25', 'IS', event)">25</div>
         <div class="dm-subgroup">
-
-            <div class="tag dm-green-tag" onclick="openInspection('DM 28', event)">
-                28
-            </div>
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 29', event)">
-                29
-            </div>
-
+            <div class="tag dm-green-tag" onclick="openInspection('DM 28', 'DM', event)">28</div>
+            <div class="tag dm-red-tag" onclick="openInspection('DM 29', 'DM', event)">29</div>
         </div>
-
     </div>
-
 </div>
 
-
-<!-- ========================================================
-      CELLULE C4
-      ======================================================== -->
-
-<div
-    class="cell-box c4"
-    onclick="clickCell('C4', event)"
->
-
-    <div class="cell-label">
-        C4
-    </div>
-
-
-    <!-- IS 9 + DM 11 -->
-
+<!-- C4 -->
+<div class="cell-box c4" onclick="clickCell('C4', event)">
+    <div class="cell-label">C4</div>
     <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
-
-        <div class="tag is-tag arrow-up" onclick="openInspection('IS 9', event)">
-            9
-        </div>
-
-        <div class="dm-subgroup">
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 11', event)">
-                11
-            </div>
-
-        </div>
-
+        <div class="tag is-tag arrow-up" onclick="openInspection('IS 9', 'IS', event)">9</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 11', 'DM', event)">11</div></div>
     </div>
-
-
-    <!-- IS 24 + DM 26 + DM 27 -->
-
-    <div
-        class="device-cluster cluster-bottom"
-        style="
-            bottom: 0;
-            right: 20%;
-            left: auto;
-        "
-    >
-
-        <div class="tag is-tag arrow-down" onclick="openInspection('IS 24', event)">
-            24
-        </div>
-
+    <div class="device-cluster cluster-bottom" style="bottom: 0; right: 20%; left: auto;">
+        <div class="tag is-tag arrow-down" onclick="openInspection('IS 24', 'IS', event)">24</div>
         <div class="dm-subgroup">
-
-            <div class="tag dm-green-tag" onclick="openInspection('DM 26', event)">
-                26
-            </div>
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 27', event)">
-                27
-            </div>
-
+            <div class="tag dm-green-tag" onclick="openInspection('DM 26', 'DM', event)">26</div>
+            <div class="tag dm-red-tag" onclick="openInspection('DM 27', 'DM', event)">27</div>
         </div>
-
     </div>
-
 </div>
 
-
-<!-- ========================================================
-      CELLULE C5
-      ======================================================== -->
-
-<div
-    class="cell-box c5"
-    onclick="clickCell('C5', event)"
->
-
-    <div class="cell-label">
-        C5
-    </div>
-
-
-    <!-- IS 23 + DM 24 + DM 25 -->
-
-    <div
-        class="device-cluster cluster-bottom"
-        style="bottom: 0; left: 40%;"
-    >
-
-        <div class="tag is-tag arrow-down" onclick="openInspection('IS 23', event)">
-            23
-        </div>
-
+<!-- C5 -->
+<div class="cell-box c5" onclick="clickCell('C5', event)">
+    <div class="cell-label">C5</div>
+    <div class="device-cluster cluster-bottom" style="bottom: 0; left: 40%;">
+        <div class="tag is-tag arrow-down" onclick="openInspection('IS 23', 'IS', event)">23</div>
         <div class="dm-subgroup">
-
-            <div class="tag dm-green-tag" onclick="openInspection('DM 24', event)">
-                24
-            </div>
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 25', event)">
-                25
-            </div>
-
+            <div class="tag dm-green-tag" onclick="openInspection('DM 24', 'DM', event)">24</div>
+            <div class="tag dm-red-tag" onclick="openInspection('DM 25', 'DM', event)">25</div>
         </div>
-
     </div>
-
 </div>
 
-
-<!-- ========================================================
-      CELLULE C6
-      ======================================================== -->
-
-<div
-    class="cell-box c6"
-    onclick="clickCell('C6', event)"
->
-
-    <div class="cell-label">
-        C6
-    </div>
-
-
-    <!-- IS 15 + DM 15 -->
-
+<!-- C6 -->
+<div class="cell-box c6" onclick="clickCell('C6', event)">
+    <div class="cell-label">C6</div>
     <div class="device-cluster cluster-top" style="top: 0; left: 22%;">
-
-        <div class="tag is-tag arrow-up" onclick="openInspection('IS 15', event)">
-            15
-        </div>
-
-        <div class="dm-subgroup">
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 15', event)">
-                15
-            </div>
-
-        </div>
-
+        <div class="tag is-tag arrow-up" onclick="openInspection('IS 15', 'IS', event)">15</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 15', 'DM', event)">15</div></div>
     </div>
-
-
-    <!-- IS 17 + DM 17 -->
-
-    <div
-        class="device-cluster cluster-right"
-        style="top: 55%; right: 0;"
-    >
-
-        <div class="tag is-tag arrow-right" onclick="openInspection('IS 17', event)">
-            17
-        </div>
-
-        <div class="dm-subgroup">
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 17', event)">
-                17
-            </div>
-
-        </div>
-
+    <div class="device-cluster cluster-right" style="top: 55%; right: 0;">
+        <div class="tag is-tag arrow-right" onclick="openInspection('IS 17', 'IS', event)">17</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 17', 'DM', event)">17</div></div>
     </div>
-
-
-    <!-- IS 18 + DM 19 + DM 18 -->
-
-    <div class="device-cluster cluster-bottom" style="
-            bottom: 0;
-            right: 10%;
-            left: auto;
-        ">
-
-        <div class="tag is-tag arrow-down" onclick="openInspection('IS 18', event)">
-            18
-        </div>
-
+    <div class="device-cluster cluster-bottom" style="bottom: 0; right: 10%; left: auto;">
+        <div class="tag is-tag arrow-down" onclick="openInspection('IS 18', 'IS', event)">18</div>
         <div class="dm-subgroup">
-
-            <div class="tag dm-green-tag" onclick="openInspection('DM 19', event)">
-                19
-            </div>
-
-            <div class="tag dm-red-tag" onclick="openInspection('DM 18', event)">
-                18
-            </div>
-
+            <div class="tag dm-green-tag" onclick="openInspection('DM 19', 'DM', event)">19</div>
+            <div class="tag dm-red-tag" onclick="openInspection('DM 18', 'DM', event)">18</div>
         </div>
-
     </div>
-
 </div>
-
-
 </div>
-
 </div>
-
-
-<!-- ============================================================
-      DM HORS PLAN
-      ============================================================ -->
 
 <div class="off-map-container">
-
-    <div class="off-map-title">
-        DM hors plan :
-    </div>
-
-    <div class="off-map-tags">
-
-        <!--
-            Ajoute ici les DM qui ne sont pas
-            positionnés directement sur le plan.
-        -->
-
-    </div>
-
+    <div class="off-map-title">DM hors plan :</div>
+    <div class="off-map-tags"></div>
 </div>
 
-
-<!-- ============================================================
-      JAVASCRIPT
-      ============================================================ -->
-
 <script>
+    let currentElementId = null;
+    let currentElementType = null;
+    const inspectionsRegistry = {};
 
-/* ============================================================
-    GESTION DES ANOMALIES (MODE CONFORME PAR DÉFAUT)
-   ============================================================ */
-
-let currentEquipmentElement = null;
-let currentEquipmentName = null;
-
-function openInspection(eqName, event) {
-    if (event) event.stopPropagation();
-    currentEquipmentName = eqName;
-    currentEquipmentElement = event.currentTarget;
-    
-    document.getElementById("panel-title").innerText = "Anomalie sur : " + eqName;
-    document.getElementById("panel-notes").value = '';
-    
-    const overlay = document.getElementById("inspection-overlay");
-    overlay.classList.add("visible");
-}
-
-function closePanel() {
-    document.getElementById("inspection-overlay").classList.remove("visible");
-    currentEquipmentElement = null;
-    currentEquipmentName = null;
-}
-
-function saveInspection() {
-    if (!currentEquipmentElement) return;
-    
-    // Marque visuellement la pastille comme défectueuse
-    currentEquipmentElement.classList.add("has-defect");
-    
-    closePanel();
-}
-
-
-/* ============================================================
-    AFFICHAGE / MASQUAGE DES IS
-   ============================================================ */
-
-let isVisible = true;
-
-function toggleIS() {
-
-    const plan = document.getElementById("plan");
-
-    const button = document.getElementById("btn-is");
-
-    isVisible = !isVisible;
-
-    if (isVisible) {
-
-        plan.classList.remove("hide-is");
-
-        button.classList.add("active-is");
-
-    } else {
-
-        plan.classList.add("hide-is");
-
-        button.classList.remove("active-is");
-
+    function toggleIS() {
+        const plan = document.getElementById('plan');
+        const btn = document.getElementById('btn-is');
+        plan.classList.toggle('hide-is');
+        btn.classList.toggle('active-is');
     }
 
-}
-
-
-/* ============================================================
-    AFFICHAGE / MASQUAGE DES DM
-   ============================================================ */
-
-let dmVisible = true;
-
-function toggleDM() {
-
-    const plan = document.getElementById("plan");
-
-    const button = document.getElementById("btn-dm");
-
-    dmVisible = !dmVisible;
-
-    if (dmVisible) {
-
-        plan.classList.remove("hide-dm");
-
-        button.classList.add("active-dm");
-
-    } else {
-
-        plan.classList.add("hide-dm");
-
-        button.classList.remove("active-dm");
-
+    function toggleDM() {
+        const plan = document.getElementById('plan');
+        const btn = document.getElementById('btn-dm');
+        plan.classList.toggle('hide-dm');
+        btn.classList.toggle('active-dm');
     }
 
-}
-
-
-/* ============================================================
-    PLEIN ECRAN
-   ============================================================ */
-
-function toggleFullscreen() {
-
-    const plan = document.getElementById("plan");
-
-    if (!document.fullscreenElement) {
-
-        if (plan.requestFullscreen) {
-
-            plan.requestFullscreen();
-
-        }
-
-    } else {
-
-        if (document.exitFullscreen) {
-
-            document.exitFullscreen();
-
-        }
-
-    }
-
-}
-
-
-/* ============================================================
-    CLIC SUR UNE CELLULE
-   ============================================================ */
-
-function clickCell(name, event) {
-
-    if (event) {
+    function openInspection(elementName, type, event) {
         event.stopPropagation();
+        currentElementId = elementName;
+        currentElementType = type;
+        
+        let displayTitle = elementName;
+        if (type === 'DM') {
+            const isGreen = event.currentTarget.classList.contains('dm-green-tag');
+            displayTitle += isGreen ? ' (vert)' : ' (rouge)';
+        }
+        document.getElementById('panel-title').innerText = displayTitle;
+        
+        const data = inspectionsRegistry[elementName] || {
+            etat: 'Conforme',
+            access: 'Libre',
+            essai: 'ok',
+            barre: 'Bon état',
+            comment: ''
+        };
+
+        const bodyContent = document.getElementById('inspection-body-content');
+
+        if (type === 'IS') {
+            bodyContent.innerHTML = `
+                <div class="form-group">
+                    <label class="form-label">État général</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="etat" value="Conforme" ${data.etat === 'Conforme' ? 'checked' : ''}> Conforme</label>
+                        <label class="radio-label"><input type="radio" name="etat" value="Non Conforme" ${data.etat === 'Non Conforme' ? 'checked' : ''}> Non Conforme</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Accessibilité</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="access" value="Libre" ${data.access === 'Libre' ? 'checked' : ''}> Libre</label>
+                        <label class="radio-label"><input type="radio" name="access" value="Encombré" ${data.access === 'Encombré' ? 'checked' : ''}> Encombré</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Essai fermeture et ouverture totale</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="essai" value="ok" ${data.essai === 'ok' ? 'checked' : ''}> ok</label>
+                        <label class="radio-label"><input type="radio" name="essai" value="Nok" ${data.essai === 'Nok' ? 'checked' : ''}> Nok</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">État barre anti-panique</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="barre" value="Bon état" ${data.barre === 'Bon état' ? 'checked' : ''}> Bon état</label>
+                        <label class="radio-label"><input type="radio" name="barre" value="Defectrueux" ${data.barre === 'Defectrueux' ? 'checked' : ''}> Defectrueux</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Commentaire</label>
+                    <textarea id="field-comment" class="inspection-notes" placeholder="Remarques éventuelles...">${data.comment || ''}</textarea>
+                </div>
+                <div class="inspection-footer">
+                    <button type="button" class="btn-cancel" onclick="closePanel()">Annuler</button>
+                    <button type="button" class="btn-save" onclick="saveInspection()">Enregistrer</button>
+                </div>
+            `;
+        } else {
+            bodyContent.innerHTML = `
+                <div class="form-group">
+                    <label class="form-label">État général</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="etat" value="Conforme" ${data.etat === 'Conforme' ? 'checked' : ''}> Conforme</label>
+                        <label class="radio-label"><input type="radio" name="etat" value="Non Conforme" ${data.etat === 'Non Conforme' ? 'checked' : ''}> Non Conforme</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Accessibilité</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="access" value="Libre" ${data.access === 'Libre' ? 'checked' : ''}> Libre</label>
+                        <label class="radio-label"><input type="radio" name="access" value="Encombré" ${data.access === 'Encombré' ? 'checked' : ''}> Encombré</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Commentaire</label>
+                    <textarea id="field-comment" class="inspection-notes" placeholder="Remarques éventuelles...">${data.comment || ''}</textarea>
+                </div>
+                <div class="inspection-footer">
+                    <button type="button" class="btn-cancel" onclick="closePanel()">Annuler</button>
+                    <button type="button" class="btn-save" onclick="saveInspection()">Enregistrer</button>
+                </div>
+            `;
+        }
+
+        document.getElementById('inspection-overlay').classList.add('visible');
     }
 
-    console.log("Cellule sélectionnée :", name);
-
-}
-
-
-/* ============================================================
-    ESC POUR QUITTER LE PLEIN ECRAN
-   ============================================================ */
-
-document.addEventListener("fullscreenchange", function() {
-
-    const plan = document.getElementById("plan");
-
-    if (!document.fullscreenElement) {
-
-        plan.classList.remove("fullscreen-active");
-
+    function closePanel() {
+        document.getElementById('inspection-overlay').classList.remove('visible');
+        currentElementId = null;
+        currentElementType = null;
     }
 
-});
+    function saveInspection() {
+        if (!currentElementId) return;
 
+        const getSelectedRadio = (name) => {
+            const el = document.querySelector(`input[name="${name}"]:checked`);
+            return el ? el.value : '';
+        };
 
+        const data = {
+            type: currentElementType,
+            etat: getSelectedRadio('etat'),
+            access: getSelectedRadio('access'),
+            comment: document.getElementById('field-comment').value.trim()
+        };
+
+        if (currentElementType === 'IS') {
+            data.essai = getSelectedRadio('essai');
+            data.barre = getSelectedRadio('barre');
+        }
+
+        const hasIssue = (
+            data.etat === 'Non Conforme' || 
+            data.access === 'Encombré' || 
+            (currentElementType === 'IS' && (data.essai === 'Nok' || data.barre === 'Defectrueux')) || 
+            data.comment !== ''
+        );
+
+        inspectionsRegistry[currentElementId] = data;
+
+        const tags = document.querySelectorAll('.tag');
+        tags.forEach(tag => {
+            const onclickAttr = tag.getAttribute('onclick');
+            if (onclickAttr && onclickAttr.includes(currentElementId)) {
+                if (hasIssue) {
+                    tag.classList.add('has-defect');
+                } else {
+                    tag.classList.remove('has-defect');
+                }
+            }
+        });
+
+        closePanel();
+    }
+
+    function clickCell(cellName, event) {
+        console.log(`Cellule cliquée : ${cellName}`);
+    }
+
+    function generateReport() {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR');
+        
+        let reportText = "========================================\n";
+        reportText += "COMPTE RENDU — IS & DM\n";
+        reportText += `Date : ${dateStr}\n`;
+        reportText += "========================================\n\n";
+
+        const entries = Object.entries(inspectionsRegistry);
+        if (entries.length === 0) {
+            reportText += "----------------------------------------\n";
+            reportText += "Résultat : Aucun problème détecté\n";
+            reportText += "----------------------------------------";
+        } else {
+            // Tri demandé : IS d'abord (du plus petit au plus grand), puis DM (du plus petit au plus grand)
+            entries.sort((a, b) => {
+                const typeA = a[1].type;
+                const typeB = b[1].type;
+
+                if (typeA !== typeB) {
+                    return typeA === 'IS' ? -1 : 1;
+                }
+
+                const numA = parseInt(a[0].replace(/[^0-9]/g, ''), 10) || 0;
+                const numB = parseInt(b[0].replace(/[^0-9]/g, ''), 10) || 0;
+                return numA - numB;
+            });
+
+            let loggedCount = 0;
+            let countIS = 0;
+            let countDM = 0;
+
+            for (const [id, data] of entries) {
+                let lines = [];
+                
+                if (data.etat && data.etat !== 'Conforme') {
+                    lines.push(`  ➔ État général : ${data.etat}`);
+                }
+                if (data.access && data.access !== 'Libre') {
+                    lines.push(`  ➔ Accessibilité : ${data.access}`);
+                }
+                if (data.type === 'IS') {
+                    if (data.essai && data.essai !== 'ok') {
+                        lines.push(`  ➔ Essai fermeture/ouverture : ${data.essai}`);
+                    }
+                    if (data.barre && data.barre !== 'Bon état') {
+                        lines.push(`  ➔ Barre anti-panique : ${data.barre}`);
+                    }
+                }
+                if (data.comment) {
+                    lines.push(`  ➔ Commentaire : ${data.comment}`);
+                }
+
+                if (lines.length > 0) {
+                    loggedCount++;
+                    if (data.type === 'IS') {
+                        countIS++;
+                    } else if (data.type === 'DM') {
+                        countDM++;
+                    }
+                    reportText += `• [${data.type}] ${id}\n`;
+                    reportText += lines.join('\n') + "\n\n";
+                }
+            }
+
+            reportText += "----------------------------------------\n";
+            if (loggedCount === 0) {
+                reportText += "Résultat : Aucun problème détecté (Éléments contrôlés conformes)";
+            } else {
+                let details = [];
+                if (countIS > 0) details.push(`${countIS} IS`);
+                if (countDM > 0) details.push(`${countDM} DM`);
+                reportText += `Résultat : Anomalies détectées (${details.join(', ')})`;
+            }
+        }
+
+        document.getElementById('report-content-text').value = reportText.trim();
+        document.getElementById('report-overlay').classList.add('visible');
+    }
+
+    function closeReport() {
+        document.getElementById('report-overlay').classList.remove('visible');
+    }
+
+    function copyReport() {
+        const text = document.getElementById('report-content-text');
+        text.select();
+        navigator.clipboard.writeText(text.value).then(() => {
+            alert("Compte rendu copié dans le presse-papier !");
+        });
+    }
+
+    function shareReport() {
+        const text = document.getElementById('report-content-text').value;
+        if (navigator.share) {
+            navigator.share({
+                title: 'Compte rendu — IS & DM',
+                text: text
+            }).catch(() => {});
+        } else {
+            copyReport();
+        }
+    }
+
+    function resetAll() {
+        if (confirm("Voulez-vous vraiment réinitialiser tous les contrôles ?")) {
+            for (const id in inspectionsRegistry) {
+                delete inspectionsRegistry[id];
+            }
+            document.querySelectorAll('.tag').forEach(tag => {
+                tag.classList.remove('has-defect');
+            });
+        }
+    }
 </script>
-
 </body>
 </html>
