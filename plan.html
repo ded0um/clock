@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>BAES</title>
+<title>Contrôles — IS & DM</title>
 
 <style>
 
@@ -145,6 +145,127 @@ h1 {
     background: rgba(239, 68, 68, 0.15);
     border-color: var(--dm-red-border);
     color: #ffffff;
+}
+
+
+/* ============================================================
+    PANNEAU DE CONTRÔLE (MODALE EN SURIMPRESSION PAR-DESSUS)
+   ============================================================ */
+
+.inspection-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(3px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+}
+
+.inspection-overlay.visible {
+    display: flex;
+}
+
+.inspection-panel {
+    width: 100%;
+    max-width: 450px;
+    background: #181818;
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 140, 0, 0.2);
+}
+
+.inspection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.inspection-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.inspection-close {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.inspection-close:hover {
+    color: #fff;
+}
+
+.inspection-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.inspection-notes {
+    width: 100%;
+    padding: 10px;
+    background: #111;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.9rem;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.inspection-notes:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.inspection-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-cancel {
+    background: #2a2a2a;
+    color: #ccc;
+    border: 1px solid #444;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-cancel:hover {
+    background: #333;
+    color: #fff;
+}
+
+.btn-save {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-save:hover {
+    opacity: 0.9;
 }
 
 
@@ -459,7 +580,7 @@ h1 {
 
 
 /* ============================================================
-    PASTILLES
+    PASTILLES (BOUTONS INTERACTIFS)
    ============================================================ */
 
 .tag {
@@ -479,6 +600,21 @@ h1 {
     white-space: nowrap;
 
     z-index: 30;
+    cursor: pointer;
+    transition: transform 0.1s ease, filter 0.2s ease, border-color 0.2s;
+}
+
+.tag:hover {
+    transform: scale(1.15);
+    filter: brightness(1.2);
+}
+
+/* État signalé défectueux */
+.tag.has-defect {
+    border-color: #ef4444 !important;
+    background-color: rgba(239, 68, 68, 0.25) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 8px #ef4444;
 }
 
 
@@ -578,7 +714,7 @@ h1 {
 
     display: flex;
 
-    pointer-events: none;
+    pointer-events: auto;
 
     align-items: center;
 }
@@ -815,11 +951,11 @@ h1 {
       TITRE
       ============================================================ -->
 
-<h1>BAES</h1>
+<h1>Contrôles — IS & DM</h1>
 
 
 <!-- ============================================================
-      CONTROLES
+      CONTROLES PRINCIPAUX
       ============================================================ -->
 
 <div class="controls">
@@ -849,6 +985,27 @@ h1 {
         ⛶ Plein écran
     </button>
 
+</div>
+
+
+<!-- ============================================================
+      PANNEAU DE CONTRÔLE (MODALE EN SURIMPRESSION)
+      ============================================================ -->
+
+<div id="inspection-overlay" class="inspection-overlay">
+    <div class="inspection-panel">
+        <div class="inspection-header">
+            <span id="panel-title" class="inspection-title">Signaler une anomalie</span>
+            <button class="inspection-close" onclick="closePanel()">✕</button>
+        </div>
+        <div class="inspection-body">
+            <textarea id="panel-notes" class="inspection-notes" placeholder="Décrivez le problème constaté (ex: voyant éteint, défaut de batterie, boîtier cassé...)"></textarea>
+            <div class="inspection-footer">
+                <button type="button" class="btn-cancel" onclick="closePanel()">Annuler</button>
+                <button type="button" class="btn-save" onclick="saveInspection()">Signaler le défaut</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -883,13 +1040,13 @@ h1 {
 
     <div class="device-cluster cluster-left" style="top: 80%; left: 0;">
 
-        <div class="tag is-tag arrow-left">
+        <div class="tag is-tag arrow-left" onclick="openInspection('IS 12', event)">
             12
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 12', event)">
                 12
             </div>
 
@@ -902,13 +1059,13 @@ h1 {
 
     <div class="device-cluster cluster-right" style="top: 80%; right: 0;">
 
-        <div class="tag is-tag arrow-right">
+        <div class="tag is-tag arrow-right" onclick="openInspection('IS 13', event)">
             13
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 13', event)">
                 13
             </div>
 
@@ -919,7 +1076,7 @@ h1 {
 
     <!-- DM 14 ENTRE H ET D -->
 
-    <div class="tag dm-red-tag" style="
+    <div class="tag dm-red-tag" onclick="openInspection('DM 14', event)" style="
             position: absolute;
             bottom: -13px;
             left: 50%;
@@ -961,7 +1118,7 @@ h1 {
 
         <div
             class="tech-box tgbt"
-            onclick="clickCell('TGBT', event)"
+            onclick="openInspection('TGBT', event)"
         >
             TGBT
         </div>
@@ -971,7 +1128,7 @@ h1 {
 
         <div
             class="tech-box chauf"
-            onclick="clickCell('Chaufferie', event)"
+            onclick="openInspection('Chaufferie', event)"
         >
 
             Chauf.
@@ -981,13 +1138,13 @@ h1 {
                 style="top: 0; left: 50%;"
             >
 
-                <div class="tag is-tag arrow-up">
+                <div class="tag is-tag arrow-up" onclick="openInspection('IS 5', event)">
                     5
                 </div>
 
                 <div class="dm-subgroup">
 
-                    <div class="tag dm-red-tag">
+                    <div class="tag dm-red-tag" onclick="openInspection('DM 7', event)">
                         7
                     </div>
 
@@ -1002,7 +1159,7 @@ h1 {
 
         <div
             class="tech-box atelier"
-            onclick="clickCell('Atelier Maintenance', event)"
+            onclick="openInspection('Atelier Maintenance', event)"
         >
 
             Atelier
@@ -1012,13 +1169,13 @@ h1 {
                 style="top: 0; left: 50%;"
             >
 
-                <div class="tag is-tag arrow-up">
+                <div class="tag is-tag arrow-up" onclick="openInspection('IS 6', event)">
                     6
                 </div>
 
                 <div class="dm-subgroup">
 
-                    <div class="tag dm-red-tag">
+                    <div class="tag dm-red-tag" onclick="openInspection('DM 8', event)">
                         8
                     </div>
 
@@ -1033,7 +1190,7 @@ h1 {
 
         <div
             class="tech-box charge"
-            onclick="clickCell('Salle de Charge C2', event)"
+            onclick="openInspection('Salle de Charge C2', event)"
         >
 
             S. Charge
@@ -1043,13 +1200,13 @@ h1 {
                 style="top: 0; left: 50%;"
             >
 
-                <div class="tag is-tag arrow-up">
+                <div class="tag is-tag arrow-up" onclick="openInspection('IS 7', event)">
                     7
                 </div>
 
                 <div class="dm-subgroup">
 
-                    <div class="tag dm-red-tag">
+                    <div class="tag dm-red-tag" onclick="openInspection('DM 9', event)">
                         9
                     </div>
 
@@ -1072,7 +1229,7 @@ h1 {
 
     <div
         class="sc-c6"
-        onclick="clickCell('Salle de Charge C6', event)"
+        onclick="openInspection('Salle de Charge C6', event)"
     >
 
         S. Charge
@@ -1082,13 +1239,13 @@ h1 {
 
         <div class="device-cluster cluster-top" style="top: 0; left: 80%;">
 
-            <div class="tag is-tag arrow-up">
+            <div class="tag is-tag arrow-up" onclick="openInspection('IS 16', event)">
                 16
             </div>
 
             <div class="dm-subgroup">
 
-                <div class="tag dm-red-tag">
+                <div class="tag dm-red-tag" onclick="openInspection('DM 16', event)">
                     16
                 </div>
 
@@ -1122,13 +1279,13 @@ h1 {
         style="top: 30%; left: 0;"
     >
 
-        <div class="tag is-tag arrow-left">
+        <div class="tag is-tag arrow-left" onclick="openInspection('IS 2', event)">
             2
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 4', event)">
                 4
             </div>
 
@@ -1144,13 +1301,13 @@ h1 {
         style="top: 70%; left: 0;"
     >
 
-        <div class="tag is-tag arrow-left">
+        <div class="tag is-tag arrow-left" onclick="openInspection('IS 1', event)">
             1
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 3', event)">
                 3
             </div>
 
@@ -1163,13 +1320,13 @@ h1 {
 
     <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
 
-        <div class="tag is-tag arrow-up">
+        <div class="tag is-tag arrow-up" onclick="openInspection('IS 3', event)">
             3
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 5', event)">
                 5
             </div>
 
@@ -1182,17 +1339,17 @@ h1 {
 
     <div class="device-cluster cluster-bottom" style="bottom: 0; left: 20%;">
 
-        <div class="tag is-tag arrow-down">
+        <div class="tag is-tag arrow-down" onclick="openInspection('IS 28', event)">
             28
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-green-tag">
+            <div class="tag dm-green-tag" onclick="openInspection('DM 34', event)">
                 34
             </div>
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 33', event)">
                 33
             </div>
 
@@ -1205,6 +1362,7 @@ h1 {
 
     <div
         class="tag dm-green-tag"
+        onclick="openInspection('DM Vert 2', event)"
         style="
             position: absolute;
             bottom: 5px;
@@ -1239,13 +1397,13 @@ h1 {
         style="top: 0; left: 15%;"
     >
 
-        <div class="tag is-tag arrow-up">
+        <div class="tag is-tag arrow-up" onclick="openInspection('IS 4', event)">
             4
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 6', event)">
                 6
             </div>
 
@@ -1261,13 +1419,13 @@ h1 {
         style="bottom: 0; left: 15%;"
     >
 
-        <div class="tag is-tag arrow-down">
+        <div class="tag is-tag arrow-down" onclick="openInspection('IS 27', event)">
             27
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-green-tag">
+            <div class="tag dm-green-tag" onclick="openInspection('DM 32', event)">
                 32
             </div>
 
@@ -1287,17 +1445,17 @@ h1 {
         "
     >
 
-        <div class="tag is-tag arrow-down">
+        <div class="tag is-tag arrow-down" onclick="openInspection('IS 26', event)">
             26
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-green-tag">
+            <div class="tag dm-green-tag" onclick="openInspection('DM 30', event)">
                 30
             </div>
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 31', event)">
                 31
             </div>
 
@@ -1326,13 +1484,13 @@ h1 {
 
     <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
 
-        <div class="tag is-tag arrow-up">
+        <div class="tag is-tag arrow-up" onclick="openInspection('IS 8', event)">
             8
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 10', event)">
                 10
             </div>
 
@@ -1345,17 +1503,17 @@ h1 {
 
     <div class="device-cluster cluster-bottom" style="bottom: 0; left: 35%;">
 
-        <div class="tag is-tag arrow-down">
+        <div class="tag is-tag arrow-down" onclick="openInspection('IS 25', event)">
             25
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-green-tag">
+            <div class="tag dm-green-tag" onclick="openInspection('DM 28', event)">
                 28
             </div>
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 29', event)">
                 29
             </div>
 
@@ -1384,13 +1542,13 @@ h1 {
 
     <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
 
-        <div class="tag is-tag arrow-up">
+        <div class="tag is-tag arrow-up" onclick="openInspection('IS 9', event)">
             9
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 11', event)">
                 11
             </div>
 
@@ -1410,17 +1568,17 @@ h1 {
         "
     >
 
-        <div class="tag is-tag arrow-down">
+        <div class="tag is-tag arrow-down" onclick="openInspection('IS 24', event)">
             24
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-green-tag">
+            <div class="tag dm-green-tag" onclick="openInspection('DM 26', event)">
                 26
             </div>
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 27', event)">
                 27
             </div>
 
@@ -1452,17 +1610,17 @@ h1 {
         style="bottom: 0; left: 40%;"
     >
 
-        <div class="tag is-tag arrow-down">
+        <div class="tag is-tag arrow-down" onclick="openInspection('IS 23', event)">
             23
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-green-tag">
+            <div class="tag dm-green-tag" onclick="openInspection('DM 24', event)">
                 24
             </div>
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 25', event)">
                 25
             </div>
 
@@ -1491,13 +1649,13 @@ h1 {
 
     <div class="device-cluster cluster-top" style="top: 0; left: 22%;">
 
-        <div class="tag is-tag arrow-up">
+        <div class="tag is-tag arrow-up" onclick="openInspection('IS 15', event)">
             15
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 15', event)">
                 15
             </div>
 
@@ -1513,13 +1671,13 @@ h1 {
         style="top: 55%; right: 0;"
     >
 
-        <div class="tag is-tag arrow-right">
+        <div class="tag is-tag arrow-right" onclick="openInspection('IS 17', event)">
             17
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 17', event)">
                 17
             </div>
 
@@ -1536,17 +1694,17 @@ h1 {
             left: auto;
         ">
 
-        <div class="tag is-tag arrow-down">
+        <div class="tag is-tag arrow-down" onclick="openInspection('IS 18', event)">
             18
         </div>
 
         <div class="dm-subgroup">
 
-            <div class="tag dm-green-tag">
+            <div class="tag dm-green-tag" onclick="openInspection('DM 19', event)">
                 19
             </div>
 
-            <div class="tag dm-red-tag">
+            <div class="tag dm-red-tag" onclick="openInspection('DM 18', event)">
                 18
             </div>
 
@@ -1590,9 +1748,43 @@ h1 {
 
 <script>
 
+/* ============================================================
+    GESTION DES ANOMALIES (MODE CONFORME PAR DÉFAUT)
+   ============================================================ */
+
+let currentEquipmentElement = null;
+let currentEquipmentName = null;
+
+function openInspection(eqName, event) {
+    if (event) event.stopPropagation();
+    currentEquipmentName = eqName;
+    currentEquipmentElement = event.currentTarget;
+    
+    document.getElementById("panel-title").innerText = "Anomalie sur : " + eqName;
+    document.getElementById("panel-notes").value = '';
+    
+    const overlay = document.getElementById("inspection-overlay");
+    overlay.classList.add("visible");
+}
+
+function closePanel() {
+    document.getElementById("inspection-overlay").classList.remove("visible");
+    currentEquipmentElement = null;
+    currentEquipmentName = null;
+}
+
+function saveInspection() {
+    if (!currentEquipmentElement) return;
+    
+    // Marque visuellement la pastille comme défectueuse
+    currentEquipmentElement.classList.add("has-defect");
+    
+    closePanel();
+}
+
 
 /* ============================================================
-   AFFICHAGE / MASQUAGE DES IS
+    AFFICHAGE / MASQUAGE DES IS
    ============================================================ */
 
 let isVisible = true;
@@ -1623,7 +1815,7 @@ function toggleIS() {
 
 
 /* ============================================================
-   AFFICHAGE / MASQUAGE DES DM
+    AFFICHAGE / MASQUAGE DES DM
    ============================================================ */
 
 let dmVisible = true;
@@ -1654,7 +1846,7 @@ function toggleDM() {
 
 
 /* ============================================================
-   PLEIN ECRAN
+    PLEIN ECRAN
    ============================================================ */
 
 function toggleFullscreen() {
@@ -1683,7 +1875,7 @@ function toggleFullscreen() {
 
 
 /* ============================================================
-   CLIC SUR UNE CELLULE
+    CLIC SUR UNE CELLULE
    ============================================================ */
 
 function clickCell(name, event) {
@@ -1698,7 +1890,7 @@ function clickCell(name, event) {
 
 
 /* ============================================================
-   ESC POUR QUITTER LE PLEIN ECRAN
+    ESC POUR QUITTER LE PLEIN ECRAN
    ============================================================ */
 
 document.addEventListener("fullscreenchange", function() {
