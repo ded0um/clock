@@ -9,7 +9,7 @@
 <style>
 
 /* ============================================================
-   VARIABLES
+    VARIABLES
    ============================================================ */
 
 :root {
@@ -43,7 +43,7 @@
 
 
 /* ============================================================
-   RESET
+    RESET
    ============================================================ */
 
 * {
@@ -54,7 +54,7 @@
 
 
 /* ============================================================
-   BODY
+    BODY
    ============================================================ */
 
 body {
@@ -72,7 +72,7 @@ body {
 
 
 /* ============================================================
-   TITRE
+    TITRE
    ============================================================ */
 
 h1 {
@@ -85,7 +85,7 @@ h1 {
 
 
 /* ============================================================
-   CONTROLES
+    CONTROLES
    ============================================================ */
 
 .controls {
@@ -149,7 +149,7 @@ h1 {
 
 
 /* ============================================================
-   PLAN
+    PLAN
    ============================================================ */
 
 .plan-wrapper {
@@ -195,7 +195,7 @@ h1 {
 
 
 /* ============================================================
-   GRILLE DU BATIMENT
+    GRILLE DU BATIMENT
    ============================================================ */
 
 .building-container {
@@ -219,7 +219,7 @@ h1 {
 
 
 /* ============================================================
-   CELLULES
+    CELLULES
    ============================================================ */
 
 .cell-box {
@@ -266,7 +266,7 @@ h1 {
 
 
 /* ============================================================
-   LOCAUX TECHNIQUES
+    LOCAUX TECHNIQUES
    ============================================================ */
 
 .tech-zone {
@@ -283,29 +283,10 @@ h1 {
     align-items: flex-end;
 }
 
-
-/*
-    IMPORTANT :
-
-    Les 4 locaux :
-
-    TGBT
-    + Chaufferie
-    + Atelier Maintenance
-    + Salle de Charge C2
-
-    occupent EXACTEMENT 80 % de la largeur de C2.
-
-    L'ensemble est aligné à droite.
-
-    La limite droite de la Salle de Charge C2
-    reste donc exactement à sa position actuelle.
-*/
-
 .tech-zone-inner {
     position: absolute;
 
-    bottom: 2px;
+    bottom: 0px;
     right: 0;
 
     width: 80%;
@@ -314,7 +295,7 @@ h1 {
 
     display: flex;
 
-    gap: 1px;
+    gap: 6px;
 
     box-sizing: border-box;
 }
@@ -330,12 +311,15 @@ h1 {
 
     display: flex;
 
+    flex-direction: column;
+
     align-items: center;
     justify-content: center;
 
     text-align: center;
 
     font-weight: 600;
+    font-size: 0.55rem;
 
     color: #cccccc;
 
@@ -349,12 +333,6 @@ h1 {
 
     min-width: 0;
 }
-
-
-/*
-   Les proportions sont calculées à l'intérieur
-   des 80 % disponibles.
-*/
 
 .tech-box.tgbt {
     flex: 0.7;
@@ -379,7 +357,7 @@ h1 {
 
 
 /* ============================================================
-   POSITIONS
+    POSITIONS
    ============================================================ */
 
 .ch {
@@ -409,13 +387,44 @@ h1 {
 .sc-c6 {
     position: absolute;
 
-    bottom: 2px;
+    bottom: 0px;
 
     left: 30%;
 
     width: 50%;
 
     height: 42px;
+
+    background-color: #1a1a1a;
+
+    border: 1px solid #444;
+
+    border-radius: 4px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    font-weight: 600;
+    font-size: 0.55rem;
+
+    color: #cccccc;
+
+    cursor: pointer;
+
+    line-height: 1.1;
+
+    padding: 2px;
+}
+
+.sc-c6:hover {
+    border-color: var(--accent);
+    color: #ffffff;
 }
 
 .c1 {
@@ -450,7 +459,7 @@ h1 {
 
 
 /* ============================================================
-   PASTILLES
+    PASTILLES
    ============================================================ */
 
 .tag {
@@ -474,7 +483,7 @@ h1 {
 
 
 /* ============================================================
-   IS
+    IS
    ============================================================ */
 
 .is-tag {
@@ -495,7 +504,7 @@ h1 {
 
 
 /* ============================================================
-   DM
+    DM
    ============================================================ */
 
 .dm-red-tag,
@@ -534,7 +543,7 @@ h1 {
 
 
 /* ============================================================
-   FLECHES DES IS
+    FLECHES DES IS
    ============================================================ */
 
 .is-tag.arrow-up::after {
@@ -559,7 +568,7 @@ h1 {
 
 
 /* ============================================================
-   CONTENEUR UNIFIE
+    CONTENEUR UNIFIE
    ============================================================ */
 
 .device-cluster {
@@ -576,7 +585,7 @@ h1 {
 
 
 /* ============================================================
-   CLUSTERS HAUT
+    CLUSTERS HAUT
    ============================================================ */
 
 .cluster-top {
@@ -611,7 +620,7 @@ h1 {
 
 
 /* ============================================================
-   CLUSTERS BAS
+    CLUSTERS BAS
    ============================================================ */
 
 .cluster-bottom {
@@ -648,7 +657,7 @@ h1 {
 
 
 /* ============================================================
-   CLUSTERS GAUCHE
+    CLUSTERS GAUCHE
    ============================================================ */
 
 .cluster-left {
@@ -677,7 +686,7 @@ h1 {
 
 
 /* ============================================================
-   CLUSTERS DROITE
+    CLUSTERS DROITE
    ============================================================ */
 
 .cluster-right {
@@ -706,7 +715,7 @@ h1 {
 
 
 /* ============================================================
-   MASQUAGE IS / DM
+    MASQUAGE IS / DM
    ============================================================ */
 
 .hide-is .is-tag {
@@ -720,7 +729,7 @@ h1 {
 
 
 /* ============================================================
-   DM HORS PLAN
+    DM HORS PLAN
    ============================================================ */
 
 .off-map-container {
@@ -769,7 +778,7 @@ h1 {
 
 
 /* ============================================================
-   RESPONSIVE
+    RESPONSIVE
    ============================================================ */
 
 @media (max-width: 600px) {
@@ -787,8 +796,9 @@ h1 {
         padding: 5px 8px;
     }
 
-    .tech-box {
-        font-size: 0.35rem;
+    .tech-box,
+    .sc-c6 {
+        font-size: 0.45rem;
     }
 
 }
@@ -802,15 +812,15 @@ h1 {
 
 
 <!-- ============================================================
-     TITRE
-     ============================================================ -->
+      TITRE
+      ============================================================ -->
 
 <h1>BAES</h1>
 
 
 <!-- ============================================================
-     CONTROLES
-     ============================================================ -->
+      CONTROLES
+      ============================================================ -->
 
 <div class="controls">
 
@@ -843,8 +853,8 @@ h1 {
 
 
 <!-- ============================================================
-     PLAN
-     ============================================================ -->
+      PLAN
+      ============================================================ -->
 
 <div
     class="plan-wrapper"
@@ -856,8 +866,8 @@ h1 {
 
 
 <!-- ========================================================
-     RANGÉE H
-     ======================================================== -->
+      RANGÉE H
+      ======================================================== -->
 
 <div
     class="cell-box ch"
@@ -871,10 +881,7 @@ h1 {
 
     <!-- IS 12 + DM 12 (GAUCHE) -->
 
-    <div
-        class="device-cluster cluster-left"
-        style="top: 20%; left: 0;"
-    >
+    <div class="device-cluster cluster-left" style="top: 80%; left: 0;">
 
         <div class="tag is-tag arrow-left">
             12
@@ -893,10 +900,7 @@ h1 {
 
     <!-- IS 13 + DM 13 (DROITE) -->
 
-    <div
-        class="device-cluster cluster-right"
-        style="top: 20%; right: 0;"
-    >
+    <div class="device-cluster cluster-right" style="top: 80%; right: 0;">
 
         <div class="tag is-tag arrow-right">
             13
@@ -915,16 +919,13 @@ h1 {
 
     <!-- DM 14 ENTRE H ET D -->
 
-    <div
-        class="tag dm-red-tag"
-        style="
+    <div class="tag dm-red-tag" style="
             position: absolute;
-            bottom: 4px;
+            bottom: -13px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 30;
-        "
-    >
+        ">
         14
     </div>
 
@@ -932,8 +933,8 @@ h1 {
 
 
 <!-- ========================================================
-     RANGÉE D
-     ======================================================== -->
+      RANGÉE D
+      ======================================================== -->
 
 <div
     class="cell-box cd"
@@ -948,8 +949,8 @@ h1 {
 
 
 <!-- ========================================================
-     LOCAUX TECHNIQUES C2
-     ======================================================== -->
+      LOCAUX TECHNIQUES C2
+      ======================================================== -->
 
 <div class="tech-zone">
 
@@ -1004,7 +1005,7 @@ h1 {
             onclick="clickCell('Atelier Maintenance', event)"
         >
 
-            Atelier Maint.
+            Atelier
 
             <div
                 class="device-cluster cluster-top"
@@ -1035,7 +1036,7 @@ h1 {
             onclick="clickCell('Salle de Charge C2', event)"
         >
 
-            S. Charge C2
+            S. Charge
 
             <div
                 class="device-cluster cluster-top"
@@ -1064,31 +1065,22 @@ h1 {
 
 
 <!-- ========================================================
-     SALLE DE CHARGE C6 AU-DESSUS DE C6
-     ======================================================== -->
+      SALLE DE CHARGE C6 AU-DESSUS DE C6
+      ======================================================== -->
 
 <div class="c6-top-wrapper">
 
     <div
-        class="cell-box sc-c6"
+        class="sc-c6"
         onclick="clickCell('Salle de Charge C6', event)"
     >
 
-        <span
-            style="
-                font-size:0.55rem;
-                font-weight:600;
-                color:#ccc;
-            "
-        >
-            S. Charge C6
-        </span>
+        S. Charge
 
 
-        <div
-            class="device-cluster cluster-top"
-            style="top: 0; left: 50%;"
-        >
+        <!-- IS 16 + DM 16 -->
+
+        <div class="device-cluster cluster-top" style="top: 0; left: 80%;">
 
             <div class="tag is-tag arrow-up">
                 16
@@ -1110,8 +1102,8 @@ h1 {
 
 
 <!-- ========================================================
-     CELLULE C1
-     ======================================================== -->
+      CELLULE C1
+      ======================================================== -->
 
 <div
     class="cell-box c1"
@@ -1123,33 +1115,11 @@ h1 {
     </div>
 
 
-    <!-- IS 1 + DM 3 -->
-
-    <div
-        class="device-cluster cluster-left"
-        style="top: 30%; left: 0;"
-    >
-
-        <div class="tag is-tag arrow-left">
-            1
-        </div>
-
-        <div class="dm-subgroup">
-
-            <div class="tag dm-red-tag">
-                3
-            </div>
-
-        </div>
-
-    </div>
-
-
     <!-- IS 2 + DM 4 -->
 
     <div
         class="device-cluster cluster-left"
-        style="top: 70%; left: 0;"
+        style="top: 30%; left: 0;"
     >
 
         <div class="tag is-tag arrow-left">
@@ -1167,12 +1137,31 @@ h1 {
     </div>
 
 
-    <!-- IS 3 + DM 5 -->
+    <!-- IS 1 + DM 3 -->
 
     <div
-        class="device-cluster cluster-top"
-        style="top: 0; left: 40%;"
+        class="device-cluster cluster-left"
+        style="top: 70%; left: 0;"
     >
+
+        <div class="tag is-tag arrow-left">
+            1
+        </div>
+
+        <div class="dm-subgroup">
+
+            <div class="tag dm-red-tag">
+                3
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- IS 3 + DM 5 -->
+
+    <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
 
         <div class="tag is-tag arrow-up">
             3
@@ -1191,10 +1180,7 @@ h1 {
 
     <!-- IS 28 + DM 34 + DM 33 -->
 
-    <div
-        class="device-cluster cluster-bottom"
-        style="bottom: 0; left: 10%;"
-    >
+    <div class="device-cluster cluster-bottom" style="bottom: 0; left: 20%;">
 
         <div class="tag is-tag arrow-down">
             28
@@ -1222,7 +1208,7 @@ h1 {
         style="
             position: absolute;
             bottom: 5px;
-            left: 4px;
+            left: -9px;
             z-index: 30;
         "
     >
@@ -1233,8 +1219,8 @@ h1 {
 
 
 <!-- ========================================================
-     CELLULE C2
-     ======================================================== -->
+      CELLULE C2
+      ======================================================== -->
 
 <div
     class="cell-box c2"
@@ -1323,8 +1309,8 @@ h1 {
 
 
 <!-- ========================================================
-     CELLULE C3
-     ======================================================== -->
+      CELLULE C3
+      ======================================================== -->
 
 <div
     class="cell-box c3"
@@ -1338,10 +1324,7 @@ h1 {
 
     <!-- IS 8 + DM 10 -->
 
-    <div
-        class="device-cluster cluster-top"
-        style="top: 0; left: 40%;"
-    >
+    <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
 
         <div class="tag is-tag arrow-up">
             8
@@ -1360,10 +1343,7 @@ h1 {
 
     <!-- IS 25 + DM 28 + DM 29 -->
 
-    <div
-        class="device-cluster cluster-bottom"
-        style="bottom: 0; left: 15%;"
-    >
+    <div class="device-cluster cluster-bottom" style="bottom: 0; left: 35%;">
 
         <div class="tag is-tag arrow-down">
             25
@@ -1387,8 +1367,8 @@ h1 {
 
 
 <!-- ========================================================
-     CELLULE C4
-     ======================================================== -->
+      CELLULE C4
+      ======================================================== -->
 
 <div
     class="cell-box c4"
@@ -1402,10 +1382,7 @@ h1 {
 
     <!-- IS 9 + DM 11 -->
 
-    <div
-        class="device-cluster cluster-top"
-        style="top: 0; left: 40%;"
-    >
+    <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
 
         <div class="tag is-tag arrow-up">
             9
@@ -1455,8 +1432,8 @@ h1 {
 
 
 <!-- ========================================================
-     CELLULE C5
-     ======================================================== -->
+      CELLULE C5
+      ======================================================== -->
 
 <div
     class="cell-box c5"
@@ -1497,8 +1474,8 @@ h1 {
 
 
 <!-- ========================================================
-     CELLULE C6
-     ======================================================== -->
+      CELLULE C6
+      ======================================================== -->
 
 <div
     class="cell-box c6"
@@ -1512,10 +1489,7 @@ h1 {
 
     <!-- IS 15 + DM 15 -->
 
-    <div
-        class="device-cluster cluster-top"
-        style="top: 0; left: 15%;"
-    >
+    <div class="device-cluster cluster-top" style="top: 0; left: 22%;">
 
         <div class="tag is-tag arrow-up">
             15
@@ -1556,14 +1530,11 @@ h1 {
 
     <!-- IS 18 + DM 19 + DM 18 -->
 
-    <div
-        class="device-cluster cluster-bottom"
-        style="
+    <div class="device-cluster cluster-bottom" style="
             bottom: 0;
-            right: 20%;
+            right: 10%;
             left: auto;
-        "
-    >
+        ">
 
         <div class="tag is-tag arrow-down">
             18
@@ -1592,8 +1563,8 @@ h1 {
 
 
 <!-- ============================================================
-     DM HORS PLAN
-     ============================================================ -->
+      DM HORS PLAN
+      ============================================================ -->
 
 <div class="off-map-container">
 
@@ -1614,8 +1585,8 @@ h1 {
 
 
 <!-- ============================================================
-     JAVASCRIPT
-     ============================================================ -->
+      JAVASCRIPT
+      ============================================================ -->
 
 <script>
 
