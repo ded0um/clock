@@ -14,13 +14,20 @@
       --cell-hover: #1f1f1f;
       --accent: #ff8c00;
       
+      /* IS en Jaune */
       --is-bg: #000000;
-      --is-border: #10b981;
-      --is-color: #10b981;
+      --is-border: #eab308;
+      --is-color: #facc15;
       
-      --dm-bg: #000000;
-      --dm-border: #ef4444;
-      --dm-color: #ef4444;
+      /* DM Rouges (Incendie) */
+      --dm-red-bg: #000000;
+      --dm-red-border: #ef4444;
+      --dm-red-color: #ef4444;
+
+      /* DM Verts (Déverrouillage) */
+      --dm-green-bg: #000000;
+      --dm-green-border: #22c55e;
+      --dm-green-color: #22c55e;
 
       --text-muted: #9aa0a6;
     }
@@ -67,7 +74,7 @@
       background: #1a1a1a;
       border: 1px solid #444;
       color: #ccc;
-      padding: 6px 10px;
+      padding: 6px 12px;
       border-radius: 6px;
       font-size: 0.8rem;
       font-weight: 600;
@@ -75,7 +82,7 @@
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
     }
 
     .btn-toggle:hover {
@@ -84,15 +91,15 @@
     }
 
     .btn-toggle.active-is {
-      background: rgba(16, 185, 129, 0.15);
+      background: rgba(234, 179, 8, 0.15);
       border-color: var(--is-border);
       color: var(--is-color);
     }
 
     .btn-toggle.active-dm {
       background: rgba(239, 68, 68, 0.15);
-      border-color: var(--dm-border);
-      color: var(--dm-color);
+      border-color: var(--dm-red-border);
+      color: #ffffff;
     }
 
     .plan-wrapper {
@@ -108,7 +115,6 @@
       cursor: pointer;
     }
 
-    /* Modifié pour assurer l'accès à C1 et la lisibilité globale */
     .plan-wrapper:fullscreen {
       width: 100vw;
       height: 100vh;
@@ -224,13 +230,12 @@
     .c5 { grid-column: 5; grid-row: 3; }
     .c6 { grid-column: 6; grid-row: 3; }
 
-    /* Pastilles */
+    /* Pastilles universelles */
     .tag {
       position: absolute;
-      background-color: var(--is-bg);
       font-size: 0.6rem;
       font-weight: 800;
-      padding: 1px 3px;
+      padding: 1px 4px;
       border-radius: 3px;
       line-height: 1;
       pointer-events: none;
@@ -242,15 +247,27 @@
       white-space: nowrap;
     }
 
+    /* IS : Jaune */
     .is-tag {
+      background-color: var(--is-bg);
       color: var(--is-color);
       border: 1px solid var(--is-border);
     }
 
-    .dm-tag {
-      color: var(--dm-color);
-      border: 1px solid var(--dm-border);
+    /* DM Rouges (Incendie) */
+    .dm-red-tag {
+      background-color: var(--dm-red-bg);
+      color: var(--dm-red-color);
+      border: 1px solid var(--dm-red-border);
       z-index: 25;
+    }
+
+    /* DM Verts (Déverrouillage) */
+    .dm-green-tag {
+      background-color: var(--dm-green-bg);
+      color: var(--dm-green-color);
+      border: 1px solid var(--dm-green-border);
+      z-index: 24;
     }
 
     .arrow-up::after { content: " ⬆"; font-size: 0.55rem; }
@@ -258,8 +275,10 @@
     .arrow-left::before { content: "⬅ "; font-size: 0.55rem; }
     .arrow-right::after { content: " ➡"; font-size: 0.55rem; }
 
+    /* Masquage via JS */
     .hide-is .is-tag { display: none !important; }
-    .hide-dm .dm-tag { display: none !important; }
+    .hide-dm .dm-red-tag, 
+    .hide-dm .dm-green-tag { display: none !important; }
 
     .off-map-container {
       width: 100%;
@@ -312,10 +331,10 @@
 
   <div class="controls">
     <button id="btn-is" class="btn-toggle active-is" onclick="toggleLayer('is')">
-      <span>●</span> IS (Issues)
+      <span>●</span> IS (Jaune)
     </button>
     <button id="btn-dm" class="btn-toggle active-dm" onclick="toggleLayer('dm')">
-      <span>●</span> DM (Déclencheurs)
+      <span style="color: #ef4444;">●</span><span style="color: #22c55e;">●</span> DM (Rouges & Verts)
     </button>
   </div>
 
@@ -325,11 +344,15 @@
       <!-- RANGÉE H -->
       <div class="cell-box ch" onclick="clickCell('H', event)">
         <div class="cell-label">H</div>
+        <!-- IS (Jaune) -->
         <div class="tag is-tag arrow-left" style="top: 10px; left: -10px;">12</div>
         <div class="tag is-tag arrow-right" style="top: 10px; right: -10px;">13</div>
-        <div class="tag dm-tag arrow-left" style="top: 35px; left: -10px;">DM 12</div>
-        <div class="tag dm-tag arrow-right" style="top: 35px; right: -10px;">DM 13</div>
-        <div class="tag dm-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">DM 14</div>
+        <!-- DM Rouges -->
+        <div class="tag dm-red-tag arrow-left" style="top: 30px; left: -10px;">12</div>
+        <div class="tag dm-red-tag arrow-right" style="top: 30px; right: -10px;">13</div>
+        <div class="tag dm-red-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">14</div>
+        <!-- DM Vert -->
+        <div class="tag dm-green-tag arrow-left" style="top: 50px; left: -10px;">12</div>
       </div>
 
       <!-- RANGÉE D -->
@@ -342,17 +365,17 @@
         <div class="tech-box" onclick="clickCell('TGBT', event)">
           TGBT
           <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">5</div>
-          <div class="tag dm-tag arrow-up" style="top: -24px; left: 50%; transform: translateX(-50%);">DM 5</div>
+          <div class="tag dm-red-tag arrow-up" style="top: -24px; left: 50%; transform: translateX(-50%);">5</div>
         </div>
         <div class="tech-box" onclick="clickCell('Chaufferie', event)">
           Chauf.
           <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">6</div>
-          <div class="tag dm-tag arrow-up" style="top: -24px; left: 50%; transform: translateX(-50%);">DM 6</div>
+          <div class="tag dm-red-tag arrow-up" style="top: -24px; left: 50%; transform: translateX(-50%);">6</div>
         </div>
         <div class="tech-box" onclick="clickCell('Atelier Maintenance', event)">
           Atelier Maint.
           <div class="tag is-tag arrow-up" style="top: -10px; left: 50%; transform: translateX(-50%);">7</div>
-          <div class="tag dm-tag arrow-up" style="top: -24px; left: 50%; transform: translateX(-50%);">DM 7</div>
+          <div class="tag dm-red-tag arrow-up" style="top: -24px; left: 50%; transform: translateX(-50%);">7</div>
         </div>
         <div class="tech-box" onclick="clickCell('Salle de Charge C2', event)">
           S. Charge C2
@@ -372,28 +395,35 @@
       <!-- CELLULE 1 -->
       <div class="cell-box c1" onclick="clickCell('C1', event)">
         <div class="cell-label">C1</div>
+        <!-- IS -->
         <div class="tag is-tag arrow-left" style="bottom: 30%; left: -10px;">1</div>
         <div class="tag is-tag arrow-left" style="top: 30%; left: -10px;">2</div>
         <div class="tag is-tag arrow-up" style="top: -10px; left: 40%;">3</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">28</div>
-        <div class="tag dm-tag arrow-left" style="bottom: 15%; left: -10px;">DM 1</div>
-        <div class="tag dm-tag arrow-left" style="top: 15%; left: -10px;">DM 2</div>
-        <div class="tag dm-tag arrow-up" style="top: -10px; left: 65%;">DM 3</div>
-        <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 32%;">DM 33</div>
-        <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 58%;">DM 34</div>
+        <!-- DM Rouges -->
+        <div class="tag dm-red-tag arrow-left" style="bottom: 15%; left: -10px;">1</div>
+        <div class="tag dm-red-tag arrow-left" style="top: 15%; left: -10px;">2</div>
+        <div class="tag dm-red-tag arrow-up" style="top: -10px; left: 65%;">3</div>
+        <div class="tag dm-red-tag arrow-down" style="bottom: -10px; left: 32%;">33</div>
+        <div class="tag dm-red-tag arrow-down" style="bottom: -10px; left: 58%;">34</div>
+        <!-- DM Verts -->
+        <div class="tag dm-green-tag arrow-left" style="bottom: 45%; left: -10px;">1</div>
+        <div class="tag dm-green-tag arrow-left" style="top: 45%; left: -10px;">2</div>
       </div>
 
       <!-- CELLULE 2 -->
       <div class="cell-box c2" onclick="clickCell('C2', event)">
         <div class="cell-label">C2</div>
+        <!-- IS -->
         <div class="tag is-tag arrow-up" style="top: -10px; left: 10%;">4</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">27</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 40%;">31</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; right: 10%;">26</div>
-        <div class="tag dm-tag arrow-up" style="top: -10px; left: 35%;">DM 4</div>
-        <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 25%;">DM 32</div>
-        <div class="tag dm-tag arrow-down" style="bottom: -10px; right: 28%;">DM 30</div>
-        <div class="tag dm-tag arrow-down" style="bottom: -10px; right: 45%;">DM 31</div>
+        <!-- DM Rouges -->
+        <div class="tag dm-red-tag arrow-up" style="top: -10px; left: 35%;">4</div>
+        <div class="tag dm-red-tag arrow-down" style="bottom: -10px; left: 25%;">32</div>
+        <div class="tag dm-red-tag arrow-down" style="bottom: -10px; right: 28%;">30</div>
+        <div class="tag dm-red-tag arrow-down" style="bottom: -10px; right: 45%;">31</div>
       </div>
 
       <!-- CELLULE 3 -->
@@ -402,9 +432,9 @@
         <div class="tag is-tag arrow-up" style="top: -10px; left: 40%;">8</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">25</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; right: 10%;">30</div>
-        <div class="tag dm-tag arrow-up" style="top: -10px; left: 65%;">DM 8</div>
-        <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 32%;">DM 28</div>
-        <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 55%;">DM 29</div>
+        <div class="tag dm-red-tag arrow-up" style="top: -10px; left: 65%;">8</div>
+        <div class="tag dm-red-tag arrow-down" style="bottom: -10px; left: 32%;">28</div>
+        <div class="tag dm-red-tag arrow-down" style="bottom: -10px; left: 55%;">29</div>
       </div>
 
       <!-- CELLULE 4 -->
@@ -412,17 +442,17 @@
         <div class="cell-label">C4</div>
         <div class="tag is-tag arrow-up" style="top: -10px; left: 40%;">9</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; right: 10%;">24</div>
-        <div class="tag dm-tag arrow-up" style="top: -10px; left: 65%;">DM 9</div>
-        <div class="tag dm-tag arrow-down" style="bottom: -10px; right: 32%;">DM 26</div>
-        <div class="tag dm-tag arrow-down" style="bottom: -10px; right: 55%;">DM 27</div>
+        <div class="tag dm-red-tag arrow-up" style="top: -10px; left: 65%;">9</div>
+        <div class="tag dm-red-tag arrow-down" style="bottom: -10px; right: 32%;">26</div>
+        <div class="tag dm-red-tag arrow-down" style="bottom: -10px; right: 55%;">27</div>
       </div>
 
       <!-- CELLULE 5 -->
       <div class="cell-box c5" onclick="clickCell('C5', event)">
         <div class="cell-label">C5</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 40%;">23</div>
-        <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 15%;">DM 24</div>
-        <div class="tag dm-tag arrow-down" style="bottom: -10px; left: 65%;">DM 25</div>
+        <div class="tag dm-red-tag arrow-down" style="bottom: -10px; left: 15%;">24</div>
+        <div class="tag dm-red-tag arrow-down" style="bottom: -10px; left: 65%;">25</div>
       </div>
 
       <!-- CELLULE 6 -->
@@ -433,10 +463,12 @@
         <div class="tag is-tag arrow-right" style="top: 40%; right: -10px;">17</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; left: 10%;">20</div>
         <div class="tag is-tag arrow-down" style="bottom: -10px; right: 30%;">19</div>
-        <div class="tag dm-tag arrow-up" style="top: -10px; left: 35%;">DM 15</div>
-        <div class="tag dm-tag arrow-up" style="top: -10px; right: 35%;">DM 16</div>
-        <div class="tag dm-tag arrow-right" style="top: 25%; right: -10px;">DM 17</div>
-        <div class="tag dm-tag arrow-down" style="bottom: -10px; right: 10%;">DM 18</div>
+        <div class="tag dm-red-tag arrow-up" style="top: -10px; left: 35%;">15</div>
+        <div class="tag dm-red-tag arrow-up" style="top: -10px; right: 35%;">16</div>
+        <div class="tag dm-red-tag arrow-right" style="top: 25%; right: -10px;">17</div>
+        <div class="tag dm-red-tag arrow-down" style="bottom: -10px; right: 10%;">18</div>
+        <!-- DM Vert -->
+        <div class="tag dm-green-tag arrow-right" style="top: 60%; right: -10px;">17</div>
       </div>
 
     </div>
@@ -445,7 +477,7 @@
   <div id="off-map-container" class="off-map-container">
     <span class="off-map-title">Hors plan :</span>
     <div class="off-map-tags">
-      <div class="tag dm-tag">DM 35 (Poste de garde)</div>
+      <div class="tag dm-red-tag">35 (Poste de garde)</div>
     </div>
   </div>
 
