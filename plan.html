@@ -1,11 +1,10 @@
-```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Synoptique IS / DM</title>
+<title>BAES</title>
 
 <style>
 
@@ -146,7 +145,8 @@ h1 {
   border-radius: 12px;
   border: 1px solid var(--border);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   cursor: pointer;
 }
 
@@ -160,7 +160,7 @@ h1 {
   align-items: center;
   justify-content: center;
   background-color: var(--bg);
-  overflow: hidden;
+  overflow: auto;
 }
 
 
@@ -492,27 +492,11 @@ h1 {
 }
 
 .cluster-left .is-tag {
-  /*
-     L'IS conserve sa position d'origine.
-     Il est simplement décalé visuellement de 50%.
-  */
   transform: translateX(-50%);
   width: 42px;
   padding: 2px 5px;
 }
 
-/*
-   IMPORTANT :
-
-   Le DM est déplacé de 21px vers la gauche.
-
-   Largeur IS = 42px
-   Moitié = 21px
-
-   Cela permet au DM de venir toucher
-   exactement la bordure de l'IS sans
-   déplacer l'IS lui-même.
-*/
 .cluster-left .dm-subgroup {
   transform: translateX(-21px);
 }
@@ -531,19 +515,11 @@ h1 {
 }
 
 .cluster-right .is-tag {
-  /*
-     Même principe que pour la gauche.
-  */
   transform: translateX(50%);
   width: 42px;
   padding: 2px 5px;
 }
 
-/*
-   Le DM est déplacé de 21px vers la droite
-   pour venir toucher exactement la bordure
-   de l'IS.
-*/
 .cluster-right .dm-subgroup {
   transform: translateX(21px);
 }
@@ -633,7 +609,7 @@ h1 {
      TITRE
      ============================================================ -->
 
-<h1>Synoptique IS / DM</h1>
+<h1>BAES</h1>
 
 
 <!-- ============================================================
@@ -1428,8 +1404,8 @@ h1 {
   <div class="off-map-tags">
 
     <!--
-      Ajoute ici les DM qui ne sont pas
-      positionnés directement sur le plan.
+       Ajoute ici les DM qui ne sont pas
+       positionnés directement sur le plan.
     -->
 
   </div>
@@ -1527,24 +1503,12 @@ function toggleFullscreen() {
 
 function clickCell(name, event) {
 
-  /*
-    Empêche le clic sur une cellule de déclencher
-    d'autres comportements si nécessaire.
-  */
-
   if (event) {
     event.stopPropagation();
   }
 
   console.log("Cellule sélectionnée :", name);
 
-  /*
-    Pour l'instant, aucune action particulière
-    n'est effectuée.
-
-    Tu peux remplacer ce console.log() par ton
-    propre traitement.
-  */
 }
 
 
@@ -1566,4 +1530,3 @@ document.addEventListener("fullscreenchange", function() {
 
 </body>
 </html>
-```
