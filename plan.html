@@ -35,7 +35,7 @@
       font-family: Inter, system-ui, -apple-system, sans-serif;
       background-color: var(--bg);
       color: #ffffff;
-      padding: 20px 10px;
+      padding: 10px 5px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -43,8 +43,8 @@
     }
 
     h1 {
-      font-size: 1.2rem;
-      margin-bottom: 15px;
+      font-size: 1.1rem;
+      margin-bottom: 12px;
       text-align: center;
       color: #ffffff;
       font-weight: 600;
@@ -52,27 +52,30 @@
 
     .controls {
       display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 8px;
+      margin-bottom: 15px;
       background: var(--card-bg);
-      padding: 10px 16px;
+      padding: 8px 12px;
       border-radius: 8px;
       border: 1px solid var(--border);
+      width: 100%;
+      max-width: 1100px;
+      justify-content: center;
     }
 
     .btn-toggle {
       background: #1a1a1a;
       border: 1px solid #444;
       color: #ccc;
-      padding: 6px 14px;
+      padding: 6px 10px;
       border-radius: 6px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .btn-toggle:hover {
@@ -96,11 +99,12 @@
       width: 100%;
       max-width: 1100px;
       background: var(--card-bg);
-      padding: 20px;
+      padding: 15px 10px;
       border-radius: 12px;
       border: 1px solid var(--border);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .building-container {
@@ -108,7 +112,7 @@
       grid-template-columns: repeat(6, 1fr);
       grid-template-rows: 80px 80px 240px;
       gap: 6px;
-      min-width: 900px;
+      min-width: 850px; /* Garantit la structuration lisible sur écran étroit */
     }
 
     .cell-box {
@@ -126,21 +130,20 @@
     .cell-box:hover {
       background-color: var(--cell-hover);
       border-color: var(--accent);
-      transform: translateY(-1px);
     }
 
     .cell-label {
       border: 1px solid var(--accent);
       color: var(--accent);
-      padding: 4px 12px;
+      padding: 4px 10px;
       background: rgba(255, 140, 0, 0.08);
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       border-radius: 6px;
       letter-spacing: 0.5px;
     }
 
-    /* Zone technique C2 : commence à 10% de C2 et s'étend jusqu'à la fin de C2 (100%) */
+    /* Zone technique C2 : alignée de 10% à 100% de la largeur C2 */
     .tech-zone {
       grid-column: 2;
       grid-row: 2;
@@ -163,7 +166,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      font-size: 0.52rem;
+      font-size: 0.55rem;
       font-weight: 600;
       color: #cccccc;
       position: relative;
@@ -190,7 +193,6 @@
       align-items: flex-end;
     }
 
-    /* Salle de charge C6 */
     .sc-c6 {
       position: absolute;
       bottom: 2px;
@@ -210,9 +212,9 @@
     .tag {
       position: absolute;
       background-color: var(--is-bg);
-      font-size: 0.62rem;
+      font-size: 0.6rem;
       font-weight: 800;
-      padding: 1px 4px;
+      padding: 1px 3px;
       border-radius: 3px;
       line-height: 1;
       pointer-events: none;
@@ -221,7 +223,7 @@
       align-items: center;
       gap: 2px;
       z-index: 20;
-      transition: opacity 0.2s ease, transform 0.2s ease;
+      white-space: nowrap;
     }
 
     .is-tag {
@@ -235,42 +237,58 @@
       z-index: 25;
     }
 
-    /* Flèches */
-    .arrow-up::after { content: " ⬆"; font-size: 0.6rem; }
-    .arrow-down::after { content: " ⬇"; font-size: 0.6rem; }
-    .arrow-left::before { content: "⬅ "; font-size: 0.6rem; }
-    .arrow-right::after { content: " ➡"; font-size: 0.6rem; }
+    .arrow-up::after { content: " ⬆"; font-size: 0.55rem; }
+    .arrow-down::after { content: " ⬇"; font-size: 0.55rem; }
+    .arrow-left::before { content: "⬅ "; font-size: 0.55rem; }
+    .arrow-right::after { content: " ➡"; font-size: 0.55rem; }
 
-    /* Masquage dynamique */
     .hide-is .is-tag { display: none !important; }
     .hide-dm .dm-tag { display: none !important; }
 
     .off-map-container {
       width: 100%;
       max-width: 1100px;
-      margin-top: 15px;
+      margin-top: 12px;
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 12px 20px;
+      padding: 10px 15px;
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .off-map-title {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 600;
       color: var(--text-muted);
     }
 
     .off-map-tags {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       position: relative;
     }
 
     .off-map-tags .tag { position: relative; }
+
+    /* Adaptations spécifiques aux petits écrans mobile */
+    @media (max-width: 600px) {
+      body {
+        padding: 8px 4px;
+      }
+      .controls {
+        flex-wrap: wrap;
+      }
+      .btn-toggle {
+        font-size: 0.75rem;
+        padding: 5px 8px;
+      }
+      .tech-box {
+        font-size: 0.5rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -279,10 +297,10 @@
 
   <div class="controls">
     <button id="btn-is" class="btn-toggle active-is" onclick="toggleLayer('is')">
-      <span>●</span> IS (Issues de Secours)
+      <span>●</span> IS (Issues)
     </button>
     <button id="btn-dm" class="btn-toggle active-dm" onclick="toggleLayer('dm')">
-      <span>●</span> DM (Déclencheurs Manuels)
+      <span>●</span> DM (Déclencheurs)
     </button>
   </div>
 
