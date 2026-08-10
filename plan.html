@@ -109,7 +109,7 @@ h1 {
     border: 1px solid var(--border);
     width: 100%;
     max-width: 1100px;
-    justify-content: space-between; /* Modifié : Écarte les éléments vers la gauche et la droite */
+    justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
 }
@@ -146,7 +146,6 @@ h1 {
     border-color: #666;
     color: #fff;
 }
-/* Style neutre sélectionné (sans rouge/vert/jaune) */
 .level-pill.active {
     background: #ffffff;
     border-color: #ffffff;
@@ -174,7 +173,6 @@ h1 {
 .btn-toggle:hover {
     opacity: 0.9;
 }
-/* Style désactivé neutre */
 .btn-toggle.is-off, .btn-toggle.dm-off {
     background: #141414;
     border-color: #333333;
@@ -319,7 +317,6 @@ h1 {
 .btn-save:hover {
     opacity: 0.9;
 }
-/* Style de la boîte de rapport (Compte rendu) */
 .report-textarea {
     width: 100%;
     background: #111111;
@@ -371,13 +368,13 @@ h1 {
     opacity: 0.9;
 }
 /* ============================================================
-    PLAN ET GRILLE (AJUSTÉ SANS ESPACE INUTILE EN HAUT)
+    PLAN ET GRILLE
    ============================================================ */
 .plan-wrapper {
     width: 100%;
     max-width: 1100px;
     background: var(--card-bg);
-    padding: 10px 25px 25px 25px; /* Padding haut réduit */
+    padding: 10px 25px 25px 25px;
     border-radius: 12px;
     border: 1px solid var(--border);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
@@ -387,7 +384,7 @@ h1 {
 .building-container {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: 60px 80px 240px; /* Rangée 1 ajustée de 80px à 60px pour resserrer le haut */
+    grid-template-rows: 60px 80px 240px;
     gap: 6px;
     min-width: 850px;
     width: 100%;
@@ -418,9 +415,6 @@ h1 {
     border-radius: 6px;
     letter-spacing: 0.5px;
 }
-/* ============================================================
-    GESTION RDC / ÉTAGE (Visibilité & Alignement bas de grille)
-   ============================================================ */
 .building-container .floor-element {
     display: none !important;
 }
@@ -464,9 +458,6 @@ h1 {
     letter-spacing: 0.5px;
     pointer-events: none;
 }
-/* ============================================================
-    LOCAUX TECHNIQUES (RDC)
-   ============================================================ */
 .tech-zone {
     grid-column: 2;
     grid-row: 2;
@@ -515,9 +506,6 @@ h1 {
     color: #ffffff;
     background-color: var(--cell-hover);
 }
-/* ============================================================
-    POSITIONS & PASTILLES RDC
-   ============================================================ */
 .ch { grid-column: 5; grid-row: 1; }
 .cd { grid-column: 5; grid-row: 2; }
 .c6-top-wrapper {
@@ -637,8 +625,10 @@ h1 {
 .cluster-right .dm-subgroup { transform: translateX(21px); display: flex; flex-direction: row; gap: 1px; }
 .hide-is .is-tag { display: none !important; }
 .hide-dm .dm-red-tag, .hide-dm .dm-green-tag { display: none !important; }
+/* Masque uniquement les boutons DM individuels dans la zone hors plan sans cacher le conteneur global */
+.hide-dm .off-map-btn { display: none !important; }
 /* ============================================================
-    ZONE HORS PLAN STRUCTURÉE (GROUPES & 2 COLONNES RDC/ÉTAGE)
+    ZONE HORS PLAN STRUCTURÉE
    ============================================================ */
 .off-map-container {
     width: 100%;
@@ -765,7 +755,6 @@ h1 {
         <button class="btn-action btn-reset" onclick="resetAll()">Réinitialiser</button>
     </div>
 </div>
-<!-- CONTRÔLES : Niveau à gauche, Toggle à droite -->
 <div class="controls">
     <div class="level-selector-group">
         <label>Niveau :</label>
@@ -779,7 +768,6 @@ h1 {
         <button id="btn-dm" class="btn-toggle" onclick="toggleDM()">DM</button>
     </div>
 </div>
-<!-- PANNEAU DE CONTRÔLE (MODALE INDIVIDUELLE) -->
 <div id="inspection-overlay" class="inspection-overlay">
     <div class="inspection-panel">
         <div class="inspection-header">
@@ -789,7 +777,6 @@ h1 {
         <div id="inspection-body-content" class="inspection-body"></div>
     </div>
 </div>
-<!-- PANNEAU RAPPORT / COMPTE RENDU -->
 <div id="report-overlay" class="inspection-overlay">
     <div class="inspection-panel">
         <div class="inspection-header">
@@ -807,7 +794,6 @@ h1 {
 </div>
 <div class="plan-wrapper" id="plan">
 <div class="building-container" id="building-grid">
-<!-- ================= ELEMENT ÉTAGE (C1 à C6) ================= -->
 <div class="floor-element floor-c1" onclick="clickCell('Étage C1', event)">
     <div class="floor-inner-box">
         <span class="floor-label-badge">Étage</span>
@@ -877,7 +863,6 @@ h1 {
         </div>
     </div>
 </div>
-<!-- ================= ÉLÉMENTS RDC ================= -->
 <div class="cell-box rdc-element ch" onclick="clickCell('H', event)">
     <div class="cell-label">H</div>
     <div class="device-cluster cluster-left" style="top: 80%; left: 0;">
@@ -1025,12 +1010,9 @@ h1 {
 </div>
 </div>
 </div>
-<!-- ================= ZONE HORS PLAN STRUCTURÉE ================= -->
 <div class="off-map-container">
     <div class="off-map-title">DM hors plan :</div>
     <div class="off-map-groups">
-        
-        <!-- Groupe DSV -->
         <div class="off-map-group-block">
             <div class="off-map-group-title">DSV</div>
             <div class="off-map-grid-2cols">
@@ -1057,7 +1039,6 @@ h1 {
                 </div>
             </div>
         </div>
-        <!-- Groupe SPI2 -->
         <div class="off-map-group-block">
             <div class="off-map-group-title">SPI2</div>
             <div class="off-map-grid-2cols">
@@ -1106,7 +1087,6 @@ h1 {
         "DM-SPI2-ETG-19": "DM 19",
         "DM-SPI2-ETG-20": "DM 20"
     };
-    /* Formate un titre clair et simplifié (ex: IS 8, DM 18) pour la modale */
     function formatDeviceTitle(uniqueId, type) {
         if (customDeviceNames[uniqueId]) {
             return customDeviceNames[uniqueId];
@@ -1159,6 +1139,7 @@ h1 {
         const plan = document.getElementById('plan');
         const btn = document.getElementById('btn-dm');
         plan.classList.toggle('hide-dm');
+        document.body.classList.toggle('hide-dm');
         btn.classList.toggle('dm-off');
     }
     function openInspection(uniqueId, type, event) {
