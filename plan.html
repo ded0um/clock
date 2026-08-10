@@ -97,7 +97,7 @@ h1 {
     color: #9aa0a6;
 }
 /* ============================================================
-    BARRE DE CONTRÔLES & SÉLECTEURS ALIGNÉS À DROITE
+    BARRE DE CONTRÔLES (ALIGNEMENT MODIFIÉ)
    ============================================================ */
 .controls {
     display: flex;
@@ -109,7 +109,7 @@ h1 {
     border: 1px solid var(--border);
     width: 100%;
     max-width: 1100px;
-    justify-content: flex-end;
+    justify-content: space-between; /* Modifié : Écarte les éléments vers la gauche et la droite */
     align-items: center;
     flex-wrap: wrap;
 }
@@ -765,7 +765,7 @@ h1 {
         <button class="btn-action btn-reset" onclick="resetAll()">Réinitialiser</button>
     </div>
 </div>
-<!-- CONTRÔLES ET BOUTONS ALIGNÉS À DROITE SANS ROUGE/VERT/JAUNE EN SÉLECTION -->
+<!-- CONTRÔLES : Niveau à gauche, Toggle à droite -->
 <div class="controls">
     <div class="level-selector-group">
         <label>Niveau :</label>
@@ -1086,7 +1086,6 @@ h1 {
     let currentElementId = null;
     let currentElementType = null;
     const inspectionsRegistry = {};
-
     const customDeviceNames = {
         "DM-DSV-RDC-36": "DM 36 (Local CE)",
         "DM-DSV-RDC-37": "DM 37 (Entrée DSV)",
@@ -1107,7 +1106,6 @@ h1 {
         "DM-SPI2-ETG-19": "DM 19",
         "DM-SPI2-ETG-20": "DM 20"
     };
-
     /* Formate un titre clair et simplifié (ex: IS 8, DM 18) pour la modale */
     function formatDeviceTitle(uniqueId, type) {
         if (customDeviceNames[uniqueId]) {
@@ -1137,7 +1135,6 @@ h1 {
         }
         return uniqueId;
     }
-
     function setLevel(val) {
         const grid = document.getElementById('building-grid');
         const pillRdc = document.getElementById('pill-rdc');
