@@ -97,11 +97,11 @@ h1 {
     color: #9aa0a6;
 }
 /* ============================================================
-    BARRE DE CONTRÔLES & SÉLECTEUR NIVEAU
+    BARRE DE CONTRÔLES & SÉLECTEURS ALIGNÉS À DROITE
    ============================================================ */
 .controls {
     display: flex;
-    gap: 12px;
+    gap: 16px;
     margin-bottom: 15px;
     background: var(--card-bg);
     padding: 8px 12px;
@@ -109,7 +109,7 @@ h1 {
     border: 1px solid var(--border);
     width: 100%;
     max-width: 1100px;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
     flex-wrap: wrap;
 }
@@ -118,37 +118,53 @@ h1 {
     align-items: center;
     gap: 8px;
     background: #141414;
-    padding: 4px 10px;
+    padding: 4px 8px;
     border-radius: 6px;
-    border: 1px solid #444;
+    border: 1px solid #333;
 }
 .level-selector-group label {
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-muted);
 }
-.level-select {
-    background: #000000;
-    color: #ffffff;
-    border: 1px solid #555;
-    padding: 4px 8px;
+.level-pills {
+    display: flex;
+    gap: 4px;
+}
+.level-pill {
+    background: #1a1a1a;
+    color: var(--text-muted);
+    border: 1px solid #333;
+    padding: 4px 10px;
     border-radius: 4px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
-    outline: none;
+    transition: all 0.2s ease;
 }
-.level-select:focus {
-    border-color: var(--accent);
+.level-pill:hover {
+    border-color: #666;
+    color: #fff;
+}
+/* Style neutre sélectionné (sans rouge/vert/jaune) */
+.level-pill.active {
+    background: #ffffff;
+    border-color: #ffffff;
+    color: #000000;
+    font-weight: 700;
+}
+.toggle-group {
+    display: flex;
+    gap: 6px;
 }
 .btn-toggle {
-    background: #1a1a1a;
-    border: 1px solid #444;
-    color: #ccc;
-    padding: 6px 12px;
+    background: #ffffff;
+    border: 1px solid #ffffff;
+    color: #000000;
+    padding: 5px 14px;
     border-radius: 6px;
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -156,18 +172,15 @@ h1 {
     gap: 6px;
 }
 .btn-toggle:hover {
-    border-color: #666;
-    color: #fff;
+    opacity: 0.9;
 }
-.btn-toggle.active-is {
-    background: rgba(234, 179, 8, 0.15);
-    border-color: var(--is-border);
-    color: var(--is-color);
-}
-.btn-toggle.active-dm {
-    background: rgba(239, 68, 68, 0.15);
-    border-color: var(--dm-red-border);
-    color: #ffffff;
+/* Style désactivé neutre */
+.btn-toggle.is-off, .btn-toggle.dm-off {
+    background: #141414;
+    border-color: #333333;
+    color: #666666;
+    font-weight: 600;
+    opacity: 0.6;
 }
 /* ============================================================
     PANNEAU DE CONTRÔLE / MODALES
@@ -358,13 +371,13 @@ h1 {
     opacity: 0.9;
 }
 /* ============================================================
-    PLAN ET GRILLE
+    PLAN ET GRILLE (AJUSTÉ SANS ESPACE INUTILE EN HAUT)
    ============================================================ */
 .plan-wrapper {
     width: 100%;
     max-width: 1100px;
     background: var(--card-bg);
-    padding: 45px 35px;
+    padding: 10px 25px 25px 25px; /* Padding haut réduit */
     border-radius: 12px;
     border: 1px solid var(--border);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
@@ -374,7 +387,7 @@ h1 {
 .building-container {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: 80px 80px 80px 240px;
+    grid-template-rows: 60px 80px 240px; /* Rangée 1 ajustée de 80px à 60px pour resserrer le haut */
     gap: 6px;
     min-width: 850px;
     width: 100%;
@@ -417,12 +430,12 @@ h1 {
 .building-container.show-etage .floor-element {
     display: flex !important;
 }
-.floor-c1 { grid-column: 1; grid-row: 4; height: 240px; align-items: flex-end; }
-.floor-c2 { grid-column: 2; grid-row: 4; height: 240px; align-items: flex-end; }
-.floor-c3 { grid-column: 3; grid-row: 4; height: 240px; align-items: flex-end; }
-.floor-c4 { grid-column: 4; grid-row: 4; height: 240px; align-items: flex-end; }
-.floor-c5 { grid-column: 5; grid-row: 4; height: 240px; align-items: flex-end; }
-.floor-c6 { grid-column: 6; grid-row: 4; height: 240px; align-items: flex-end; }
+.floor-c1 { grid-column: 1; grid-row: 3; height: 240px; align-items: flex-end; }
+.floor-c2 { grid-column: 2; grid-row: 3; height: 240px; align-items: flex-end; }
+.floor-c3 { grid-column: 3; grid-row: 3; height: 240px; align-items: flex-end; }
+.floor-c4 { grid-column: 4; grid-row: 3; height: 240px; align-items: flex-end; }
+.floor-c5 { grid-column: 5; grid-row: 3; height: 240px; align-items: flex-end; }
+.floor-c6 { grid-column: 6; grid-row: 3; height: 240px; align-items: flex-end; }
 .floor-inner-box {
     width: 100%;
     height: 95px;
@@ -456,7 +469,7 @@ h1 {
    ============================================================ */
 .tech-zone {
     grid-column: 2;
-    grid-row: 3;
+    grid-row: 2;
     position: relative;
     width: 100%;
     height: 100%;
@@ -505,11 +518,11 @@ h1 {
 /* ============================================================
     POSITIONS & PASTILLES RDC
    ============================================================ */
-.ch { grid-column: 5; grid-row: 2; }
-.cd { grid-column: 5; grid-row: 3; }
+.ch { grid-column: 5; grid-row: 1; }
+.cd { grid-column: 5; grid-row: 2; }
 .c6-top-wrapper {
     grid-column: 6;
-    grid-row: 3;
+    grid-row: 2;
     position: relative;
     width: 100%;
     height: 100%;
@@ -543,12 +556,12 @@ h1 {
     color: #ffffff;
     background-color: var(--cell-hover);
 }
-.c1 { grid-column: 1; grid-row: 4; }
-.c2 { grid-column: 2; grid-row: 4; }
-.c3 { grid-column: 3; grid-row: 4; }
-.c4 { grid-column: 4; grid-row: 4; }
-.c5 { grid-column: 5; grid-row: 4; }
-.c6 { grid-column: 6; grid-row: 4; }
+.c1 { grid-column: 1; grid-row: 3; }
+.c2 { grid-column: 2; grid-row: 3; }
+.c3 { grid-column: 3; grid-row: 3; }
+.c4 { grid-column: 4; grid-row: 3; }
+.c5 { grid-column: 5; grid-row: 3; }
+.c6 { grid-column: 6; grid-row: 3; }
 .tag {
     font-size: 0.6rem;
     font-weight: 800;
@@ -738,7 +751,7 @@ h1 {
 }
 @media (max-width: 600px) {
     body { padding: 8px 4px; }
-    .controls { flex-wrap: wrap; }
+    .controls { flex-wrap: wrap; justify-content: flex-start; }
     .btn-toggle, .btn-action { font-size: 0.75rem; padding: 5px 8px; }
     .tech-box, .sc-c6 { font-size: 0.45rem; }
 }
@@ -752,16 +765,19 @@ h1 {
         <button class="btn-action btn-reset" onclick="resetAll()">Réinitialiser</button>
     </div>
 </div>
+<!-- CONTRÔLES ET BOUTONS ALIGNÉS À DROITE SANS ROUGE/VERT/JAUNE EN SÉLECTION -->
 <div class="controls">
     <div class="level-selector-group">
-        <label for="level-select">Niveau :</label>
-        <select id="level-select" class="level-select" onchange="changeLevel()">
-            <option value="rdc">RDC</option>
-            <option value="etage">Étage</option>
-        </select>
+        <label>Niveau :</label>
+        <div class="level-pills">
+            <button type="button" id="pill-rdc" class="level-pill active" onclick="setLevel('rdc')">RDC</button>
+            <button type="button" id="pill-etage" class="level-pill" onclick="setLevel('etage')">Étage</button>
+        </div>
     </div>
-    <button id="btn-is" class="btn-toggle active-is" onclick="toggleIS()">🟡 IS</button>
-    <button id="btn-dm" class="btn-toggle active-dm" onclick="toggleDM()">🔴🟢 DM</button>
+    <div class="toggle-group">
+        <button id="btn-is" class="btn-toggle" onclick="toggleIS()">IS</button>
+        <button id="btn-dm" class="btn-toggle" onclick="toggleDM()">DM</button>
+    </div>
 </div>
 <!-- PANNEAU DE CONTRÔLE (MODALE INDIVIDUELLE) -->
 <div id="inspection-overlay" class="inspection-overlay">
@@ -1021,22 +1037,22 @@ h1 {
                 <div class="off-map-col">
                     <div class="off-map-col-title">RDC</div>
                     <div class="off-map-tags">
-                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-36" onclick="openInspection('DM-DSV-RDC-36', 'DM', event)"><span class="off-map-dot red"></span>DM 36 (Local CE RDC)</button>
-                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-37" onclick="openInspection('DM-DSV-RDC-37', 'DM', event)"><span class="off-map-dot red"></span>DM 37 (Entrée RDC)</button>
-                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-38" onclick="openInspection('DM-DSV-RDC-38', 'DM', event)"><span class="off-map-dot green"></span>DM 38 (Entrée RDC)</button>
-                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-39" onclick="openInspection('DM-DSV-RDC-39', 'DM', event)"><span class="off-map-dot green"></span>DM 39 (Salle de pause RDC)</button>
-                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-40" onclick="openInspection('DM-DSV-RDC-40', 'DM', event)"><span class="off-map-dot green"></span>DM 40 (Vestiaire Homme RDC)</button>
-                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-41" onclick="openInspection('DM-DSV-RDC-41', 'DM', event)"><span class="off-map-dot green"></span>DM 41 (Open Space RDC)</button>
-                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-42" onclick="openInspection('DM-DSV-RDC-42', 'DM', event)"><span class="off-map-dot green"></span>DM 42 (Vestiaire Femme RDC)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-36" onclick="openInspection('DM-DSV-RDC-36', 'DM', event)"><span class="off-map-dot red"></span>DM 36 (Local CE)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-37" onclick="openInspection('DM-DSV-RDC-37', 'DM', event)"><span class="off-map-dot red"></span>DM 37 (Entrée DSV)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-38" onclick="openInspection('DM-DSV-RDC-38', 'DM', event)"><span class="off-map-dot green"></span>DM 38 (Entrée DSV)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-39" onclick="openInspection('DM-DSV-RDC-39', 'DM', event)"><span class="off-map-dot green"></span>DM 39 (Salle de pause DSV)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-40" onclick="openInspection('DM-DSV-RDC-40', 'DM', event)"><span class="off-map-dot green"></span>DM 40 (Vestiaire Homme DSV)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-41" onclick="openInspection('DM-DSV-RDC-41', 'DM', event)"><span class="off-map-dot green"></span>DM 41 (Open Space)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-42" onclick="openInspection('DM-DSV-RDC-42', 'DM', event)"><span class="off-map-dot green"></span>DM 42 (Vestiaire Femme DSV)</button>
                         <button class="off-map-btn" data-device-id="DM-DSV-PDG-35" onclick="openInspection('DM-DSV-PDG-35', 'DM', event)"><span class="off-map-dot green"></span>DM 35 (Poste de garde)</button>
                     </div>
                 </div>
                 <div class="off-map-col">
                     <div class="off-map-col-title">Étage</div>
                     <div class="off-map-tags">
-                        <button class="off-map-btn" data-device-id="DM-DSV-ETG-43" onclick="openInspection('DM-DSV-ETG-43', 'DM', event)"><span class="off-map-dot red"></span>DM 43 (Escaliers Étage)</button>
-                        <button class="off-map-btn" data-device-id="DM-DSV-ETG-44" onclick="openInspection('DM-DSV-ETG-44', 'DM', event)"><span class="off-map-dot green"></span>DM 44 (Escaliers Étage)</button>
-                        <button class="off-map-btn" data-device-id="DM-DSV-ETG-45" onclick="openInspection('DM-DSV-ETG-45', 'DM', event)"><span class="off-map-dot green"></span>DM 45 (Passage DSV/SPI2 Étage)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-ETG-43" onclick="openInspection('DM-DSV-ETG-43', 'DM', event)"><span class="off-map-dot red"></span>DM 43 (Escaliers)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-ETG-44" onclick="openInspection('DM-DSV-ETG-44', 'DM', event)"><span class="off-map-dot green"></span>DM 44 (Escaliers)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-ETG-45" onclick="openInspection('DM-DSV-ETG-45', 'DM', event)"><span class="off-map-dot green"></span>DM 45 (Passage DSV/SPI2)</button>
                     </div>
                 </div>
             </div>
@@ -1048,7 +1064,7 @@ h1 {
                 <div class="off-map-col">
                     <div class="off-map-col-title">RDC</div>
                     <div class="off-map-tags">
-                        <button class="off-map-btn" data-device-id="DM-SPI2-RDC-21" onclick="openInspection('DM-SPI2-RDC-21', 'DM', event)"><span class="off-map-dot red"></span>DM 21 (Entrée RDC)</button>
+                        <button class="off-map-btn" data-device-id="DM-SPI2-RDC-21" onclick="openInspection('DM-SPI2-RDC-21', 'DM', event)"><span class="off-map-dot red"></span>DM 21 (Entrée)</button>
                         <button class="off-map-btn" data-device-id="DM-SPI2-RDC-22" onclick="openInspection('DM-SPI2-RDC-22', 'DM', event)"><span class="off-map-dot green"></span>DM 22</button>
                         <button class="off-map-btn" data-device-id="DM-SPI2-RDC-23" onclick="openInspection('DM-SPI2-RDC-23', 'DM', event)"><span class="off-map-dot green"></span>DM 23</button>
                     </div>
@@ -1071,37 +1087,89 @@ h1 {
     let currentElementType = null;
     const inspectionsRegistry = {};
 
-    function changeLevel() {
-        const val = document.getElementById('level-select').value;
+    const customDeviceNames = {
+        "DM-DSV-RDC-36": "DM 36 (Local CE)",
+        "DM-DSV-RDC-37": "DM 37 (Entrée DSV)",
+        "DM-DSV-RDC-38": "DM 38 (Entrée DSV)",
+        "DM-DSV-RDC-39": "DM 39 (Salle de pause DSV)",
+        "DM-DSV-RDC-40": "DM 40 (Vestiaire Homme DSV)",
+        "DM-DSV-RDC-41": "DM 41 (Open Space)",
+        "DM-DSV-RDC-42": "DM 42 (Vestiaire Femme DSV)",
+        "DM-DSV-PDG-35": "DM 35 (Poste de garde)",
+        "DM-DSV-ETG-43": "DM 43 (Escaliers)",
+        "DM-DSV-ETG-44": "DM 44 (Escaliers)",
+        "DM-DSV-ETG-45": "DM 45 (Passage DSV/SPI2)",
+        "DM-SPI2-RDC-21": "DM 21 (Entrée)",
+        "DM-SPI2-RDC-22": "DM 22",
+        "DM-SPI2-RDC-23": "DM 23",
+        "DM-SPI2-ETG-17": "DM 17 (Escalier Étage)",
+        "DM-SPI2-ETG-18": "DM 18",
+        "DM-SPI2-ETG-19": "DM 19",
+        "DM-SPI2-ETG-20": "DM 20"
+    };
+
+    /* Formate un titre clair et simplifié (ex: IS 8, DM 18) pour la modale */
+    function formatDeviceTitle(uniqueId, type) {
+        if (customDeviceNames[uniqueId]) {
+            return customDeviceNames[uniqueId];
+        }
+        if (type === 'IS') {
+            if (uniqueId.startsWith('IS-RDC-') || uniqueId.startsWith('IS-ETG-')) {
+                const numStr = uniqueId.split('-').pop();
+                const num = parseInt(numStr, 10);
+                return `IS ${isNaN(num) ? numStr : num}`;
+            }
+            if (uniqueId === 'IS-TGBT') return 'IS TGBT';
+            if (uniqueId === 'IS-Chaufferie') return 'IS Chaufferie';
+            if (uniqueId === 'IS-Atelier') return 'IS Atelier';
+            if (uniqueId === 'IS-ChargeC2') return 'IS Charge C2';
+            if (uniqueId === 'IS-ChargeC6') return 'IS Charge C6';
+            return uniqueId.replace('IS-', 'IS ');
+        }
+        if (type === 'DM') {
+            const parts = uniqueId.split('-');
+            const lastPart = parts[parts.length - 1];
+            const num = parseInt(lastPart, 10);
+            if (!isNaN(num)) {
+                return `DM ${num}`;
+            }
+            return uniqueId.replace('DM-', 'DM ');
+        }
+        return uniqueId;
+    }
+
+    function setLevel(val) {
         const grid = document.getElementById('building-grid');
+        const pillRdc = document.getElementById('pill-rdc');
+        const pillEtage = document.getElementById('pill-etage');
         if (val === 'etage') {
             grid.classList.add('show-etage');
+            pillEtage.classList.add('active');
+            pillRdc.classList.remove('active');
         } else {
             grid.classList.remove('show-etage');
+            pillRdc.classList.add('active');
+            pillEtage.classList.remove('active');
         }
     }
     function toggleIS() {
         const plan = document.getElementById('plan');
         const btn = document.getElementById('btn-is');
         plan.classList.toggle('hide-is');
-        btn.classList.toggle('active-is');
+        btn.classList.toggle('is-off');
     }
     function toggleDM() {
         const plan = document.getElementById('plan');
         const btn = document.getElementById('btn-dm');
         plan.classList.toggle('hide-dm');
-        btn.classList.toggle('active-dm');
+        btn.classList.toggle('dm-off');
     }
     function openInspection(uniqueId, type, event) {
         event.stopPropagation();
         currentElementId = uniqueId;
         currentElementType = type;
         
-        let displayTitle = uniqueId;
-        if (type === 'DM') {
-            const isGreen = event.currentTarget.classList.contains('dm-green-tag') || (event.currentTarget.querySelector && event.currentTarget.querySelector('.off-map-dot.green'));
-            displayTitle += isGreen ? ' (vert)' : ' (rouge)';
-        }
+        let displayTitle = formatDeviceTitle(uniqueId, type);
         document.getElementById('panel-title').innerText = displayTitle;
         
         const data = inspectionsRegistry[uniqueId] || {
@@ -1239,86 +1307,55 @@ h1 {
         now.toLocaleDateString('fr-FR') +
         ' ' +
         now.toLocaleTimeString('fr-FR');
-
     let reportText = "========================================\n";
     reportText += "COMPTE RENDU — IS & DM\n";
     reportText += `Date : ${dateStr}\n`;
     reportText += "========================================\n\n";
-
     const entries = Object.entries(inspectionsRegistry);
-
     if (entries.length === 0) {
         reportText += "----------------------------------------\n";
         reportText += "Résultat : Aucun problème détecté\n";
         reportText += "----------------------------------------";
-
     } else {
         let listIS = [];
         let listDM_DSV = [];
         let listDM_SPI2 = [];
-
         let countIS = 0;
         let countDM = 0;
-
         for (const [id, data] of entries) {
-
             let itemsList = [];
-
             if (data.etat && data.etat !== 'Conforme') {
                 itemsList.push(`État : ${data.etat}`);
             }
-
             if (data.access && data.access !== 'Libre') {
                 itemsList.push(`Accès : ${data.access}`);
             }
-
             if (data.type === 'IS') {
-
                 if (data.essai && data.essai !== 'ok') {
                     itemsList.push(`Essai : ${data.essai}`);
                 }
-
                 if (data.barre && data.barre !== 'Bon état') {
                     itemsList.push(`Barre : ${data.barre}`);
                 }
             }
-
             if (data.comment) {
                 itemsList.push(`Note : ${data.comment}`);
             }
-
-            // On ajoute uniquement les éléments ayant une anomalie
             if (itemsList.length > 0) {
-
                 const itemsStr = itemsList.join(' | ');
-
                 if (data.type === 'IS') {
-
                     countIS++;
-
-                    let cleanName = id
-                        .replace(/^IS-/, '')
-                        .replace(/^(RDC|ETG)-/, '');
-
+                    let cleanName = formatDeviceTitle(id, 'IS');
                     listIS.push(
-                        `• IS ${cleanName}\n` +
+                        `• ${cleanName}\n` +
                         `  ➔ ${itemsStr}`
                     );
-
                 } else {
-
                     countDM++;
-
-                    let matchNum = id.match(/-([0-9]+)$/);
-
-                    let shortName = matchNum
-                        ? `DM ${matchNum[1]}`
-                        : id;
-
+                    let shortName = formatDeviceTitle(id, 'DM');
                     let formattedItem =
                         `• ${shortName}\n` +
                         `  ➔ ${itemsStr}`;
-
                     if (id.includes('SPI2')) {
                         listDM_SPI2.push(formattedItem);
                     } else {
@@ -1327,80 +1364,43 @@ h1 {
                 }
             }
         }
-
         if (countIS === 0 && countDM === 0) {
-
             reportText += "----------------------------------------\n";
             reportText += "Résultat : Aucun problème détecté (Éléments contrôlés conformes)\n";
             reportText += "----------------------------------------";
-
         } else {
-
-            // ================================
-            // ISSUE DE SECOURS
-            // ================================
             if (listIS.length > 0) {
-
                 reportText += "ISSUE DE SECOURS\n";
-
-                // Les éléments sont séparés uniquement par un retour à la ligne
                 reportText += listIS.join("\n");
-
-                // Une ligne vide avant la prochaine section
                 reportText += "\n\n";
             }
-
-            // ================================
-            // DM DSV
-            // ================================
             if (listDM_DSV.length > 0) {
-
                 reportText += "DM (DSV)\n";
-
-                // Pas de ligne vide entre les éléments
                 reportText += listDM_DSV.join("\n");
-
-                // Une ligne vide avant la prochaine section
                 reportText += "\n\n";
             }
-
-            // ================================
-            // DM SPI2
-            // ================================
             if (listDM_SPI2.length > 0) {
-
                 reportText += "DM (SPI2)\n";
-
-                // Pas de ligne vide entre les éléments
                 reportText += listDM_SPI2.join("\n");
-
                 reportText += "\n\n";
             }
-
             reportText += "----------------------------------------\n";
-
             let details = [];
-
             if (countIS > 0) {
                 details.push(`${countIS} IS`);
             }
-
             if (countDM > 0) {
                 details.push(`${countDM} DM`);
             }
-
             reportText +=
                 `Résultat : Anomalies détectées (${details.join(', ')})`;
         }
     }
-
     document.getElementById('report-content-text').value =
         reportText.trim();
-
     document.getElementById('report-overlay')
         .classList.add('visible');
 }
-
 function closeReport() {
         document.getElementById('report-overlay').classList.remove('visible');
     }
