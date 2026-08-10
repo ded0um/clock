@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BAES — IS & DM (RDC / Étage)</title>
+<title>BAES — IS & DM</title>
 <style>
 /* ============================================================
     VARIABLES
@@ -317,7 +317,7 @@ h1 {
     font-size: 0.8rem;
     padding: 10px;
     resize: none;
-    height: 180px;
+    height: 220px;
 }
 .report-footer {
     display: flex;
@@ -408,25 +408,21 @@ h1 {
 /* ============================================================
     GESTION RDC / ÉTAGE (Visibilité & Alignement bas de grille)
    ============================================================ */
-/* Par défaut (Mode RDC) : Les éléments RDC s'affichent, les éléments Étage sont masqués */
 .building-container .floor-element {
     display: none !important;
 }
-/* Mode Étage activé : Les éléments RDC s'effacent et les éléments Étage se positionnent sur la ligne du bas (alignés avec le RDC) */
 .building-container.show-etage .rdc-element {
     display: none !important;
 }
 .building-container.show-etage .floor-element {
     display: flex !important;
 }
-/* ÉLÉMENTS DE LA GRANDE LIGNE DU BAS (Rangée 4, hauteur 240px alignée sur le RDC, mais avec une hauteur visuelle interne alignée en bas) */
 .floor-c1 { grid-column: 1; grid-row: 4; height: 240px; align-items: flex-end; }
 .floor-c2 { grid-column: 2; grid-row: 4; height: 240px; align-items: flex-end; }
 .floor-c3 { grid-column: 3; grid-row: 4; height: 240px; align-items: flex-end; }
 .floor-c4 { grid-column: 4; grid-row: 4; height: 240px; align-items: flex-end; }
 .floor-c5 { grid-column: 5; grid-row: 4; height: 240px; align-items: flex-end; }
 .floor-c6 { grid-column: 6; grid-row: 4; height: 240px; align-items: flex-end; }
-/* Contenu interne des cellules d'étage pour forcer une hauteur de 95px collée en bas */
 .floor-inner-box {
     width: 100%;
     height: 95px;
@@ -586,18 +582,6 @@ h1 {
     width: 38px;
     text-align: center;
 }
-.cluster-top .is-tag:hover,
-.cluster-bottom .is-tag:hover,
-.cluster-left .is-tag:hover,
-.cluster-right .is-tag:hover,
-.is-tag:hover {
-    transform: scale(1.15) !important;
-    background-color: var(--cell-hover) !important;
-}
-.cluster-top .is-tag:hover { transform: translateY(-50%) scale(1.15) !important; }
-.cluster-bottom .is-tag:hover { transform: translateY(50%) scale(1.15) !important; }
-.cluster-left .is-tag:hover { transform: translateX(-50%) scale(1.15) !important; }
-.cluster-right .is-tag:hover { transform: translateX(50%) scale(1.15) !important; }
 .dm-red-tag, .dm-green-tag {
     border-radius: 50%;
     width: 18px;
@@ -640,6 +624,9 @@ h1 {
 .cluster-right .dm-subgroup { transform: translateX(21px); display: flex; flex-direction: row; gap: 1px; }
 .hide-is .is-tag { display: none !important; }
 .hide-dm .dm-red-tag, .hide-dm .dm-green-tag { display: none !important; }
+/* ============================================================
+    ZONE HORS PLAN STRUCTURÉE (GROUPES & 2 COLONNES RDC/ÉTAGE)
+   ============================================================ */
 .off-map-container {
     width: 100%;
     max-width: 1100px;
@@ -647,14 +634,108 @@ h1 {
     background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 10px 15px;
+    padding: 12px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.off-map-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.off-map-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.off-map-group-block {
+    background: #141414;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.off-map-group-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+.off-map-grid-2cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.off-map-col {
+    background: #0f0f0f;
+    border: 1px solid #262626;
+    border-radius: 5px;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.off-map-col-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 3px;
+}
+.off-map-tags {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.off-map-btn {
+    width: auto;
+    background: #161616;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #ccc;
+    text-align: left;
+    box-shadow: none;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
+    gap: 5px;
+    transition: all 0.2s ease;
 }
-.off-map-title { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
-.off-map-tags { display: flex; gap: 8px; position: relative; }
+.off-map-btn:hover {
+    transform: none;
+    filter: none;
+    background: #222;
+    border-color: var(--accent);
+    color: #fff;
+}
+.off-map-btn.has-defect {
+    border-color: #ef4444 !important;
+    background-color: rgba(239, 68, 68, 0.2) !important;
+    color: #ffffff !important;
+}
+.off-map-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+.off-map-dot.red { background-color: var(--dm-red-border); }
+.off-map-dot.green { background-color: var(--dm-green-border); }
+@media (max-width: 768px) {
+    .off-map-grid-2cols {
+        grid-template-columns: 1fr;
+    }
+}
 @media (max-width: 600px) {
     body { padding: 8px 4px; }
     .controls { flex-wrap: wrap; }
@@ -710,15 +791,14 @@ h1 {
 </div>
 <div class="plan-wrapper" id="plan">
 <div class="building-container" id="building-grid">
-<!-- ================= ELEMENT ÉTAGE (C1 à C6 - Alignés sur la ligne du bas, hauteur interne de 95px alignée en bas) ================= -->
+<!-- ================= ELEMENT ÉTAGE (C1 à C6) ================= -->
 <div class="floor-element floor-c1" onclick="clickCell('Étage C1', event)">
     <div class="floor-inner-box">
         <span class="floor-label-badge">Étage</span>
         <div class="cell-label">C1</div>
-        <!-- DM 2 rouge et DM 1 vert sur le mur gauche de la C1 à ~50% verticalement (DM 2 à gauche de DM 1) -->
         <div class="device-cluster cluster-left" style="top: 50%; left: 0;">
-            <div class="tag dm-red-tag" onclick="openInspection('DM 2', 'DM', event)">2</div>
-            <div class="tag dm-green-tag" onclick="openInspection('DM 1', 'DM', event)">1</div>
+            <div class="tag dm-red-tag" data-device-id="DM-SPI2-ETG-02" onclick="openInspection('DM-SPI2-ETG-02', 'DM', event)">2</div>
+            <div class="tag dm-green-tag" data-device-id="DM-SPI2-ETG-01" onclick="openInspection('DM-SPI2-ETG-01', 'DM', event)">1</div>
         </div>
     </div>
 </div>
@@ -726,12 +806,11 @@ h1 {
     <div class="floor-inner-box">
         <span class="floor-label-badge">Étage</span>
         <div class="cell-label">C2</div>
-        <!-- IS 31 à ~25% de la cellule 2, flèche vers le bas, avec DM rouge 4 et DM vert 3 -->
         <div class="device-cluster cluster-bottom" style="bottom: 0; left: 25%;">
-            <div class="tag is-tag arrow-down" onclick="openInspection('IS 31', 'IS', event)">31</div>
+            <div class="tag is-tag arrow-down" data-device-id="IS-ETG-31" onclick="openInspection('IS-ETG-31', 'IS', event)">31</div>
             <div class="dm-subgroup">
-                <div class="tag dm-green-tag" onclick="openInspection('DM 3', 'DM', event)">3</div>
-                <div class="tag dm-red-tag" onclick="openInspection('DM 4', 'DM', event)">4</div>
+                <div class="tag dm-green-tag" data-device-id="DM-SPI2-ETG-03" onclick="openInspection('DM-SPI2-ETG-03', 'DM', event)">3</div>
+                <div class="tag dm-red-tag" data-device-id="DM-SPI2-ETG-04" onclick="openInspection('DM-SPI2-ETG-04', 'DM', event)">4</div>
             </div>
         </div>
     </div>
@@ -740,12 +819,11 @@ h1 {
     <div class="floor-inner-box">
         <span class="floor-label-badge">Étage</span>
         <div class="cell-label">C3</div>
-        <!-- IS 30 à ~90% de la cellule 3, flèche vers le bas, avec DM rouge 6 et DM vert 5 -->
         <div class="device-cluster cluster-bottom" style="bottom: 0; left: 90%;">
-            <div class="tag is-tag arrow-down" onclick="openInspection('IS 30', 'IS', event)">30</div>
+            <div class="tag is-tag arrow-down" data-device-id="IS-ETG-30" onclick="openInspection('IS-ETG-30', 'IS', event)">30</div>
             <div class="dm-subgroup">
-                <div class="tag dm-green-tag" onclick="openInspection('DM 5', 'DM', event)">5</div>
-                <div class="tag dm-red-tag" onclick="openInspection('DM 6', 'DM', event)">6</div>
+                <div class="tag dm-green-tag" data-device-id="DM-SPI2-ETG-05" onclick="openInspection('DM-SPI2-ETG-05', 'DM', event)">5</div>
+                <div class="tag dm-red-tag" data-device-id="DM-SPI2-ETG-06" onclick="openInspection('DM-SPI2-ETG-06', 'DM', event)">6</div>
             </div>
         </div>
     </div>
@@ -754,210 +832,245 @@ h1 {
     <div class="floor-inner-box">
         <span class="floor-label-badge">Étage</span>
         <div class="cell-label">C4</div>
-        <!-- DM vert 16 à 2% verticalement entre C4 et C5, du côté C4 -->
-        <div class="tag dm-green-tag" onclick="openInspection('DM 16', 'DM', event)" style="position: absolute; top: 2%; right: -1px; z-index: 30;">16</div>
-        <!-- DM vert 7 à 78% verticalement entre C4 et C5, du côté C4 -->
-        <div class="tag dm-green-tag" onclick="openInspection('DM 7', 'DM', event)" style="position: absolute; top: 78%; right: -1px; z-index: 30;">7</div>
+        <div class="tag dm-green-tag" data-device-id="DM-SPI2-ETG-16" onclick="openInspection('DM-SPI2-ETG-16', 'DM', event)" style="position: absolute; top: 2%; right: -1px; z-index: 30;">16</div>
+        <div class="tag dm-green-tag" data-device-id="DM-SPI2-ETG-07" onclick="openInspection('DM-SPI2-ETG-07', 'DM', event)" style="position: absolute; top: 78%; right: -1px; z-index: 30;">7</div>
     </div>
 </div>
 <div class="floor-element floor-c5" onclick="clickCell('Étage C5', event)">
     <div class="floor-inner-box">
         <span class="floor-label-badge">Étage</span>
         <div class="cell-label">C5</div>
-        <!-- DM vert 8 à 78% verticalement entre C5 et C4, du côté C5 -->
-        <div class="tag dm-green-tag" onclick="openInspection('DM 8', 'DM', event)" style="position: absolute; top: 78%; left: -1px; z-index: 30;">8</div>
-        <!-- DM vert 15 à 2% verticalement entre C5 et C4, du côté C5 -->
-        <div class="tag dm-green-tag" onclick="openInspection('DM 15', 'DM', event)" style="position: absolute; top: 2%; left: -1px; z-index: 30;">15</div>
-        <!-- DM vert 14 à 2% verticalement entre C5 et C6, du côté C5 -->
-        <div class="tag dm-green-tag" onclick="openInspection('DM 14', 'DM', event)" style="position: absolute; top: 2%; right: -1px; z-index: 30;">14</div>
-        <!-- DM vert 9 à 78% verticalement entre C5 et C6, du côté C5 -->
-        <div class="tag dm-green-tag" onclick="openInspection('DM 9', 'DM', event)" style="position: absolute; top: 78%; right: -1px; z-index: 30;">9</div>
+        <div class="tag dm-green-tag" data-device-id="DM-SPI2-ETG-08" onclick="openInspection('DM-SPI2-ETG-08', 'DM', event)" style="position: absolute; top: 78%; left: -1px; z-index: 30;">8</div>
+        <div class="tag dm-green-tag" data-device-id="DM-SPI2-ETG-15" onclick="openInspection('DM-SPI2-ETG-15', 'DM', event)" style="position: absolute; top: 2%; left: -1px; z-index: 30;">15</div>
+        <div class="tag dm-green-tag" data-device-id="DM-SPI2-ETG-14" onclick="openInspection('DM-SPI2-ETG-14', 'DM', event)" style="position: absolute; top: 2%; right: -1px; z-index: 30;">14</div>
+        <div class="tag dm-green-tag" data-device-id="DM-SPI2-ETG-09" onclick="openInspection('DM-SPI2-ETG-09', 'DM', event)" style="position: absolute; top: 78%; right: -1px; z-index: 30;">9</div>
     </div>
 </div>
 <div class="floor-element floor-c6" onclick="clickCell('Étage C6', event)">
     <div class="floor-inner-box">
         <span class="floor-label-badge">Étage</span>
         <div class="cell-label">C6</div>
-        <!-- DM vert 13 à 2% verticalement entre C6 et C5, du côté C6 -->
-        <div class="tag dm-green-tag" onclick="openInspection('DM 13', 'DM', event)" style="position: absolute; top: 2%; left: -1px; z-index: 30;">13</div>
-        <!-- DM vert 10 à 78% verticalement entre C6 et C5, du côté C6 -->
-        <div class="tag dm-green-tag" onclick="openInspection('DM 10', 'DM', event)" style="position: absolute; top: 78%; left: -1px; z-index: 30;">10</div>
-        <!-- IS 29 positionné à 85% de la hauteur de la cellule, DM 12 et DM 11 alignés sur la même ligne -->
+        <div class="tag dm-green-tag" data-device-id="DM-SPI2-ETG-13" onclick="openInspection('DM-SPI2-ETG-13', 'DM', event)" style="position: absolute; top: 2%; left: -1px; z-index: 30;">13</div>
+        <div class="tag dm-green-tag" data-device-id="DM-SPI2-ETG-10" onclick="openInspection('DM-SPI2-ETG-10', 'DM', event)" style="position: absolute; top: 78%; left: -1px; z-index: 30;">10</div>
         <div class="device-cluster cluster-right" style="top: 85%; right: 0;">
-            <div class="tag is-tag arrow-right" onclick="openInspection('IS 29', 'IS', event)">29</div>
+            <div class="tag is-tag arrow-right" data-device-id="IS-ETG-29" onclick="openInspection('IS-ETG-29', 'IS', event)">29</div>
             <div class="dm-subgroup">
-                <div class="tag dm-green-tag" onclick="openInspection('DM 12', 'DM', event)">12</div>
-                <div class="tag dm-red-tag" onclick="openInspection('DM 11', 'DM', event)">11</div>
+                <div class="tag dm-green-tag" data-device-id="DM-SPI2-ETG-12" onclick="openInspection('DM-SPI2-ETG-12', 'DM', event)">12</div>
+                <div class="tag dm-red-tag" data-device-id="DM-SPI2-ETG-11" onclick="openInspection('DM-SPI2-ETG-11', 'DM', event)">11</div>
             </div>
         </div>
     </div>
 </div>
-<!-- ================= ÉLÉMENTS RDC (Disparaissent à la sélection de l'étage) ================= -->
-<!-- RANGÉE H -->
+<!-- ================= ÉLÉMENTS RDC ================= -->
 <div class="cell-box rdc-element ch" onclick="clickCell('H', event)">
     <div class="cell-label">H</div>
     <div class="device-cluster cluster-left" style="top: 80%; left: 0;">
-        <div class="tag is-tag arrow-left" onclick="openInspection('IS 12', 'IS', event)">12</div>
-        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 12', 'DM', event)">12</div></div>
+        <div class="tag is-tag arrow-left" data-device-id="IS-RDC-12" onclick="openInspection('IS-RDC-12', 'IS', event)">12</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-12" onclick="openInspection('DM-DSV-RDC-12', 'DM', event)">12</div></div>
     </div>
     <div class="device-cluster cluster-right" style="top: 80%; right: 0;">
-        <div class="tag is-tag arrow-right" onclick="openInspection('IS 13', 'IS', event)">13</div>
-        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 13', 'DM', event)">13</div></div>
+        <div class="tag is-tag arrow-right" data-device-id="IS-RDC-13" onclick="openInspection('IS-RDC-13', 'IS', event)">13</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-13" onclick="openInspection('DM-DSV-RDC-13', 'DM', event)">13</div></div>
     </div>
-    <div class="tag dm-red-tag" onclick="openInspection('DM 14', 'DM', event)" style="position: absolute; bottom: -13px; left: 50%; transform: translateX(-50%); z-index: 30;">14</div>
+    <div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-14" onclick="openInspection('DM-DSV-RDC-14', 'DM', event)" style="position: absolute; bottom: -13px; left: 50%; transform: translateX(-50%); z-index: 30;">14</div>
 </div>
-<!-- RANGÉE D -->
 <div class="cell-box rdc-element cd" onclick="clickCell('D', event)"><div class="cell-label">D</div></div>
-<!-- LOCAUX TECHNIQUES C2 -->
 <div class="rdc-element tech-zone">
     <div class="tech-zone-inner">
-        <div class="tech-box tgbt" onclick="openInspection('TGBT', 'IS', event)">TGBT</div>
-        <div class="tech-box chauf" onclick="openInspection('Chaufferie', 'IS', event)">
+        <div class="tech-box tgbt" data-device-id="IS-TGBT" onclick="openInspection('IS-TGBT', 'IS', event)">TGBT</div>
+        <div class="tech-box chauf" data-device-id="IS-Chaufferie" onclick="openInspection('IS-Chaufferie', 'IS', event)">
             Chauf.
             <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
-                <div class="tag is-tag arrow-up" onclick="openInspection('IS 5', 'IS', event)">5</div>
-                <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 7', 'DM', event)">7</div></div>
+                <div class="tag is-tag arrow-up" data-device-id="IS-RDC-05" onclick="openInspection('IS-RDC-05', 'IS', event)">5</div>
+                <div class="dm-subgroup"><div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-07" onclick="openInspection('DM-DSV-RDC-07', 'DM', event)">7</div></div>
             </div>
         </div>
-        <div class="tech-box atelier" onclick="openInspection('Atelier Maintenance', 'IS', event)">
+        <div class="tech-box atelier" data-device-id="IS-Atelier" onclick="openInspection('IS-Atelier', 'IS', event)">
             Atelier
             <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
-                <div class="tag is-tag arrow-up" onclick="openInspection('IS 6', 'IS', event)">6</div>
-                <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 8', 'DM', event)">8</div></div>
+                <div class="tag is-tag arrow-up" data-device-id="IS-RDC-06" onclick="openInspection('IS-RDC-06', 'IS', event)">6</div>
+                <div class="dm-subgroup"><div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-08" onclick="openInspection('DM-DSV-RDC-08', 'DM', event)">8</div></div>
             </div>
         </div>
-        <div class="tech-box charge" onclick="openInspection('Salle de Charge C2', 'IS', event)">
+        <div class="tech-box charge" data-device-id="IS-ChargeC2" onclick="openInspection('IS-ChargeC2', 'IS', event)">
             S. Charge
             <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
-                <div class="tag is-tag arrow-up" onclick="openInspection('IS 7', 'IS', event)">7</div>
-                <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 9', 'DM', event)">9</div></div>
+                <div class="tag is-tag arrow-up" data-device-id="IS-RDC-07" onclick="openInspection('IS-RDC-07', 'IS', event)">7</div>
+                <div class="dm-subgroup"><div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-09" onclick="openInspection('DM-DSV-RDC-09', 'DM', event)">9</div></div>
             </div>
         </div>
     </div>
 </div>
-<!-- C6 TOP -->
 <div class="rdc-element c6-top-wrapper">
-    <div class="sc-c6" onclick="openInspection('Salle de Charge C6', 'IS', event)">
+    <div class="sc-c6" data-device-id="IS-ChargeC6" onclick="openInspection('IS-ChargeC6', 'IS', event)">
         S. Charge
         <div class="device-cluster cluster-top" style="top: 0; left: 80%;">
-            <div class="tag is-tag arrow-up" onclick="openInspection('IS 16', 'IS', event)">16</div>
-            <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 16', 'DM', event)">16</div></div>
+            <div class="tag is-tag arrow-up" data-device-id="IS-RDC-16" onclick="openInspection('IS-RDC-16', 'IS', event)">16</div>
+            <div class="dm-subgroup"><div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-16" onclick="openInspection('DM-DSV-RDC-16', 'DM', event)">16</div></div>
         </div>
     </div>
 </div>
-<!-- C1 RDC -->
 <div class="cell-box rdc-element c1" onclick="clickCell('C1', event)">
     <div class="cell-label">C1</div>
     <div class="device-cluster cluster-left" style="top: 30%; left: 0;">
-        <div class="tag is-tag arrow-left" onclick="openInspection('IS 2', 'IS', event)">2</div>
-        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 4', 'DM', event)">4</div></div>
+        <div class="tag is-tag arrow-left" data-device-id="IS-RDC-02" onclick="openInspection('IS-RDC-02', 'IS', event)">2</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-04" onclick="openInspection('DM-DSV-RDC-04', 'DM', event)">4</div></div>
     </div>
     <div class="device-cluster cluster-left" style="top: 70%; left: 0;">
-        <div class="tag is-tag arrow-left" onclick="openInspection('IS 1', 'IS', event)">1</div>
-        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 3', 'DM', event)">3</div></div>
+        <div class="tag is-tag arrow-left" data-device-id="IS-RDC-01" onclick="openInspection('IS-RDC-01', 'IS', event)">1</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-03" onclick="openInspection('DM-DSV-RDC-03', 'DM', event)">3</div></div>
     </div>
     <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
-        <div class="tag is-tag arrow-up" onclick="openInspection('IS 3', 'IS', event)">3</div>
-        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 5', 'DM', event)">5</div></div>
+        <div class="tag is-tag arrow-up" data-device-id="IS-RDC-03" onclick="openInspection('IS-RDC-03', 'IS', event)">3</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-05" onclick="openInspection('DM-DSV-RDC-05', 'DM', event)">5</div></div>
     </div>
     <div class="device-cluster cluster-bottom" style="bottom: 0; left: 20%;">
-        <div class="tag is-tag arrow-down" onclick="openInspection('IS 28', 'IS', event)">28</div>
+        <div class="tag is-tag arrow-down" data-device-id="IS-RDC-28" onclick="openInspection('IS-RDC-28', 'IS', event)">28</div>
         <div class="dm-subgroup">
-            <div class="tag dm-green-tag" onclick="openInspection('DM 34', 'DM', event)">34</div>
-            <div class="tag dm-red-tag" onclick="openInspection('DM 33', 'DM', event)">33</div>
+            <div class="tag dm-green-tag" data-device-id="DM-DSV-RDC-34" onclick="openInspection('DM-DSV-RDC-34', 'DM', event)">34</div>
+            <div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-33" onclick="openInspection('DM-DSV-RDC-33', 'DM', event)">33</div>
         </div>
     </div>
-    <div class="tag dm-green-tag" onclick="openInspection('DM 2', 'DM', event)" style="position: absolute; bottom: 5px; left: -9px; z-index: 30;">2</div>
+    <div class="tag dm-green-tag" data-device-id="DM-DSV-RDC-02" onclick="openInspection('DM-DSV-RDC-02', 'DM', event)" style="position: absolute; bottom: 5px; left: -9px; z-index: 30;">2</div>
 </div>
-<!-- C2 RDC -->
 <div class="cell-box rdc-element c2" onclick="clickCell('C2', event)">
     <div class="cell-label">C2</div>
     <div class="device-cluster cluster-top" style="top: 0; left: 15%;">
-        <div class="tag is-tag arrow-up" onclick="openInspection('IS 4', 'IS', event)">4</div>
-        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 6', 'DM', event)">6</div></div>
+        <div class="tag is-tag arrow-up" data-device-id="IS-RDC-04" onclick="openInspection('IS-RDC-04', 'IS', event)">4</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-06" onclick="openInspection('DM-DSV-RDC-06', 'DM', event)">6</div></div>
     </div>
     <div class="device-cluster cluster-bottom" style="bottom: 0; left: 15%;">
-        <div class="tag is-tag arrow-down" onclick="openInspection('IS 27', 'IS', event)">27</div>
-        <div class="dm-subgroup"><div class="tag dm-green-tag" onclick="openInspection('DM 32', 'DM', event)">32</div></div>
+        <div class="tag is-tag arrow-down" data-device-id="IS-RDC-27" onclick="openInspection('IS-RDC-27', 'IS', event)">27</div>
+        <div class="dm-subgroup"><div class="tag dm-green-tag" data-device-id="DM-DSV-RDC-32" onclick="openInspection('DM-DSV-RDC-32', 'DM', event)">32</div></div>
     </div>
     <div class="device-cluster cluster-bottom" style="bottom: 0; right: 15%; left: auto;">
-        <div class="tag is-tag arrow-down" onclick="openInspection('IS 26', 'IS', event)">26</div>
+        <div class="tag is-tag arrow-down" data-device-id="IS-RDC-26" onclick="openInspection('IS-RDC-26', 'IS', event)">26</div>
         <div class="dm-subgroup">
-            <div class="tag dm-green-tag" onclick="openInspection('DM 30', 'DM', event)">30</div>
-            <div class="tag dm-red-tag" onclick="openInspection('DM 31', 'DM', event)">31</div>
+            <div class="tag dm-green-tag" data-device-id="DM-DSV-RDC-30" onclick="openInspection('DM-DSV-RDC-30', 'DM', event)">30</div>
+            <div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-31" onclick="openInspection('DM-DSV-RDC-31', 'DM', event)">31</div>
         </div>
     </div>
 </div>
-<!-- C3 RDC -->
 <div class="cell-box rdc-element c3" onclick="clickCell('C3', event)">
     <div class="cell-label">C3</div>
     <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
-        <div class="tag is-tag arrow-up" onclick="openInspection('IS 8', 'IS', event)">8</div>
-        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 10', 'DM', event)">10</div></div>
+        <div class="tag is-tag arrow-up" data-device-id="IS-RDC-08" onclick="openInspection('IS-RDC-08', 'IS', event)">8</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-10" onclick="openInspection('DM-DSV-RDC-10', 'DM', event)">10</div></div>
     </div>
     <div class="device-cluster cluster-bottom" style="bottom: 0; left: 35%;">
-        <div class="tag is-tag arrow-down" onclick="openInspection('IS 25', 'IS', event)">25</div>
+        <div class="tag is-tag arrow-down" data-device-id="IS-RDC-25" onclick="openInspection('IS-RDC-25', 'IS', event)">25</div>
         <div class="dm-subgroup">
-            <div class="tag dm-green-tag" onclick="openInspection('DM 28', 'DM', event)">28</div>
-            <div class="tag dm-red-tag" onclick="openInspection('DM 29', 'DM', event)">29</div>
+            <div class="tag dm-green-tag" data-device-id="DM-DSV-RDC-28" onclick="openInspection('DM-DSV-RDC-28', 'DM', event)">28</div>
+            <div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-29" onclick="openInspection('DM-DSV-RDC-29', 'DM', event)">29</div>
         </div>
     </div>
 </div>
-<!-- C4 RDC -->
 <div class="cell-box rdc-element c4" onclick="clickCell('C4', event)">
     <div class="cell-label">C4</div>
     <div class="device-cluster cluster-top" style="top: 0; left: 50%;">
-        <div class="tag is-tag arrow-up" onclick="openInspection('IS 9', 'IS', event)">9</div>
-        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 11', 'DM', event)">11</div></div>
+        <div class="tag is-tag arrow-up" data-device-id="IS-RDC-09" onclick="openInspection('IS-RDC-09', 'IS', event)">9</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-11" onclick="openInspection('DM-DSV-RDC-11', 'DM', event)">11</div></div>
     </div>
     <div class="device-cluster cluster-bottom" style="bottom: 0; right: 20%; left: auto;">
-        <div class="tag is-tag arrow-down" onclick="openInspection('IS 24', 'IS', event)">24</div>
+        <div class="tag is-tag arrow-down" data-device-id="IS-RDC-24" onclick="openInspection('IS-RDC-24', 'IS', event)">24</div>
         <div class="dm-subgroup">
-            <div class="tag dm-green-tag" onclick="openInspection('DM 26', 'DM', event)">26</div>
-            <div class="tag dm-red-tag" onclick="openInspection('DM 27', 'DM', event)">27</div>
+            <div class="tag dm-green-tag" data-device-id="DM-DSV-RDC-26" onclick="openInspection('DM-DSV-RDC-26', 'DM', event)">26</div>
+            <div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-27" onclick="openInspection('DM-DSV-RDC-27', 'DM', event)">27</div>
         </div>
     </div>
 </div>
-<!-- C5 RDC -->
 <div class="cell-box rdc-element c5" onclick="clickCell('C5', event)">
     <div class="cell-label">C5</div>
     <div class="device-cluster cluster-bottom" style="bottom: 0; left: 40%;">
-        <div class="tag is-tag arrow-down" onclick="openInspection('IS 23', 'IS', event)">23</div>
+        <div class="tag is-tag arrow-down" data-device-id="IS-RDC-23" onclick="openInspection('IS-RDC-23', 'IS', event)">23</div>
         <div class="dm-subgroup">
-            <div class="tag dm-green-tag" onclick="openInspection('DM 24', 'DM', event)">24</div>
-            <div class="tag dm-red-tag" onclick="openInspection('DM 25', 'DM', event)">25</div>
+            <div class="tag dm-green-tag" data-device-id="DM-DSV-RDC-24" onclick="openInspection('DM-DSV-RDC-24', 'DM', event)">24</div>
+            <div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-25" onclick="openInspection('DM-DSV-RDC-25', 'DM', event)">25</div>
         </div>
     </div>
 </div>
-<!-- C6 RDC -->
 <div class="cell-box rdc-element c6" onclick="clickCell('C6', event)">
     <div class="cell-label">C6</div>
     <div class="device-cluster cluster-top" style="top: 0; left: 22%;">
-        <div class="tag is-tag arrow-up" onclick="openInspection('IS 15', 'IS', event)">15</div>
-        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 15', 'DM', event)">15</div></div>
+        <div class="tag is-tag arrow-up" data-device-id="IS-RDC-15" onclick="openInspection('IS-RDC-15', 'IS', event)">15</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-15" onclick="openInspection('DM-DSV-RDC-15', 'DM', event)">15</div></div>
     </div>
     <div class="device-cluster cluster-right" style="top: 55%; right: 0;">
-        <div class="tag is-tag arrow-right" onclick="openInspection('IS 17', 'IS', event)">17</div>
-        <div class="dm-subgroup"><div class="tag dm-red-tag" onclick="openInspection('DM 17', 'DM', event)">17</div></div>
+        <div class="tag is-tag arrow-right" data-device-id="IS-RDC-17" onclick="openInspection('IS-RDC-17', 'IS', event)">17</div>
+        <div class="dm-subgroup"><div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-17" onclick="openInspection('DM-DSV-RDC-17', 'DM', event)">17</div></div>
     </div>
     <div class="device-cluster cluster-bottom" style="bottom: 0; right: 10%; left: auto;">
-        <div class="tag is-tag arrow-down" onclick="openInspection('IS 18', 'IS', event)">18</div>
+        <div class="tag is-tag arrow-down" data-device-id="IS-RDC-18" onclick="openInspection('IS-RDC-18', 'IS', event)">18</div>
         <div class="dm-subgroup">
-            <div class="tag dm-green-tag" onclick="openInspection('DM 19', 'DM', event)">19</div>
-            <div class="tag dm-red-tag" onclick="openInspection('DM 18', 'DM', event)">18</div>
+            <div class="tag dm-green-tag" data-device-id="DM-DSV-RDC-19" onclick="openInspection('DM-DSV-RDC-19', 'DM', event)">19</div>
+            <div class="tag dm-red-tag" data-device-id="DM-DSV-RDC-18" onclick="openInspection('DM-DSV-RDC-18', 'DM', event)">18</div>
         </div>
     </div>
 </div>
 </div>
 </div>
+<!-- ================= ZONE HORS PLAN STRUCTURÉE ================= -->
 <div class="off-map-container">
     <div class="off-map-title">DM hors plan :</div>
-    <div class="off-map-tags"></div>
+    <div class="off-map-groups">
+        
+        <!-- Groupe DSV -->
+        <div class="off-map-group-block">
+            <div class="off-map-group-title">DSV</div>
+            <div class="off-map-grid-2cols">
+                <div class="off-map-col">
+                    <div class="off-map-col-title">RDC</div>
+                    <div class="off-map-tags">
+                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-36" onclick="openInspection('DM-DSV-RDC-36', 'DM', event)"><span class="off-map-dot red"></span>DM 36 (Local CE RDC)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-37" onclick="openInspection('DM-DSV-RDC-37', 'DM', event)"><span class="off-map-dot red"></span>DM 37 (Entrée RDC)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-38" onclick="openInspection('DM-DSV-RDC-38', 'DM', event)"><span class="off-map-dot green"></span>DM 38 (Entrée RDC)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-39" onclick="openInspection('DM-DSV-RDC-39', 'DM', event)"><span class="off-map-dot green"></span>DM 39 (Salle de pause RDC)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-40" onclick="openInspection('DM-DSV-RDC-40', 'DM', event)"><span class="off-map-dot green"></span>DM 40 (Vestiaire Homme RDC)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-41" onclick="openInspection('DM-DSV-RDC-41', 'DM', event)"><span class="off-map-dot green"></span>DM 41 (Open Space RDC)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-RDC-42" onclick="openInspection('DM-DSV-RDC-42', 'DM', event)"><span class="off-map-dot green"></span>DM 42 (Vestiaire Femme RDC)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-PDG-35" onclick="openInspection('DM-DSV-PDG-35', 'DM', event)"><span class="off-map-dot green"></span>DM 35 (Poste de garde)</button>
+                    </div>
+                </div>
+                <div class="off-map-col">
+                    <div class="off-map-col-title">Étage</div>
+                    <div class="off-map-tags">
+                        <button class="off-map-btn" data-device-id="DM-DSV-ETG-43" onclick="openInspection('DM-DSV-ETG-43', 'DM', event)"><span class="off-map-dot red"></span>DM 43 (Escaliers Étage)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-ETG-44" onclick="openInspection('DM-DSV-ETG-44', 'DM', event)"><span class="off-map-dot green"></span>DM 44 (Escaliers Étage)</button>
+                        <button class="off-map-btn" data-device-id="DM-DSV-ETG-45" onclick="openInspection('DM-DSV-ETG-45', 'DM', event)"><span class="off-map-dot green"></span>DM 45 (Passage DSV/SPI2 Étage)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Groupe SPI2 -->
+        <div class="off-map-group-block">
+            <div class="off-map-group-title">SPI2</div>
+            <div class="off-map-grid-2cols">
+                <div class="off-map-col">
+                    <div class="off-map-col-title">RDC</div>
+                    <div class="off-map-tags">
+                        <button class="off-map-btn" data-device-id="DM-SPI2-RDC-21" onclick="openInspection('DM-SPI2-RDC-21', 'DM', event)"><span class="off-map-dot red"></span>DM 21 (Entrée RDC)</button>
+                        <button class="off-map-btn" data-device-id="DM-SPI2-RDC-22" onclick="openInspection('DM-SPI2-RDC-22', 'DM', event)"><span class="off-map-dot green"></span>DM 22</button>
+                        <button class="off-map-btn" data-device-id="DM-SPI2-RDC-23" onclick="openInspection('DM-SPI2-RDC-23', 'DM', event)"><span class="off-map-dot green"></span>DM 23</button>
+                    </div>
+                </div>
+                <div class="off-map-col">
+                    <div class="off-map-col-title">Étage</div>
+                    <div class="off-map-tags">
+                        <button class="off-map-btn" data-device-id="DM-SPI2-ETG-17" onclick="openInspection('DM-SPI2-ETG-17', 'DM', event)"><span class="off-map-dot red"></span>DM 17 (Escalier Étage)</button>
+                        <button class="off-map-btn" data-device-id="DM-SPI2-ETG-18" onclick="openInspection('DM-SPI2-ETG-18', 'DM', event)"><span class="off-map-dot green"></span>DM 18</button>
+                        <button class="off-map-btn" data-device-id="DM-SPI2-ETG-19" onclick="openInspection('DM-SPI2-ETG-19', 'DM', event)"><span class="off-map-dot green"></span>DM 19</button>
+                        <button class="off-map-btn" data-device-id="DM-SPI2-ETG-20" onclick="openInspection('DM-SPI2-ETG-20', 'DM', event)"><span class="off-map-dot green"></span>DM 20</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
     let currentElementId = null;
     let currentElementType = null;
     const inspectionsRegistry = {};
+
     function changeLevel() {
         const val = document.getElementById('level-select').value;
         const grid = document.getElementById('building-grid');
@@ -979,19 +1092,19 @@ h1 {
         plan.classList.toggle('hide-dm');
         btn.classList.toggle('active-dm');
     }
-    function openInspection(elementName, type, event) {
+    function openInspection(uniqueId, type, event) {
         event.stopPropagation();
-        currentElementId = elementName;
+        currentElementId = uniqueId;
         currentElementType = type;
         
-        let displayTitle = elementName;
+        let displayTitle = uniqueId;
         if (type === 'DM') {
-            const isGreen = event.currentTarget.classList.contains('dm-green-tag');
+            const isGreen = event.currentTarget.classList.contains('dm-green-tag') || (event.currentTarget.querySelector && event.currentTarget.querySelector('.off-map-dot.green'));
             displayTitle += isGreen ? ' (vert)' : ' (rouge)';
         }
         document.getElementById('panel-title').innerText = displayTitle;
         
-        const data = inspectionsRegistry[elementName] || {
+        const data = inspectionsRegistry[uniqueId] || {
             etat: 'Conforme',
             access: 'Libre',
             essai: 'ok',
@@ -1094,14 +1207,24 @@ h1 {
             data.comment !== ''
         );
         inspectionsRegistry[currentElementId] = data;
+        
         const tags = document.querySelectorAll('.tag');
         tags.forEach(tag => {
-            const onclickAttr = tag.getAttribute('onclick');
-            if (onclickAttr && onclickAttr.includes(currentElementId)) {
+            if (tag.getAttribute('data-device-id') === currentElementId) {
                 if (hasIssue) {
                     tag.classList.add('has-defect');
                 } else {
                     tag.classList.remove('has-defect');
+                }
+            }
+        });
+        const offMapBtns = document.querySelectorAll('.off-map-btn');
+        offMapBtns.forEach(btn => {
+            if (btn.getAttribute('data-device-id') === currentElementId) {
+                if (hasIssue) {
+                    btn.classList.add('has-defect');
+                } else {
+                    btn.classList.remove('has-defect');
                 }
             }
         });
@@ -1111,77 +1234,174 @@ h1 {
         console.log(`Cellule cliquée : ${cellName}`);
     }
     function generateReport() {
-        const now = new Date();
-        const dateStr = now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR');
-        
-        let reportText = "========================================\n";
-        reportText += "COMPTE RENDU — IS & DM\n";
-        reportText += `Date : ${dateStr}\n`;
-        reportText += "========================================\n\n";
-        const entries = Object.entries(inspectionsRegistry);
-        if (entries.length === 0) {
-            reportText += "----------------------------------------\n";
-            reportText += "Résultat : Aucun problème détecté\n";
-            reportText += "----------------------------------------";
-        } else {
-            entries.sort((a, b) => {
-                const typeA = a[1].type;
-                const typeB = b[1].type;
-                if (typeA !== typeB) {
-                    return typeA === 'IS' ? -1 : 1;
+    const now = new Date();
+    const dateStr =
+        now.toLocaleDateString('fr-FR') +
+        ' ' +
+        now.toLocaleTimeString('fr-FR');
+
+    let reportText = "========================================\n";
+    reportText += "COMPTE RENDU — IS & DM\n";
+    reportText += `Date : ${dateStr}\n`;
+    reportText += "========================================\n\n";
+
+    const entries = Object.entries(inspectionsRegistry);
+
+    if (entries.length === 0) {
+        reportText += "----------------------------------------\n";
+        reportText += "Résultat : Aucun problème détecté\n";
+        reportText += "----------------------------------------";
+
+    } else {
+        let listIS = [];
+        let listDM_DSV = [];
+        let listDM_SPI2 = [];
+
+        let countIS = 0;
+        let countDM = 0;
+
+        for (const [id, data] of entries) {
+
+            let itemsList = [];
+
+            if (data.etat && data.etat !== 'Conforme') {
+                itemsList.push(`État : ${data.etat}`);
+            }
+
+            if (data.access && data.access !== 'Libre') {
+                itemsList.push(`Accès : ${data.access}`);
+            }
+
+            if (data.type === 'IS') {
+
+                if (data.essai && data.essai !== 'ok') {
+                    itemsList.push(`Essai : ${data.essai}`);
                 }
-                const numA = parseInt(a[0].replace(/[^0-9]/g, ''), 10) || 0;
-                const numB = parseInt(b[0].replace(/[^0-9]/g, ''), 10) || 0;
-                return numA - numB;
-            });
-            let loggedCount = 0;
-            let countIS = 0;
-            let countDM = 0;
-            for (const [id, data] of entries) {
-                let lines = [];
-                
-                if (data.etat && data.etat !== 'Conforme') {
-                    lines.push(`  ➔ État général : ${data.etat}`);
-                }
-                if (data.access && data.access !== 'Libre') {
-                    lines.push(`  ➔ Accessibilité : ${data.access}`);
-                }
-                if (data.type === 'IS') {
-                    if (data.essai && data.essai !== 'ok') {
-                        lines.push(`  ➔ Essai fermeture/ouverture : ${data.essai}`);
-                    }
-                    if (data.barre && data.barre !== 'Bon état') {
-                        lines.push(`  ➔ Barre anti-panique : ${data.barre}`);
-                    }
-                }
-                if (data.comment) {
-                    lines.push(`  ➔ Commentaire : ${data.comment}`);
-                }
-                if (lines.length > 0) {
-                    loggedCount++;
-                    if (data.type === 'IS') {
-                        countIS++;
-                    } else if (data.type === 'DM') {
-                        countDM++;
-                    }
-                    reportText += `• ${id}\n`;
-                    reportText += lines.join('\n') + "\n\n";
+
+                if (data.barre && data.barre !== 'Bon état') {
+                    itemsList.push(`Barre : ${data.barre}`);
                 }
             }
-            reportText += "----------------------------------------\n";
-            if (loggedCount === 0) {
-                reportText += "Résultat : Aucun problème détecté (Éléments contrôlés conformes)";
-            } else {
-                let details = [];
-                if (countIS > 0) details.push(`${countIS} IS`);
-                if (countDM > 0) details.push(`${countDM} DM`);
-                reportText += `Résultat : Anomalies détectées (${details.join(', ')})`;
+
+            if (data.comment) {
+                itemsList.push(`Note : ${data.comment}`);
+            }
+
+            // On ajoute uniquement les éléments ayant une anomalie
+            if (itemsList.length > 0) {
+
+                const itemsStr = itemsList.join(' | ');
+
+                if (data.type === 'IS') {
+
+                    countIS++;
+
+                    let cleanName = id
+                        .replace(/^IS-/, '')
+                        .replace(/^(RDC|ETG)-/, '');
+
+                    listIS.push(
+                        `• IS ${cleanName}\n` +
+                        `  ➔ ${itemsStr}`
+                    );
+
+                } else {
+
+                    countDM++;
+
+                    let matchNum = id.match(/-([0-9]+)$/);
+
+                    let shortName = matchNum
+                        ? `DM ${matchNum[1]}`
+                        : id;
+
+                    let formattedItem =
+                        `• ${shortName}\n` +
+                        `  ➔ ${itemsStr}`;
+
+                    if (id.includes('SPI2')) {
+                        listDM_SPI2.push(formattedItem);
+                    } else {
+                        listDM_DSV.push(formattedItem);
+                    }
+                }
             }
         }
-        document.getElementById('report-content-text').value = reportText.trim();
-        document.getElementById('report-overlay').classList.add('visible');
+
+        if (countIS === 0 && countDM === 0) {
+
+            reportText += "----------------------------------------\n";
+            reportText += "Résultat : Aucun problème détecté (Éléments contrôlés conformes)\n";
+            reportText += "----------------------------------------";
+
+        } else {
+
+            // ================================
+            // ISSUE DE SECOURS
+            // ================================
+            if (listIS.length > 0) {
+
+                reportText += "ISSUE DE SECOURS\n";
+
+                // Les éléments sont séparés uniquement par un retour à la ligne
+                reportText += listIS.join("\n");
+
+                // Une ligne vide avant la prochaine section
+                reportText += "\n\n";
+            }
+
+            // ================================
+            // DM DSV
+            // ================================
+            if (listDM_DSV.length > 0) {
+
+                reportText += "DM (DSV)\n";
+
+                // Pas de ligne vide entre les éléments
+                reportText += listDM_DSV.join("\n");
+
+                // Une ligne vide avant la prochaine section
+                reportText += "\n\n";
+            }
+
+            // ================================
+            // DM SPI2
+            // ================================
+            if (listDM_SPI2.length > 0) {
+
+                reportText += "DM (SPI2)\n";
+
+                // Pas de ligne vide entre les éléments
+                reportText += listDM_SPI2.join("\n");
+
+                reportText += "\n\n";
+            }
+
+            reportText += "----------------------------------------\n";
+
+            let details = [];
+
+            if (countIS > 0) {
+                details.push(`${countIS} IS`);
+            }
+
+            if (countDM > 0) {
+                details.push(`${countDM} DM`);
+            }
+
+            reportText +=
+                `Résultat : Anomalies détectées (${details.join(', ')})`;
+        }
     }
-    function closeReport() {
+
+    document.getElementById('report-content-text').value =
+        reportText.trim();
+
+    document.getElementById('report-overlay')
+        .classList.add('visible');
+}
+
+function closeReport() {
         document.getElementById('report-overlay').classList.remove('visible');
     }
     function copyReport() {
@@ -1209,6 +1429,9 @@ h1 {
             }
             document.querySelectorAll('.tag').forEach(tag => {
                 tag.classList.remove('has-defect');
+            });
+            document.querySelectorAll('.off-map-btn').forEach(btn => {
+                btn.classList.remove('has-defect');
             });
         }
     }
