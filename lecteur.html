@@ -22,6 +22,7 @@
       flex-direction: column;
       align-items: center;
       padding: 2rem 1rem;
+      cursor: default;
     }
 
     .container {
@@ -46,10 +47,14 @@
       color: #fff;
       outline: none;
       margin-bottom: 1.5rem;
+      caret-color: transparent;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     input:focus {
       border-color: #ff8c00;
+      caret-color: #ff8c00;
     }
 
     input::placeholder {
@@ -82,8 +87,8 @@
 </head>
 <body>
   <div class="container">
-    <p>Collez un lien YouTube ci-dessous</p>
-    <input type="text" id="url" placeholder="https://www.youtube.com/watch?v=..." autofocus />
+    <p>YT sans pub</p>
+    <input type="text" id="url" placeholder="https://www.youtube.com/..." />
     <div class="player" id="player">
       <iframe id="frame" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
     </div>
