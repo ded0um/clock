@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionnaire de Congés Payés</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .card h2::before {
+            content: '';
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="number"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .results {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border-left: 4px solid #764ba2;
+        }
+
+        .results h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-item.warning {
+            border-left-color: #ffc107;
+            background: #fffbf0;
+        }
+
+        .result-item.danger {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .result-item.success {
+            border-left-color: #28a745;
+            background: #f0fff4;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .alerts {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-item {
+            margin-bottom: 10px;
+            color: #856404;
+            font-size: 14px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .alert-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .alert-item::before {
+            content: '⚠️';
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border: 2px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .rules-section {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .rules-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .rules-section ul {
+            list-style: none;
+        }
+
+        .rules-section li {
+            padding: 8px 0;
+            color: #555;
+            font-size: 13px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .rules-section li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .recommendations {
+            background: #f0fff4;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .recommendations h3 {
+            color: #155724;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .recommendations ul {
+            list-style: none;
+        }
+
+        .recommendations li {
+            padding: 8px 0;
+            color: #155724;
+            font-size: 13px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .recommendations li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .two-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📅 Gestionnaire de Congés Payés</h1>
+        <p class="subtitle">Planifiez vos congés intelligemment selon les règles de votre entreprise</p>
+
+        <div class="rules-section">
+            <h3>📋 Règles de votre entreprise</h3>
+            <ul>
+                <li>Acquisition: 2,08 jours ouvrés par mois (25 jours par an)</li>
+                <li>Obligation de solder avant le 30 avril de l'année suivante</li>
+                <li>Pas de travail de nuit possible la veille de vos CP</li>
+                <li>Si le vendredi avant vos CP n'est pas posé, l'entreprise peut vous faire travailler le weekend précédent</li>
+            </ul>
+        </div>
+
+        <div class="grid">
+            <!-- Compteurs -->
+            <div class="card">
+                <h2>📊 Vos Compteurs</h2>
+                <div class="form-group">
+                    <label for="counterN1">Compteur N-1 (fiche de paie précédente)</label>
+                    <input type="number" id="counterN1" step="0.5" placeholder="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="counterN">Compteur N (fiche de paie actuelle)</label>
+                    <input type="number" id="counterN" step="0.5" placeholder="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="deadlineYear">Année de solder (ex: 2024)</label>
+                    <input type="number" id="deadlineYear" placeholder="2024" min="2024" step="1">
+                </div>
+                <button onclick="calculateDeadline()">Calculer les échéances</button>
+            </div>
+
+            <!-- Période d'acquisition -->
+            <div class="card">
+                <h2>📈 Acquisition Annuelle</h2>
+                <div class="form-group">
+                    <label for="periodStart">Début de la période d'acquisition</label>
+                    <input type="date" id="periodStart">
+                </div>
+                <div class="form-group">
+                    <label for="periodEnd">Fin de la période d'acquisition</label>
+                    <input type="date" id="periodEnd">
+                </div>
+                <div class="form-group">
+                    <label for="accrualDate">Date d'accrual actuelle</label>
+                    <input type="date" id="accrualDate">
+                </div>
+                <button onclick="calculateAccrual()">Calculer l'acquisition</button>
+            </div>
+        </div>
+
+        <!-- Planification des CP -->
+        <div class="card">
+            <h2>🎯 Planification des Congés Payés</h2>
+            
+            <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 20px;">
+                <div class="form-group">
+                    <label for="cpStartDate">Date de début de CP prévue</label>
+                    <input type="date" id="cpStartDate">
+                </div>
+                <div class="form-group">
+                    <label for="cpDays">Nombre de jours de CP (jours ouvrés)</label>
+                    <input type="number" id="cpDays" step="0.5" placeholder="5" min="0">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Jours spéciaux à considérer</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="includeFriday" checked>
+                    <label for="includeFriday">Inclure le vendredi avant la période</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="checkHolidays" checked>
+                    <label for="checkHolidays">Vérifier les jours fériés</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="checkSchoolHolidays" checked>
+                    <label for="checkSchoolHolidays">Vérifier les vacances scolaires</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="holidays">Jours fériés (un par ligne, format YYYY-MM-DD)</label>
+                <textarea id="holidays" placeholder="2024-01-01
+2024-04-01
+2024-05-01"></textarea>
+            </div>
+
+            <button onclick="analyzeCP()" style="margin-top: 20px;">Analyser ma période de CP</button>
+        </div>
+
+        <!-- Statistiques -->
+        <div id="statsContainer" style="display: none;">
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-label">CP Disponibles</div>
+                    <div class="stat-value" id="availableCPValue">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">À Solder avant le 30/04</div>
+                    <div class="stat-value" id="toSpendValue">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Jours Restants</div>
+                    <div class="stat-value" id="remainingValue">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Résultats et Alertes -->
+        <div id="resultsContainer" style="display: none;">
+            <div id="alertsSection"></div>
+            <div class="results">
+                <h2>📋 Analyse de votre demande</h2>
+                <div id="results"></div>
+            </div>
+            <div id="recommendationsSection"></div>
+        </div>
+    </div>
+
+    <script>
+        // Jours fériés français par défaut (2024-2025)
+        const defaultHolidays = [
+            '2024-01-01', '2024-04-01', '2024-05-01', '2024-05-08', '2024-05-19', 
+            '2024-05-30', '2024-07-14', '2024-08-15', '2024-11-01', '2024-12-25',
+            '2025-01-01', '2025-04-21', '2025-05-01', '2025-05-08', '2025-05-29',
+            '2025-06-09', '2025-07-14', '2025-08-15', '2025-11-01', '2025-12-25'
+        ];
+
+        // Vacances scolaires (zone B) 2024-2025
+        const schoolHolidays = [
+            { start: '2024-10-19', end: '2024-10-27', name: 'Automne' },
+            { start: '2024-12-14', end: '2025-01-06', name: 'Noël' },
+            { start: '2025-02-08', end: '2025-02-16', name: 'Hiver' },
+            { start: '2025-04-12', end: '2025-04-28', name: 'Printemps' },
+            { start: '2025-07-06', end: '2025-09-01', name: 'Été' }
+        ];
+
+        function parseDate(dateStr) {
+            return new Date(dateStr + 'T00:00:00');
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function isWeekend(date) {
+            const day = date.getDay();
+            return day === 0 || day === 6;
+        }
+
+        function getDayName(date) {
+            const days = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+            return days[date.getDay()];
+        }
+
+        function isHoliday(date, holidays) {
+            const dateStr = date.toISOString().split('T')[0];
+            return holidays.includes(dateStr);
+        }
+
+        function isInSchoolHolidays(date, schoolHols) {
+            return schoolHols.some(period => {
+                const start = parseDate(period.start);
+                const end = parseDate(period.end);
+                return date >= start && date <= end;
+            });
+        }
+
+        function calculateDeadline() {
+            const counterN1 = parseFloat(document.getElementById('counterN1').value) || 0;
+            const counterN = parseFloat(document.getElementById('counterN').value) || 0;
+            const deadlineYear = parseInt(document.getElementById('deadlineYear').value) || 2024;
+
+            const available = counterN1 + counterN;
+            const deadline = new Date(deadlineYear, 3, 30); // 30 avril
+
+            document.getElementById('statsContainer').style.display = 'grid';
+            document.getElementById('availableCPValue').textContent = available.toFixed(1);
+            document.getElementById('toSpendValue').textContent = counterN1.toFixed(1);
+            document.getElementById('remainingValue').textContent = counterN.toFixed(1);
+
+            alert(`Congés disponibles: ${available.toFixed(1)} jours\nÀ solder avant le: ${formatDate(deadline)}`);
+        }
+
+        function calculateAccrual() {
+            const start = parseDate(document.getElementById('periodStart').value);
+            const end = parseDate(document.getElementById('periodEnd').value);
+            const current = parseDate(document.getElementById('accrualDate').value);
+
+            if (isNaN(start.getTime()) || isNaN(end.getTime()) || isNaN(current.getTime())) {
+                alert('Veuillez remplir toutes les dates');
+                return;
+            }
+
+            const daysElapsed = Math.floor((current - start) / (1000 * 60 * 60 * 24));
+            const totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+            const accrued = (daysElapsed / totalDays) * 25;
+
+            alert(`Congés acquis au ${formatDate(current)}: ${accrued.toFixed(2)} jours`);
+        }
+
+        function analyzeCP() {
+            const cpStartStr = document.getElementById('cpStartDate').value;
+            const cpDays = parseFloat(document.getElementById('cpDays').value);
+            const includeFriday = document.getElementById('includeFriday').checked;
+            const checkHolidays = document.getElementById('checkHolidays').checked;
+            const checkSchoolHolidays = document.getElementById('checkSchoolHolidays').checked;
+
+            if (!cpStartStr || isNaN(cpDays)) {
+                alert('Veuillez remplir la date et le nombre de jours de CP');
+                return;
+            }
+
+            const cpStart = parseDate(cpStartStr);
+            const holidaysText = document.getElementById('holidays').value.trim();
+            const holidays = holidaysText ? holidaysText.split('\n').map(h => h.trim()).filter(h => h) : defaultHolidays;
+
+            let alerts = [];
+            let results = [];
+            let recommendations = [];
+
+            // Vérifier le vendredi précédent
+            let cpAnalysisStart = new Date(cpStart);
+            if (includeFriday) {
+                cpAnalysisStart.setDate(cpAnalysisStart.getDate() - 1);
+                while (cpAnalysisStart.getDay() !== 5) { // 5 = vendredi
+                    cpAnalysisStart.setDate(cpAnalysisStart.getDate() - 1);
+                }
+            }
+
+            const fridayBefore = new Date(cpStart);
+            while (fridayBefore.getDay() !== 5) {
+                fridayBefore.setDate(fridayBefore.getDate() - 1);
+            }
+
+            const fridayBeforeStr = fridayBefore.toISOString().split('T')[0];
+            const isFridayHoliday = isHoliday(fridayBefore, holidays);
+
+            if (!isFridayHoliday) {
+                alerts.push('⚠️ <strong>Attention:</strong> Le vendredi ' + formatDate(fridayBefore) + ' n\'est pas en congés. L\'entreprise pourra vous faire travailler le weekend qui précède votre période de CP.');
+                recommendations.push('Envisagez de poser le vendredi ' + formatDate(fridayBefore) + ' en CP pour éviter le travail du weekend.');
+            }
+
+            // Analyser la période de CP
+            let currentDate = new Date(cpStart);
+            let cpCount = 0;
+            let analysisDetails = [];
+            const cpEnd = new Date(cpStart);
+
+            // Calculer la date de fin
+            while (cpCount < cpDays) {
+                if (!isWeekend(currentDate) && !isHoliday(currentDate, holidays)) {
+                    cpCount++;
+                }
+                if (cpCount < cpDays) {
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+            }
+
+            cpEnd = new Date(currentDate);
+
+            // Analyser chaque jour
+            currentDate = new Date(cpStart);
+            cpCount = 0;
+
+            while (cpCount < cpDays) {
+                const dateStr = currentDate.toISOString().split('T')[0];
+                const dayName = getDayName(currentDate);
+                let status = '';
+                let type = '';
+
+                if (isWeekend(currentDate)) {
+                    status = `${formatDate(currentDate)} (${dayName}): Weekend`;
+                    type = 'weekend';
+                } else if (isHoliday(currentDate, holidays)) {
+                    status = `${formatDate(currentDate)} (${dayName}): Jour férié`;
+                    type = 'holiday';
+                } else if (checkSchoolHolidays && isInSchoolHolidays(currentDate, schoolHolidays)) {
+                    const period = schoolHolidays.find(p => {
+                        const start = parseDate(p.start);
+                        const end = parseDate(p.end);
+                        return currentDate >= start && currentDate <= end;
+                    });
+                    status = `${formatDate(currentDate)} (${dayName}): Vacances scolaires (${period.name})`;
+                    type = 'schoolholiday';
+                    cpCount++;
+                } else {
+                    status = `${formatDate(currentDate)} (${dayName}): CP (jour ${cpCount + 1}/${cpDays})`;
+                    type = 'cp';
+                    cpCount++;
+                }
+
+                analysisDetails.push({ date: currentDate, status, type });
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            // Vérifier la nuit avant les CP
+            const dayBefore = new Date(cpStart);
+            dayBefore.setDate(dayBefore.getDate() - 1);
+            if (!isWeekend(dayBefore) && !isHoliday(dayBefore, holidays)) {
+                alerts.push('⚠️ <strong>Pas de travail de nuit:</strong> La nuit du ' + formatDate(dayBefore) + ' au ' + formatDate(cpStart) + ' doit être libre (pas de nuit de travail possible).');
+            }
+
+            // Afficher les résultats
+            let resultsHTML = '';
+            resultsHTML += '<div class="result-item success">';
+            resultsHTML += '<div class="result-label">Période de CP</div>';
+            resultsHTML += '<div class="result-value">' + formatDate(cpStart) + ' à ' + formatDate(cpEnd) + ' (' + cpDays + ' jours ouvrés)</div>';
+            resultsHTML += '</div>';
+
+            analysisDetails.forEach(detail => {
+                let className = 'result-item';
+                if (detail.type === 'cp') className += ' success';
+                else if (detail.type === 'weekend') className += ' warning';
+                else if (detail.type === 'holiday' || detail.type === 'schoolholiday') className += ' warning';
+
+                resultsHTML += '<div class="' + className + '">';
+                resultsHTML += '<div class="result-value">' + detail.status + '</div>';
+                resultsHTML += '</div>';
+            });
+
+            document.getElementById('results').innerHTML = resultsHTML;
+
+            if (alerts.length > 0) {
+                let alertsHTML = '<div class="alerts">';
+                alerts.forEach(alert => {
+                    alertsHTML += '<div class="alert-item">' + alert + '</div>';
+                });
+                alertsHTML += '</div>';
+                document.getElementById('alertsSection').innerHTML = alertsHTML;
+            } else {
+                document.getElementById('alertsSection').innerHTML = '';
+            }
+
+            if (recommendations.length > 0) {
+                let recsHTML = '<div class="recommendations">';
+                recsHTML += '<h3>💡 Recommandations</h3>';
+                recsHTML += '<ul>';
+                recommendations.forEach(rec => {
+                    recsHTML += '<li>' + rec + '</li>';
+                });
+                recsHTML += '</ul></div>';
+                document.getElementById('recommendationsSection').innerHTML = recsHTML;
+            } else {
+                document.getElementById('recommendationsSection').innerHTML = '';
+            }
+
+            document.getElementById('resultsContainer').style.display = 'block';
+        }
+
+        // Initialiser les dates par défaut
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            document.getElementById('deadlineYear').value = today.getFullYear();
+            document.getElementById('holidays').value = defaultHolidays.join('\n');
+        });
+    </script>
+</body>
+</html>
