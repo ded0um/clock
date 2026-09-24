@@ -1,8 +1,9 @@
 {
+  "id": "/clock/",
   "name": "Clock (by Dedoum)",
   "short_name": "Clock",
   "description": "Horloge et Rapports",
-  "start_url": "/clock/?v=2",
+  "start_url": "/clock/",
   "scope": "/clock/",
   "display": "standalone",
   "background_color": "#000000",
