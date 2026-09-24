@@ -2883,11 +2883,12 @@ document.getElementById('forceClockResetBtn').addEventListener('click', () => {
     updateClock();
 });
 
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(err => console.error('Erreur SW:', err));
-    });
-  }
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js', { scope: '/clock/' })
+      .catch(err => console.error('Erreur SW:', err));
+  });
+}
 
 
 </script>
