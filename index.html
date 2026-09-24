@@ -2882,6 +2882,14 @@ document.getElementById('forceClockResetBtn').addEventListener('click', () => {
     decalageHorlogeMs = 0;
     updateClock();
 });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(err => console.error('Erreur SW:', err));
+    });
+  }
+
+
 </script>
 </body>
 </html>
