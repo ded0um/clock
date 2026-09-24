@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <!-- Liens Icône & PWA -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horloge & Rapports | Dedoum</title>
+<!-- Liens Icône & PWA -->
 <link rel="manifest" href="manifest.json?v=2">
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=2">
 <link rel="apple-touch-icon" href="icon.svg?v=2">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-title" content="Clock">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Horloge & Rapports | Dedoum</title>
 <style>
 :root {
     --bg-color: #000000;
@@ -215,6 +215,7 @@ body {
     opacity: 1;
 }
 .menu-toggle-btn.active { color: var(--yellow-led); opacity: 1; }
+.menu-toggle-btn.masque-par-volet { opacity: 0; visibility: hidden; pointer-events: none; }
 
 .alarm-modal-overlay.menu-panel-overlay,
 #menuPanelOverlay {
@@ -1053,6 +1054,14 @@ h4 { margin: 12px 0 5px 0; color: #aaa; font-size: 0.85rem; text-transform: uppe
 }
 </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/clock/sw.js', { scope: '/clock/' })
+      .catch(err => console.error('Erreur SW:', err));
+  });
+}
+</script>
 </head>
 <body>
 
@@ -1776,6 +1785,13 @@ function toggleFullscreen() {
     }
 }
 
+// --- MASQUER LE BOUTON BURGER QUAND UN VOLET PLEIN ÉCRAN EST OUVERT ---
+function mettreAJourVisibiliteBoutonMenu() {
+    const panelOuvert = document.getElementById('questionnairePanel').classList.contains('open');
+    const meteoOuverte = document.getElementById('weatherPanel').classList.contains('open');
+    document.getElementById('toggleMenuBtn').classList.toggle('masque-par-volet', panelOuvert || meteoOuverte);
+}
+
 document.getElementById('mainClickZone').addEventListener('click', (e) => {
     if (e.target.closest('#togglePanelBtn') || e.target.closest('.top-controls')) {
         return;
@@ -1783,11 +1799,13 @@ document.getElementById('mainClickZone').addEventListener('click', (e) => {
     if (panel.classList.contains('open')) {
         panel.classList.remove('open');
         toggleBtn.classList.remove('active');
+        mettreAJourVisibiliteBoutonMenu();
         return;
     }
     if (weatherPanel.classList.contains('open')) {
         weatherPanel.classList.remove('open');
         toggleWeatherBtn.classList.remove('active');
+        mettreAJourVisibiliteBoutonMenu();
         return;
     }
     toggleFullscreen();
@@ -2413,6 +2431,7 @@ toggleWeatherBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     weatherPanel.classList.toggle('open');
     toggleWeatherBtn.classList.toggle('active');
+    mettreAJourVisibiliteBoutonMenu();
     if (weatherPanel.classList.contains('open') && !meteoDejaChargee) {
         chargerMeteo();
         meteoDejaChargee = true;
@@ -2422,6 +2441,7 @@ closeWeatherBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     weatherPanel.classList.remove('open');
     toggleWeatherBtn.classList.remove('active');
+    mettreAJourVisibiliteBoutonMenu();
 });
 weatherPanel.addEventListener('click', (e) => e.stopPropagation());
 
@@ -2539,6 +2559,7 @@ toggleBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     panel.classList.toggle('open');
     toggleBtn.classList.toggle('active');
+    mettreAJourVisibiliteBoutonMenu();
     requestWakeLock();
 });
 
@@ -2550,6 +2571,7 @@ document.getElementById('closePanelBtn').addEventListener('click', (e) => {
     e.stopPropagation();
     panel.classList.remove('open');
     toggleBtn.classList.remove('active');
+    mettreAJourVisibiliteBoutonMenu();
 });
 
 function toggleSection(header) {
@@ -2882,14 +2904,6 @@ document.getElementById('forceClockResetBtn').addEventListener('click', () => {
     decalageHorlogeMs = 0;
     updateClock();
 });
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/clock/sw.js', { scope: '/clock/' })
-      .catch(err => console.error('Erreur SW:', err));
-  });
-}
-
 </script>
 </body>
 </html>
