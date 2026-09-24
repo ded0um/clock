@@ -1,9 +1,9 @@
 const CACHE_NAME = 'clock-dedoum-v1';
 const ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon.svg'
+  '/clock/',
+  '/clock/index.html',
+  '/clock/manifest.json',
+  '/clock/icon.svg'
 ];
 
 // Installation du Service Worker et mise en cache des fichiers
@@ -32,10 +32,14 @@ self.addEventListener('activate', (e) => {
 
 // Interception des requêtes réseau
 self.addEventListener('fetch', (e) => {
-  // Ne pas mettre en cache les appels API Google Apps Script / météo
+  // Ignorer les requêtes non-GET et les extensions Chrome
+  if (e.request.method !== 'GET' || !e.request.url.startsWith('http')) return;
+
+  // Ne pas mettre en cache les API externes (Google Apps Script / Open-Meteo)
   if (e.request.url.includes('script.google.com') || e.request.url.includes('api.open-meteo.com')) {
     return;
   }
+
   e.respondWith(
     caches.match(e.request).then((response) => response || fetch(e.request))
   );
