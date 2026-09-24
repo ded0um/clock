@@ -2885,11 +2885,10 @@ document.getElementById('forceClockResetBtn').addEventListener('click', () => {
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js', { scope: '/clock/' })
+    navigator.serviceWorker.register('/clock/sw.js', { scope: '/clock/' })
       .catch(err => console.error('Erreur SW:', err));
   });
 }
-
 
 </script>
 </body>
