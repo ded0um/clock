@@ -136,7 +136,7 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
-.alarm-result-item, .ssi-zone-btn, .ssi-big-btn, .choice-btn {
+.alarm-result-item, .ssi-zone-btn, .ssi-big-btn, .choice-btn, .radio-bloc, .btn-radio-toggle, .radio-mini-stop {
     user-select: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
@@ -845,11 +845,32 @@ body.jour-sans-boutons .vacation-bar-wrap { opacity: 0 !important; visibility: h
 .radio-bloc .radio-mini-eq .m-bar:nth-child(2) { animation-delay: 0.3s; }
 .radio-bloc .radio-mini-eq .m-bar:nth-child(3) { animation-delay: 0.2s; }
 @keyframes radioMiniBounce { 0% { height: 2px; } 100% { height: 10px; } }
-.radio-bloc-add { border-style: dashed; color: #888; }
-.radio-bloc-add:hover { color: var(--yellow-led); border-color: var(--yellow-led); }
-.radio-bloc-add svg { width: 20px; height: 20px; stroke: currentColor; fill: none; margin-bottom: 6px; }
-.modal-error { font-size: 0.8rem; color: #ff5555; display: none; margin-top: 4px; }
-.modal-error.visible { display: block; }
+.radio-mini-stop {
+    position: relative;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: none;
+    border: 1px solid #333;
+    color: #888;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, border-color 0.2s;
+}
+.radio-mini-stop:hover { color: var(--yellow-led); border-color: var(--yellow-led); }
+.radio-mini-stop svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
+.radio-mini-stop-dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #22c55e;
+    box-shadow: 0 0 6px #22c55e;
+}
 
 .alarm-mobile-tabs { display: none; }
 
@@ -1152,6 +1173,10 @@ if ('serviceWorker' in navigator) {
 <div class="left-zone" id="mainClickZone">
     <div class="top-controls">
         <div id="leds-sheet-container" class="leds-sheet-container"></div>
+        <button class="radio-mini-stop hidden" id="radioMiniStopBtn" title="Arrêter la radio">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><circle cx="8" cy="15" r="1.3"/><line x1="12" y1="13" x2="16" y2="13"/><line x1="12" y1="17" x2="16" y2="17"/><path d="M8 10V6l8-3v7"/></svg>
+            <span class="radio-mini-stop-dot"></span>
+        </button>
     </div>
     <div class="date-display" id="date-label">Chargement...</div>
     <div id="clock">00:00</div>
@@ -1442,42 +1467,22 @@ if ('serviceWorker' in navigator) {
             <button id="closeRadioBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
         </div>
 
-        <div id="radioStepListe">
-            <div class="radio-player-card">
-                <div class="radio-player-info">
-                    <div class="radio-current-name" id="radioStationTitle">Sélectionnez une station</div>
-                    <div class="radio-status-tag" id="radioStatusTag">Hors ligne</div>
+        <div class="radio-player-card">
+            <div class="radio-player-info">
+                <div class="radio-current-name" id="radioStationTitle">Sélectionnez une station</div>
+                <div class="radio-status-tag" id="radioStatusTag">Hors ligne</div>
+            </div>
+            <div class="radio-player-controls">
+                <div class="radio-equalizer" id="radioEqualizer">
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
                 </div>
-                <div class="radio-player-controls">
-                    <div class="radio-equalizer" id="radioEqualizer">
-                        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                    </div>
-                    <button class="btn-radio-toggle" id="btnRadioToggle" title="Lecture / Arrêt">
-                        <svg id="radioIconPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                        <svg id="radioIconStop" viewBox="0 0 24 24" style="display:none;"><rect x="6" y="6" width="12" height="12"/></svg>
-                    </button>
-                </div>
+                <button class="btn-radio-toggle" id="btnRadioToggle" title="Lecture / Arrêt">
+                    <svg id="radioIconPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg id="radioIconStop" viewBox="0 0 24 24" style="display:none;"><rect x="6" y="6" width="12" height="12"/></svg>
+                </button>
             </div>
-            <div class="radio-grid" id="radioGrid"></div>
         </div>
-
-        <div id="radioStepAjouter" class="hidden">
-            <button class="ssi-back-btn" id="radioRetourListeBtn" style="padding-left:0;">← Retour à la liste</button>
-            <div class="form-group" style="margin-top:10px;">
-                <label>Nom de la station</label>
-                <input type="text" id="radioAddNomInput" placeholder="Ex : RTL2">
-            </div>
-            <div class="form-group">
-                <label>URL du flux (mp3/aac...)</label>
-                <input type="text" id="radioAddUrlInput" placeholder="https://...">
-            </div>
-            <div class="form-group">
-                <label>Genre (optionnel)</label>
-                <input type="text" id="radioAddGenreInput" placeholder="Ex : Rock">
-            </div>
-            <div class="modal-error" id="radioAddError">Veuillez saisir un nom et une URL valides.</div>
-            <button class="btn-submit" id="radioAddSubmitBtn">Ajouter la radio</button>
-        </div>
+        <div class="radio-grid" id="radioGrid"></div>
     </div>
 </div>
 
@@ -2840,8 +2845,6 @@ const radioModalOverlay = document.getElementById('radioModalOverlay');
 const radioModalBox = document.getElementById('radioModalBox');
 const toggleRadioBtn = document.getElementById('toggleRadioBtn');
 const closeRadioBtn = document.getElementById('closeRadioBtn');
-const radioStepListe = document.getElementById('radioStepListe');
-const radioStepAjouter = document.getElementById('radioStepAjouter');
 const radioGrid = document.getElementById('radioGrid');
 const radioStationTitle = document.getElementById('radioStationTitle');
 const radioStatusTag = document.getElementById('radioStatusTag');
@@ -2849,18 +2852,22 @@ const radioEqualizer = document.getElementById('radioEqualizer');
 const btnRadioToggle = document.getElementById('btnRadioToggle');
 const radioIconPlay = document.getElementById('radioIconPlay');
 const radioIconStop = document.getElementById('radioIconStop');
-const radioRetourListeBtn = document.getElementById('radioRetourListeBtn');
-const radioAddNomInput = document.getElementById('radioAddNomInput');
-const radioAddUrlInput = document.getElementById('radioAddUrlInput');
-const radioAddGenreInput = document.getElementById('radioAddGenreInput');
-const radioAddError = document.getElementById('radioAddError');
-const radioAddSubmitBtn = document.getElementById('radioAddSubmitBtn');
+const radioMiniStopBtn = document.getElementById('radioMiniStopBtn');
 
-let stationsRadio = [
+const stationsRadio = [
+    { id: 'chantefrance', nom: 'Chante France', url: 'https://chantefrance.ice.infomaniak.ch/chantefrance-128.mp3', genre: 'Chanson française' },
+    { id: 'cheriefm', nom: 'Chérie FM', url: 'https://streaming.nrjaudio.fm/ouuku85n3nje', genre: 'Pop / Love' },
+    { id: 'europe1', nom: 'Europe 1', url: 'https://mp3lg3.scdn.arkena.com/10489/europe1.mp3', genre: 'Talk / Info' },
+    { id: 'europe2', nom: 'Europe 2', url: 'https://europe2.lmn.fm/europe2.mp3', genre: 'Pop / Rock' },
+    { id: 'francebleu', nom: 'France Bleu', url: 'https://icecast.radiofrance.fr/fb1071-midfi.mp3', genre: 'Info / Proximité' },
+    { id: 'funradio', nom: 'Fun Radio', url: 'https://streaming.radio.funradio.fr/fun-1-44-96', genre: 'Dance / Hits' },
     { id: 'nostalgie', nom: 'Nostalgie', url: 'https://streaming.nrjaudio.fm/oug7girb92oc', genre: 'Variété / Oldies' },
     { id: 'nrj', nom: 'NRJ', url: 'https://streaming.nrjaudio.fm/oumvmk8fnozc', genre: 'Hits / Pop' },
-    { id: 'europe2', nom: 'Europe 2', url: 'https://europe2.lmn.fm/europe2.mp3', genre: 'Pop / Rock' },
-    { id: 'cheriefm', nom: 'Chérie FM', url: 'https://streaming.nrjaudio.fm/ouuku85n3nje', genre: 'Pop / Love' },
+    { id: 'ouifm', nom: 'OUI FM', url: 'https://ouifm.ice.infomaniak.ch/ouifm-high.mp3', genre: 'Rock' },
+    { id: 'rfm', nom: 'RFM', url: 'https://rfm-live-mp3-128.scdn.arkena.com/rfm.mp3', genre: 'Pop / Rock' },
+    { id: 'rireetchansons', nom: 'Rire & Chansons', url: 'https://streaming.nrjaudio.fm/oug7y8rb92oc', genre: 'Humour / Sketches' },
+    { id: 'rmc', nom: 'RMC', url: 'https://audio.bfmtv.com/rmcradio_128.mp3', genre: 'Talk / Info / Sport' },
+    { id: 'rtl2', nom: 'RTL2', url: 'https://streaming.radio.rtl2.fr/rtl2-1-44-128', genre: 'Pop / Rock' },
     { id: 'skyrock', nom: 'Skyrock', url: 'https://icecast.skyrock.net/s/natio_mp3_128k', genre: 'Rap / R&B' }
 ];
 stationsRadio.sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
@@ -2874,16 +2881,10 @@ function genererGrilleRadios() {
             <span class="radio-nom">${s.nom}</span>
             <span class="radio-genre">${s.genre}</span>
         </div>
-    `).join('') + `
-        <div class="radio-bloc radio-bloc-add" id="radio-card-add" title="Ajouter une radio">
-            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            <span class="radio-genre">Ajouter</span>
-        </div>
-    `;
+    `).join('');
 }
 
 radioGrid.addEventListener('click', (e) => {
-    if (e.target.closest('#radio-card-add')) { afficherEtapeRadio('ajouter'); return; }
     const bloc = e.target.closest('.radio-bloc');
     if (!bloc || !bloc.dataset.id) return;
     selectionnerEtLireRadio(bloc.dataset.id);
@@ -2943,6 +2944,7 @@ function majUiRadio(enLecture) {
         radioEqualizer.classList.add('playing');
         const carte = document.querySelector('#radioGrid .radio-bloc.active');
         if (carte) carte.classList.add('playing');
+        radioMiniStopBtn.classList.remove('hidden');
     } else {
         radioStatusTag.textContent = radioAudioPlayer.src ? 'En pause' : 'Hors ligne';
         radioStatusTag.classList.remove('playing');
@@ -2950,31 +2952,21 @@ function majUiRadio(enLecture) {
         radioIconStop.style.display = 'none';
         radioEqualizer.classList.remove('playing');
         document.querySelectorAll('#radioGrid .radio-bloc').forEach(el => el.classList.remove('playing'));
+        radioMiniStopBtn.classList.add('hidden');
     }
 }
 radioAudioPlayer.addEventListener('play', () => majUiRadio(true));
 radioAudioPlayer.addEventListener('pause', () => majUiRadio(false));
 btnRadioToggle.addEventListener('click', (e) => { e.stopPropagation(); basculerLectureRadio(); });
+radioMiniStopBtn.addEventListener('click', (e) => { e.stopPropagation(); arreterRadio(); });
 
 function ouvrirRadioModal() {
     radioModalOverlay.classList.add('open');
     toggleRadioBtn.classList.add('active');
-    afficherEtapeRadio('liste');
 }
 function fermerRadioModal() {
     radioModalOverlay.classList.remove('open');
     toggleRadioBtn.classList.remove('active');
-}
-function afficherEtapeRadio(etape) {
-    radioStepListe.classList.toggle('hidden', etape !== 'liste');
-    radioStepAjouter.classList.toggle('hidden', etape !== 'ajouter');
-    if (etape === 'ajouter') {
-        radioAddNomInput.value = '';
-        radioAddUrlInput.value = '';
-        radioAddGenreInput.value = '';
-        radioAddError.classList.remove('visible');
-        setTimeout(() => radioAddNomInput.focus(), 50);
-    }
 }
 toggleRadioBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -2989,29 +2981,6 @@ radioModalOverlay.addEventListener('click', (e) => {
     if (e.target === radioModalOverlay) fermerRadioModal();
 });
 radioModalBox.addEventListener('click', (e) => e.stopPropagation());
-radioRetourListeBtn.addEventListener('click', () => afficherEtapeRadio('liste'));
-
-function genererIdRadio(nom) {
-    const base = nom.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    let id = base || 'radio';
-    let compteur = 1;
-    while (stationsRadio.some(s => s.id === id)) { id = `${base}-${compteur}`; compteur++; }
-    return id;
-}
-radioAddSubmitBtn.addEventListener('click', () => {
-    const nom = radioAddNomInput.value.trim();
-    const url = radioAddUrlInput.value.trim();
-    const genre = radioAddGenreInput.value.trim() || 'Radio ajoutée';
-    if (!nom || !url) {
-        radioAddError.classList.add('visible');
-        return;
-    }
-    radioAddError.classList.remove('visible');
-    stationsRadio.push({ id: genererIdRadio(nom), nom, url, genre });
-    stationsRadio.sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
-    genererGrilleRadios();
-    afficherEtapeRadio('liste');
-});
 
 genererGrilleRadios();
 
