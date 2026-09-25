@@ -199,10 +199,10 @@
 
 <script>
 const stations = [
-    { id: 'nostalgie', nom: 'Nostalgie', url: 'https://cdn.nrjaudio.fm/audio/1/fr/30601/mp3_128.mp3', genre: 'Variété / Oldies' },
-    { id: 'nrj', nom: 'NRJ', url: 'https://cdn.nrjaudio.fm/audio/1/fr/30001/mp3_128.mp3', genre: 'Hits / Pop' },
-    { id: 'europe2', nom: 'Europe 2', url: 'https://europe2.lmn.cloud/europe2.mp3', genre: 'Pop / Rock' },
-    { id: 'cheriefm', nom: 'Chérie FM', url: 'https://cdn.nrjaudio.fm/audio/1/fr/30201/mp3_128.mp3', genre: 'Pop / Love' },
+    { id: 'nostalgie', nom: 'Nostalgie', url: 'https://streaming.nrjaudio.fm/oug7girb92oc', genre: 'Variété / Oldies' },
+    { id: 'nrj', nom: 'NRJ', url: 'https://streaming.nrjaudio.fm/oumvmk8fnozc', genre: 'Hits / Pop' },
+    { id: 'europe2', nom: 'Europe 2', url: 'https://europe2.lmn.fm/europe2.mp3', genre: 'Pop / Rock' },
+    { id: 'cheriefm', nom: 'Chérie FM', url: 'https://streaming.nrjaudio.fm/ouuku85n3nje', genre: 'Pop / Love' },
     { id: 'skyrock', nom: 'Skyrock', url: 'https://icecast.skyrock.net/s/natio_mp3_128k', genre: 'Rap / R&B' }
 ];
 
@@ -231,10 +231,20 @@ function playRadio(id) {
     // Mise à jour du lecteur
     stationTitle.innerText = station.nom;
     audioPlayer.src = station.url;
-    audioPlayer.play();
+    audioPlayer.load();
     
-    statusTag.innerText = 'En direct';
-    statusTag.classList.add('playing');
+    // Lancement de la lecture avec gestion des erreurs
+    const playPromise = audioPlayer.play();
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            statusTag.innerText = 'En direct';
+            statusTag.classList.add('playing');
+        }).catch(error => {
+            console.error("Erreur de lecture :", error);
+            statusTag.innerText = 'Erreur / Bloqué';
+            statusTag.classList.remove('playing');
+        });
+    }
 }
 
 // Gestion des évènements du lecteur audio
