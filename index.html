@@ -162,7 +162,7 @@ body {
     right: 20px;
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
     z-index: 10;
 }
 
@@ -870,6 +870,18 @@ body.jour-sans-boutons .vacation-bar-wrap { opacity: 0 !important; visibility: h
     border-radius: 50%;
     background-color: #22c55e;
     box-shadow: 0 0 6px #22c55e;
+}
+/* Bouton stop ancré en haut à droite de l'horloge : même taille qu'une LED (24px),
+   même apparence que le bouton stop de la modale radio (.radio-mini-stop) */
+.top-controls .radio-mini-stop {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+.top-controls .radio-mini-stop svg { width: 13px; height: 13px; }
+.top-controls .radio-mini-stop .radio-mini-stop-dot {
+    width: 7px;
+    height: 7px;
 }
 
 .alarm-mobile-tabs { display: none; }
@@ -2857,17 +2869,17 @@ const radioMiniStopBtn = document.getElementById('radioMiniStopBtn');
 const stationsRadio = [
     { id: 'chantefrance', nom: 'Chante France', url: 'https://chantefrance.ice.infomaniak.ch/chantefrance-128.mp3', genre: 'Chanson française' },
     { id: 'cheriefm', nom: 'Chérie FM', url: 'https://streaming.nrjaudio.fm/ouuku85n3nje', genre: 'Pop / Love' },
-    { id: 'europe1', nom: 'Europe 1', url: 'https://mp3lg3.scdn.arkena.com/10489/europe1.mp3', genre: 'Talk / Info' },
+    { id: 'europe1', nom: 'Europe 1', url: 'https://europe1.lmn.fm/europe1.mp3', genre: 'Talk / Info' },
     { id: 'europe2', nom: 'Europe 2', url: 'https://europe2.lmn.fm/europe2.mp3', genre: 'Pop / Rock' },
     { id: 'francebleu', nom: 'France Bleu', url: 'https://icecast.radiofrance.fr/fb1071-midfi.mp3', genre: 'Info / Proximité' },
-    { id: 'funradio', nom: 'Fun Radio', url: 'https://streaming.radio.funradio.fr/fun-1-44-96', genre: 'Dance / Hits' },
+    { id: 'funradio', nom: 'Fun Radio', url: 'https://icecast.funradio.fr/fun-1-44-128', genre: 'Dance / Hits' },
     { id: 'nostalgie', nom: 'Nostalgie', url: 'https://streaming.nrjaudio.fm/oug7girb92oc', genre: 'Variété / Oldies' },
     { id: 'nrj', nom: 'NRJ', url: 'https://streaming.nrjaudio.fm/oumvmk8fnozc', genre: 'Hits / Pop' },
     { id: 'ouifm', nom: 'OUI FM', url: 'https://ouifm.ice.infomaniak.ch/ouifm-high.mp3', genre: 'Rock' },
-    { id: 'rfm', nom: 'RFM', url: 'https://rfm-live-mp3-128.scdn.arkena.com/rfm.mp3', genre: 'Pop / Rock' },
+    { id: 'rfm', nom: 'RFM', url: 'https://stream.rfm.fr/rfm.mp3', genre: 'Pop / Rock' },
     { id: 'rireetchansons', nom: 'Rire & Chansons', url: 'https://streaming.nrjaudio.fm/oug7y8rb92oc', genre: 'Humour / Sketches' },
     { id: 'rmc', nom: 'RMC', url: 'https://audio.bfmtv.com/rmcradio_128.mp3', genre: 'Talk / Info / Sport' },
-    { id: 'rtl2', nom: 'RTL2', url: 'https://streaming.radio.rtl2.fr/rtl2-1-44-128', genre: 'Pop / Rock' },
+    { id: 'rtl2', nom: 'RTL2', url: 'https://icecast.rtl2.fr/rtl2-1-44-128', genre: 'Pop / Rock' },
     { id: 'skyrock', nom: 'Skyrock', url: 'https://icecast.skyrock.net/s/natio_mp3_128k', genre: 'Rap / R&B' }
 ];
 stationsRadio.sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
