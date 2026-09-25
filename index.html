@@ -872,13 +872,26 @@ body.jour-sans-boutons .vacation-bar-wrap { opacity: 0 !important; visibility: h
     box-shadow: 0 0 6px #22c55e;
 }
 /* Bouton stop ancré en haut à droite de l'horloge : même taille qu'une LED (24px),
-   même apparence que le bouton stop de la modale radio (.radio-mini-stop) */
+   même apparence que le bouton stop de la modale radio (bordure orange, fond orange translucide, carré blanc) */
 .top-controls .radio-mini-stop {
     width: 24px;
     height: 24px;
     flex-shrink: 0;
+    border: 1px solid var(--yellow-led);
+    background-color: rgba(255, 140, 0, 0.1);
+    color: #fff;
 }
-.top-controls .radio-mini-stop svg { width: 13px; height: 13px; }
+.top-controls .radio-mini-stop:hover {
+    background-color: var(--yellow-led);
+    border-color: var(--yellow-led);
+    color: #000;
+}
+.top-controls .radio-mini-stop svg {
+    width: 12px;
+    height: 12px;
+    stroke: none;
+    fill: currentColor;
+}
 .top-controls .radio-mini-stop .radio-mini-stop-dot {
     width: 7px;
     height: 7px;
@@ -1186,7 +1199,7 @@ if ('serviceWorker' in navigator) {
     <div class="top-controls">
         <div id="leds-sheet-container" class="leds-sheet-container"></div>
         <button class="radio-mini-stop hidden" id="radioMiniStopBtn" title="Arrêter la radio">
-            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><circle cx="8" cy="15" r="1.3"/><line x1="12" y1="13" x2="16" y2="13"/><line x1="12" y1="17" x2="16" y2="17"/><path d="M8 10V6l8-3v7"/></svg>
+            <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"/></svg>
             <span class="radio-mini-stop-dot"></span>
         </button>
     </div>
