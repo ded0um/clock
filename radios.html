@@ -45,16 +45,17 @@
         padding: 20px;
         margin-bottom: 30px;
         display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-    
-    .player-header {
-        display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
+        gap: 20px;
     }
     
+    .player-info {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
     .current-station {
         font-size: 1.2rem;
         font-weight: bold;
@@ -66,12 +67,13 @@
     .status-tag {
         font-size: 0.7rem;
         font-weight: bold;
-        padding: 4px 8px;
+        padding: 3px 8px;
         border-radius: 4px;
         text-transform: uppercase;
         background-color: rgba(136, 136, 136, 0.1);
         color: var(--text-dim);
         border: 1px solid var(--card-border);
+        width: fit-content;
     }
 
     .status-tag.playing {
@@ -80,11 +82,70 @@
         border-color: rgba(34, 197, 94, 0.4);
     }
 
-    audio {
-        width: 100%;
-        height: 45px;
-        border-radius: 6px;
+    /* Controls Custom */
+    .player-controls {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .btn-play-stop {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        border: 1px solid var(--accent);
+        background-color: rgba(255, 140, 0, 0.1);
+        color: var(--accent);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
         outline: none;
+    }
+
+    .btn-play-stop:hover {
+        background-color: var(--accent);
+        color: #000;
+        box-shadow: 0 0 12px rgba(255, 140, 0, 0.4);
+    }
+
+    .btn-play-stop svg {
+        width: 22px;
+        height: 22px;
+        fill: currentColor;
+    }
+
+    /* Égaliseur / Barres de son */
+    .equalizer {
+        display: flex;
+        align-items: flex-end;
+        gap: 3px;
+        height: 20px;
+    }
+
+    .equalizer .bar {
+        width: 4px;
+        height: 4px;
+        background-color: var(--text-dim);
+        border-radius: 2px;
+        transition: height 0.2s ease, background-color 0.2s ease;
+    }
+
+    .equalizer.playing .bar {
+        background-color: var(--accent);
+        animation: bounce 1.2s infinite ease-in-out alternate;
+    }
+
+    .equalizer.playing .bar:nth-child(1) { animation-delay: 0.1s; }
+    .equalizer.playing .bar:nth-child(2) { animation-delay: 0.4s; }
+    .equalizer.playing .bar:nth-child(3) { animation-delay: 0.2s; }
+    .equalizer.playing .bar:nth-child(4) { animation-delay: 0.5s; }
+    .equalizer.playing .bar:nth-child(5) { animation-delay: 0.3s; }
+
+    @keyframes bounce {
+        0% { height: 4px; }
+        100% { height: 22px; }
     }
 
     /* Grille des radios */
@@ -115,6 +176,7 @@
         justify-content: center;
         cursor: pointer;
         transition: all 0.2s ease;
+        position: relative;
     }
 
     .radio-bloc:hover {
@@ -143,6 +205,38 @@
         color: var(--text-dim);
         text-transform: uppercase;
         letter-spacing: 0.5px;
+    }
+
+    /* Égaliseur miniature sur la carte active */
+    .radio-bloc .mini-eq {
+        display: none;
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        gap: 2px;
+        align-items: flex-end;
+        height: 10px;
+    }
+
+    .radio-bloc.active.playing .mini-eq {
+        display: flex;
+    }
+
+    .radio-bloc .mini-eq .m-bar {
+        width: 2px;
+        height: 2px;
+        background-color: var(--accent);
+        border-radius: 1px;
+        animation: miniBounce 0.8s infinite ease-in-out alternate;
+    }
+
+    .radio-bloc .mini-eq .m-bar:nth-child(1) { animation-delay: 0.1s; }
+    .radio-bloc .mini-eq .m-bar:nth-child(2) { animation-delay: 0.3s; }
+    .radio-bloc .mini-eq .m-bar:nth-child(3) { animation-delay: 0.2s; }
+
+    @keyframes miniBounce {
+        0% { height: 2px; }
+        100% { height: 10px; }
     }
 
     /* Légende footer */
@@ -179,12 +273,31 @@
 
     <!-- Carte du lecteur principal -->
     <div class="player-card">
-        <div class="player-header">
+        <div class="player-info">
             <div class="current-station" id="stationTitle">Sélectionnez une station</div>
             <div class="status-tag" id="statusTag">Hors ligne</div>
         </div>
-        <audio id="audioPlayer" controls src=""></audio>
+
+        <div class="player-controls">
+            <!-- Animation des barres de son -->
+            <div class="equalizer" id="mainEqualizer">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+
+            <!-- Bouton unique Play / Stop -->
+            <button class="btn-play-stop" id="btnToggle" onclick="togglePlayStop()" title="Lecture / Arrêt">
+                <svg id="iconPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <svg id="iconStop" viewBox="0 0 24 24" style="display:none;"><rect x="6" y="6" width="12" height="12"/></svg>
+            </button>
+        </div>
     </div>
+
+    <!-- Élément audio masqué -->
+    <audio id="audioPlayer"></audio>
 
     <div class="section-title">Stations disponibles</div>
     
@@ -198,7 +311,7 @@
 </div>
 
 <script>
-const stations = [
+let stations = [
     { id: 'nostalgie', nom: 'Nostalgie', url: 'https://streaming.nrjaudio.fm/oug7girb92oc', genre: 'Variété / Oldies' },
     { id: 'nrj', nom: 'NRJ', url: 'https://streaming.nrjaudio.fm/oumvmk8fnozc', genre: 'Hits / Pop' },
     { id: 'europe2', nom: 'Europe 2', url: 'https://europe2.lmn.fm/europe2.mp3', genre: 'Pop / Rock' },
@@ -206,59 +319,119 @@ const stations = [
     { id: 'skyrock', nom: 'Skyrock', url: 'https://icecast.skyrock.net/s/natio_mp3_128k', genre: 'Rap / R&B' }
 ];
 
+// Tri par ordre alphabétique automatique basé sur le nom
+stations.sort((a, b) => a.nom.localeCompare(b.nom));
+
 const audioPlayer = document.getElementById('audioPlayer');
 const stationTitle = document.getElementById('stationTitle');
 const statusTag = document.getElementById('statusTag');
 const radioGrid = document.getElementById('radioGrid');
+const btnToggle = document.getElementById('btnToggle');
+const iconPlay = document.getElementById('iconPlay');
+const iconStop = document.getElementById('iconStop');
+const mainEqualizer = document.getElementById('mainEqualizer');
+
+let currentStationId = null;
 
 function chargerRadios() {
     radioGrid.innerHTML = stations.map(s => `
-        <div class="radio-bloc" id="card-${s.id}" onclick="playRadio('${s.id}')">
+        <div class="radio-bloc" id="card-${s.id}" onclick="selectAndPlay('${s.id}')">
+            <div class="mini-eq">
+                <div class="m-bar"></div>
+                <div class="m-bar"></div>
+                <div class="m-bar"></div>
+            </div>
             <span class="num">${s.nom}</span>
             <span class="lbl">${s.genre}</span>
         </div>
     `).join('');
 }
 
-function playRadio(id) {
+function selectAndPlay(id) {
     const station = stations.find(s => s.id === id);
     if (!station) return;
 
-    // Mise à jour de la sélection visuelle
+    currentStationId = id;
+
+    // Mise à jour de la grille
     document.querySelectorAll('.radio-bloc').forEach(el => el.classList.remove('active'));
     document.getElementById(`card-${id}`).classList.add('active');
 
-    // Mise à jour du lecteur
+    // Mise à jour de la station
     stationTitle.innerText = station.nom;
     audioPlayer.src = station.url;
     audioPlayer.load();
-    
-    // Lancement de la lecture avec gestion des erreurs
+
+    playAudio();
+}
+
+function playAudio() {
+    if (!audioPlayer.src) return;
+
     const playPromise = audioPlayer.play();
     if (playPromise !== undefined) {
         playPromise.then(() => {
-            statusTag.innerText = 'En direct';
-            statusTag.classList.add('playing');
+            updateUI(true);
         }).catch(error => {
             console.error("Erreur de lecture :", error);
             statusTag.innerText = 'Erreur / Bloqué';
-            statusTag.classList.remove('playing');
+            updateUI(false);
         });
     }
 }
 
-// Gestion des évènements du lecteur audio
-audioPlayer.addEventListener('pause', () => {
-    statusTag.innerText = 'En pause';
-    statusTag.classList.remove('playing');
-});
+function stopAudio() {
+    audioPlayer.pause();
+    audioPlayer.currentTime = 0;
+    audioPlayer.src = ""; // Coupe complètement le flux pour économiser la bande passante
+    updateUI(false);
+}
 
-audioPlayer.addEventListener('play', () => {
-    statusTag.innerText = 'En direct';
-    statusTag.classList.add('playing');
-});
+function togglePlayStop() {
+    if (!currentStationId) {
+        // Si aucune station sélectionnée, lancer la première de la liste
+        selectAndPlay(stations[0].id);
+        return;
+    }
 
-// Initialisation de la grille au chargement
+    if (audioPlayer.paused || !audioPlayer.src) {
+        const station = stations.find(s => s.id === currentStationId);
+        if (station) {
+            audioPlayer.src = station.url;
+            audioPlayer.load();
+            playAudio();
+        }
+    } else {
+        stopAudio();
+    }
+}
+
+function updateUI(isPlaying) {
+    if (isPlaying) {
+        statusTag.innerText = 'En direct';
+        statusTag.classList.add('playing');
+        iconPlay.style.display = 'none';
+        iconStop.style.display = 'block';
+        mainEqualizer.classList.add('playing');
+        
+        const activeCard = document.querySelector('.radio-bloc.active');
+        if (activeCard) activeCard.classList.add('playing');
+    } else {
+        statusTag.innerText = audioPlayer.src ? 'En pause' : 'Hors ligne';
+        statusTag.classList.remove('playing');
+        iconPlay.style.display = 'block';
+        iconStop.style.display = 'none';
+        mainEqualizer.classList.remove('playing');
+        
+        document.querySelectorAll('.radio-bloc').forEach(el => el.classList.remove('playing'));
+    }
+}
+
+// Événements natifs du lecteur
+audioPlayer.addEventListener('play', () => updateUI(true));
+audioPlayer.addEventListener('pause', () => updateUI(false));
+
+// Initialisation
 chargerRadios();
 </script>
 
