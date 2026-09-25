@@ -802,6 +802,55 @@ body.jour-sans-boutons .vacation-bar-wrap { opacity: 0 !important; visibility: h
 .ssi-result-zone { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
 .ssi-result-designation { font-size: 1.3rem; font-weight: bold; color: var(--yellow-led); line-height: 1.4; }
 
+/* --- RADIOS --- */
+.radio-player-card {
+    background-color: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+.radio-player-info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.radio-current-name { font-size: 1.05rem; font-weight: bold; color: var(--yellow-led); text-transform: uppercase; letter-spacing: 0.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.radio-status-tag { font-size: 0.7rem; font-weight: bold; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; background-color: rgba(136,136,136,0.1); color: #888; border: 1px solid #2a2a2a; width: fit-content; }
+.radio-status-tag.playing { background-color: rgba(34,197,94,0.1); color: #22c55e; border-color: rgba(34,197,94,0.4); }
+.radio-player-controls { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+.radio-equalizer { display: flex; align-items: flex-end; gap: 3px; height: 20px; }
+.radio-equalizer .bar { width: 4px; height: 4px; background-color: #888; border-radius: 2px; transition: height 0.2s ease, background-color 0.2s ease; }
+.radio-equalizer.playing .bar { background-color: var(--yellow-led); animation: radioBounce 1.2s infinite ease-in-out alternate; }
+.radio-equalizer.playing .bar:nth-child(1) { animation-delay: 0.1s; }
+.radio-equalizer.playing .bar:nth-child(2) { animation-delay: 0.4s; }
+.radio-equalizer.playing .bar:nth-child(3) { animation-delay: 0.2s; }
+.radio-equalizer.playing .bar:nth-child(4) { animation-delay: 0.5s; }
+.radio-equalizer.playing .bar:nth-child(5) { animation-delay: 0.3s; }
+@keyframes radioBounce { 0% { height: 4px; } 100% { height: 22px; } }
+.btn-radio-toggle { width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--yellow-led); background-color: rgba(255,140,0,0.1); color: var(--yellow-led); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.btn-radio-toggle:hover { background-color: var(--yellow-led); color: #000; }
+.btn-radio-toggle svg { width: 20px; height: 20px; fill: currentColor; }
+.radio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+.radio-bloc { background-color: #141414; border: 1px solid #252525; border-radius: 8px; padding: 14px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; position: relative; transition: border-color 0.15s, background-color 0.15s; }
+.radio-bloc:hover { border-color: var(--yellow-led); background-color: rgba(255,140,0,0.05); }
+.radio-bloc.active { background-color: rgba(255,140,0,0.12); border-color: var(--yellow-led); }
+.radio-bloc .radio-nom { font-size: 0.9rem; font-weight: bold; color: #fff; margin-bottom: 4px; }
+.radio-bloc.active .radio-nom { color: var(--yellow-led); }
+.radio-bloc .radio-genre { font-size: 0.62rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+.radio-bloc .radio-mini-eq { display: none; position: absolute; top: 8px; right: 8px; gap: 2px; align-items: flex-end; height: 10px; }
+.radio-bloc.active.playing .radio-mini-eq { display: flex; }
+.radio-bloc .radio-mini-eq .m-bar { width: 2px; height: 2px; background-color: var(--yellow-led); border-radius: 1px; animation: radioMiniBounce 0.8s infinite ease-in-out alternate; }
+.radio-bloc .radio-mini-eq .m-bar:nth-child(1) { animation-delay: 0.1s; }
+.radio-bloc .radio-mini-eq .m-bar:nth-child(2) { animation-delay: 0.3s; }
+.radio-bloc .radio-mini-eq .m-bar:nth-child(3) { animation-delay: 0.2s; }
+@keyframes radioMiniBounce { 0% { height: 2px; } 100% { height: 10px; } }
+.radio-bloc-add { border-style: dashed; color: #888; }
+.radio-bloc-add:hover { color: var(--yellow-led); border-color: var(--yellow-led); }
+.radio-bloc-add svg { width: 20px; height: 20px; stroke: currentColor; fill: none; margin-bottom: 6px; }
+.modal-error { font-size: 0.8rem; color: #ff5555; display: none; margin-top: 4px; }
+.modal-error.visible { display: block; }
+
 .alarm-mobile-tabs { display: none; }
 
 @media (max-width: 768px) {
@@ -1092,6 +1141,7 @@ if ('serviceWorker' in navigator) {
             <button class="icon-btn" id="togglePanelBtn" title="Prise de service"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 3h6v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V3z"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="13" y2="15"/></svg><span>Prise de service</span></button>
             <button class="icon-btn" id="toggleAlarmSearchBtn" title="Support Alarme"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9 15.5H3z"/><line x1="12" y1="9.5" x2="12" y2="13.5"/><line x1="12" y1="16.2" x2="12" y2="16.25"/></svg><span>Support Alarme</span></button>
             <button class="icon-btn" id="toggleCompteRenduBtn" title="Compte rendu"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13l3 3v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><path d="M8 4v6h7V4"/><line x1="7" y1="14" x2="17" y2="14"/><line x1="7" y1="17" x2="13" y2="17"/></svg><span>Compte rendu</span></button>
+            <button class="icon-btn" id="toggleRadioBtn" title="Radios"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><circle cx="8" cy="15" r="1.3"/><line x1="12" y1="13" x2="16" y2="13"/><line x1="12" y1="17" x2="16" y2="17"/><path d="M8 10V6l8-3v7"/></svg><span>Radios</span></button>
 
             <div class="menu-section-titre">Pages</div>
             <div id="menuPagesListe"><div class="alarm-multi-empty">Chargement...</div></div>
@@ -1383,6 +1433,55 @@ if ('serviceWorker' in navigator) {
         </div>
     </div>
 </div>
+
+<!-- FENÊTRE RADIOS -->
+<div class="alarm-modal-overlay" id="radioModalOverlay">
+    <div class="alarm-modal-box choice-modal-box" id="radioModalBox" style="max-width:520px;">
+        <div class="alarm-modal-header">
+            <h2>Radios</h2>
+            <button id="closeRadioBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+        </div>
+
+        <div id="radioStepListe">
+            <div class="radio-player-card">
+                <div class="radio-player-info">
+                    <div class="radio-current-name" id="radioStationTitle">Sélectionnez une station</div>
+                    <div class="radio-status-tag" id="radioStatusTag">Hors ligne</div>
+                </div>
+                <div class="radio-player-controls">
+                    <div class="radio-equalizer" id="radioEqualizer">
+                        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    </div>
+                    <button class="btn-radio-toggle" id="btnRadioToggle" title="Lecture / Arrêt">
+                        <svg id="radioIconPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <svg id="radioIconStop" viewBox="0 0 24 24" style="display:none;"><rect x="6" y="6" width="12" height="12"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="radio-grid" id="radioGrid"></div>
+        </div>
+
+        <div id="radioStepAjouter" class="hidden">
+            <button class="ssi-back-btn" id="radioRetourListeBtn" style="padding-left:0;">← Retour à la liste</button>
+            <div class="form-group" style="margin-top:10px;">
+                <label>Nom de la station</label>
+                <input type="text" id="radioAddNomInput" placeholder="Ex : RTL2">
+            </div>
+            <div class="form-group">
+                <label>URL du flux (mp3/aac...)</label>
+                <input type="text" id="radioAddUrlInput" placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label>Genre (optionnel)</label>
+                <input type="text" id="radioAddGenreInput" placeholder="Ex : Rock">
+            </div>
+            <div class="modal-error" id="radioAddError">Veuillez saisir un nom et une URL valides.</div>
+            <button class="btn-submit" id="radioAddSubmitBtn">Ajouter la radio</button>
+        </div>
+    </div>
+</div>
+
+<audio id="radioAudioPlayer"></audio>
 
 <!-- FENÊTRE DE RECHERCHE D'ALARMES -->
 <div class="alarm-modal-overlay" id="alarmModalOverlay">
@@ -2228,7 +2327,7 @@ menuPanelOverlay.addEventListener('click', (e) => {
     if (e.target === menuPanelOverlay) fermerMenu();
 });
 menuPanelBox.addEventListener('click', (e) => e.stopPropagation());
-['togglePanelBtn', 'toggleWeatherBtn', 'toggleAlarmSearchBtn', 'toggleCompteRenduBtn'].forEach(id => {
+['togglePanelBtn', 'toggleWeatherBtn', 'toggleAlarmSearchBtn', 'toggleCompteRenduBtn', 'toggleRadioBtn'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('click', fermerMenu);
 });
@@ -2734,6 +2833,187 @@ function copierRapport() {
         setTimeout(() => { btn.textContent = texteOriginal; }, 1500);
     });
 }
+
+// --- RADIOS ---
+const radioAudioPlayer = document.getElementById('radioAudioPlayer');
+const radioModalOverlay = document.getElementById('radioModalOverlay');
+const radioModalBox = document.getElementById('radioModalBox');
+const toggleRadioBtn = document.getElementById('toggleRadioBtn');
+const closeRadioBtn = document.getElementById('closeRadioBtn');
+const radioStepListe = document.getElementById('radioStepListe');
+const radioStepAjouter = document.getElementById('radioStepAjouter');
+const radioGrid = document.getElementById('radioGrid');
+const radioStationTitle = document.getElementById('radioStationTitle');
+const radioStatusTag = document.getElementById('radioStatusTag');
+const radioEqualizer = document.getElementById('radioEqualizer');
+const btnRadioToggle = document.getElementById('btnRadioToggle');
+const radioIconPlay = document.getElementById('radioIconPlay');
+const radioIconStop = document.getElementById('radioIconStop');
+const radioRetourListeBtn = document.getElementById('radioRetourListeBtn');
+const radioAddNomInput = document.getElementById('radioAddNomInput');
+const radioAddUrlInput = document.getElementById('radioAddUrlInput');
+const radioAddGenreInput = document.getElementById('radioAddGenreInput');
+const radioAddError = document.getElementById('radioAddError');
+const radioAddSubmitBtn = document.getElementById('radioAddSubmitBtn');
+
+let stationsRadio = [
+    { id: 'nostalgie', nom: 'Nostalgie', url: 'https://streaming.nrjaudio.fm/oug7girb92oc', genre: 'Variété / Oldies' },
+    { id: 'nrj', nom: 'NRJ', url: 'https://streaming.nrjaudio.fm/oumvmk8fnozc', genre: 'Hits / Pop' },
+    { id: 'europe2', nom: 'Europe 2', url: 'https://europe2.lmn.fm/europe2.mp3', genre: 'Pop / Rock' },
+    { id: 'cheriefm', nom: 'Chérie FM', url: 'https://streaming.nrjaudio.fm/ouuku85n3nje', genre: 'Pop / Love' },
+    { id: 'skyrock', nom: 'Skyrock', url: 'https://icecast.skyrock.net/s/natio_mp3_128k', genre: 'Rap / R&B' }
+];
+stationsRadio.sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+
+let radioStationCourante = null;
+
+function genererGrilleRadios() {
+    radioGrid.innerHTML = stationsRadio.map(s => `
+        <div class="radio-bloc" id="radio-card-${s.id}" data-id="${s.id}">
+            <div class="radio-mini-eq"><div class="m-bar"></div><div class="m-bar"></div><div class="m-bar"></div></div>
+            <span class="radio-nom">${s.nom}</span>
+            <span class="radio-genre">${s.genre}</span>
+        </div>
+    `).join('') + `
+        <div class="radio-bloc radio-bloc-add" id="radio-card-add" title="Ajouter une radio">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span class="radio-genre">Ajouter</span>
+        </div>
+    `;
+}
+
+radioGrid.addEventListener('click', (e) => {
+    if (e.target.closest('#radio-card-add')) { afficherEtapeRadio('ajouter'); return; }
+    const bloc = e.target.closest('.radio-bloc');
+    if (!bloc || !bloc.dataset.id) return;
+    selectionnerEtLireRadio(bloc.dataset.id);
+});
+
+function selectionnerEtLireRadio(id) {
+    const station = stationsRadio.find(s => s.id === id);
+    if (!station) return;
+    radioStationCourante = id;
+    document.querySelectorAll('#radioGrid .radio-bloc').forEach(el => el.classList.remove('active'));
+    const carte = document.getElementById(`radio-card-${id}`);
+    if (carte) carte.classList.add('active');
+    radioStationTitle.textContent = station.nom;
+    radioAudioPlayer.src = station.url;
+    radioAudioPlayer.load();
+    lireRadio();
+}
+
+function lireRadio() {
+    if (!radioAudioPlayer.src) return;
+    const p = radioAudioPlayer.play();
+    if (p !== undefined) {
+        p.then(() => majUiRadio(true)).catch(() => {
+            radioStatusTag.textContent = 'Erreur / Bloqué';
+            majUiRadio(false);
+        });
+    }
+}
+function arreterRadio() {
+    radioAudioPlayer.pause();
+    radioAudioPlayer.currentTime = 0;
+    radioAudioPlayer.src = '';
+    majUiRadio(false);
+}
+function basculerLectureRadio() {
+    if (!radioStationCourante) {
+        if (stationsRadio.length > 0) selectionnerEtLireRadio(stationsRadio[0].id);
+        return;
+    }
+    if (radioAudioPlayer.paused || !radioAudioPlayer.src) {
+        const station = stationsRadio.find(s => s.id === radioStationCourante);
+        if (station) {
+            radioAudioPlayer.src = station.url;
+            radioAudioPlayer.load();
+            lireRadio();
+        }
+    } else {
+        arreterRadio();
+    }
+}
+function majUiRadio(enLecture) {
+    if (enLecture) {
+        radioStatusTag.textContent = 'En direct';
+        radioStatusTag.classList.add('playing');
+        radioIconPlay.style.display = 'none';
+        radioIconStop.style.display = 'block';
+        radioEqualizer.classList.add('playing');
+        const carte = document.querySelector('#radioGrid .radio-bloc.active');
+        if (carte) carte.classList.add('playing');
+    } else {
+        radioStatusTag.textContent = radioAudioPlayer.src ? 'En pause' : 'Hors ligne';
+        radioStatusTag.classList.remove('playing');
+        radioIconPlay.style.display = 'block';
+        radioIconStop.style.display = 'none';
+        radioEqualizer.classList.remove('playing');
+        document.querySelectorAll('#radioGrid .radio-bloc').forEach(el => el.classList.remove('playing'));
+    }
+}
+radioAudioPlayer.addEventListener('play', () => majUiRadio(true));
+radioAudioPlayer.addEventListener('pause', () => majUiRadio(false));
+btnRadioToggle.addEventListener('click', (e) => { e.stopPropagation(); basculerLectureRadio(); });
+
+function ouvrirRadioModal() {
+    radioModalOverlay.classList.add('open');
+    toggleRadioBtn.classList.add('active');
+    afficherEtapeRadio('liste');
+}
+function fermerRadioModal() {
+    radioModalOverlay.classList.remove('open');
+    toggleRadioBtn.classList.remove('active');
+}
+function afficherEtapeRadio(etape) {
+    radioStepListe.classList.toggle('hidden', etape !== 'liste');
+    radioStepAjouter.classList.toggle('hidden', etape !== 'ajouter');
+    if (etape === 'ajouter') {
+        radioAddNomInput.value = '';
+        radioAddUrlInput.value = '';
+        radioAddGenreInput.value = '';
+        radioAddError.classList.remove('visible');
+        setTimeout(() => radioAddNomInput.focus(), 50);
+    }
+}
+toggleRadioBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (radioModalOverlay.classList.contains('open')) fermerRadioModal();
+    else ouvrirRadioModal();
+});
+closeRadioBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fermerRadioModal();
+});
+radioModalOverlay.addEventListener('click', (e) => {
+    if (e.target === radioModalOverlay) fermerRadioModal();
+});
+radioModalBox.addEventListener('click', (e) => e.stopPropagation());
+radioRetourListeBtn.addEventListener('click', () => afficherEtapeRadio('liste'));
+
+function genererIdRadio(nom) {
+    const base = nom.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    let id = base || 'radio';
+    let compteur = 1;
+    while (stationsRadio.some(s => s.id === id)) { id = `${base}-${compteur}`; compteur++; }
+    return id;
+}
+radioAddSubmitBtn.addEventListener('click', () => {
+    const nom = radioAddNomInput.value.trim();
+    const url = radioAddUrlInput.value.trim();
+    const genre = radioAddGenreInput.value.trim() || 'Radio ajoutée';
+    if (!nom || !url) {
+        radioAddError.classList.add('visible');
+        return;
+    }
+    radioAddError.classList.remove('visible');
+    stationsRadio.push({ id: genererIdRadio(nom), nom, url, genre });
+    stationsRadio.sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+    genererGrilleRadios();
+    afficherEtapeRadio('liste');
+});
+
+genererGrilleRadios();
 
 // --- PANNEAU ADMIN CACHÉ (appui 8s sur "h", ou 5 taps sur la date) ---
 // Connexion Google — seule cette adresse est autorisée à accéder au panneau admin
