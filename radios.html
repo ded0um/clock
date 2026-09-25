@@ -7,49 +7,68 @@
 <style>
     :root {
         --bg-color: #000000;
-        --card-bg: #111111;
-        --card-border: #2a2a2a;
+        --card-bg: #0c0c0c;
+        --card-border: #1a1a1a;
+        --card-border-hover: #333333;
         --text-color: #ffffff;
-        --text-dim: #888888;
+        --text-dim: #777777;
         --accent: #ff8c00;
         --vert-status: #22c55e;
-        --rouge-live: #ff4444;
-        --bleu-btn: #3b82f6;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+    * { 
+        box-sizing: border-box; 
+        margin: 0; 
+        padding: 0; 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+    }
+
     body {
         background-color: var(--bg-color);
         color: var(--text-color);
-        padding: 30px 20px 60px;
+        padding: 40px 20px 60px;
         min-height: 100dvh;
+        display: flex;
+        justify-content: center;
     }
+
     .page-wrap {
-        max-width: 1000px;
-        margin: 0 auto;
+        width: 100%;
+        max-width: 800px;
     }
+
+    header {
+        margin-bottom: 40px;
+        border-bottom: 1px solid var(--card-border);
+        padding-bottom: 16px;
+    }
+
     h1 {
-        font-size: 1.4rem;
+        font-size: 1.1rem;
+        font-weight: 500;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 2px;
         color: var(--text-dim);
-        margin-bottom: 30px;
-        border-bottom: 1px solid rgba(255, 140, 0, 0.25);
-        padding-bottom: 15px;
     }
-    
-    /* Section Lecteur Principal */
+
+    /* Carte Lecteur Principal */
     .player-card {
         background-color: var(--card-bg);
         border: 1px solid var(--card-border);
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 30px;
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 36px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 20px;
+        transition: border-color 0.3s ease;
     }
-    
+
+    .player-card.active {
+        border-color: rgba(255, 140, 0, 0.4);
+    }
+
     .player-info {
         display: flex;
         flex-direction: column;
@@ -57,45 +76,90 @@
     }
 
     .current-station {
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: var(--accent);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        font-size: 1.3rem;
+        font-weight: 600;
+        letter-spacing: -0.2px;
     }
 
     .status-tag {
-        font-size: 0.7rem;
-        font-weight: bold;
-        padding: 3px 8px;
-        border-radius: 4px;
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 1px;
         text-transform: uppercase;
-        background-color: rgba(136, 136, 136, 0.1);
         color: var(--text-dim);
-        border: 1px solid var(--card-border);
-        width: fit-content;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: var(--text-dim);
+        transition: background-color 0.3s ease;
+    }
+
+    .status-tag.playing .status-dot {
+        background-color: var(--vert-status);
+        box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
     }
 
     .status-tag.playing {
-        background-color: rgba(34, 197, 94, 0.1);
-        color: var(--vert-status);
-        border-color: rgba(34, 197, 94, 0.4);
+        color: var(--text-color);
     }
 
     /* Controls Custom */
     .player-controls {
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 24px;
     }
 
+    /* Égaliseur ultra-épuré */
+    .equalizer {
+        display: flex;
+        align-items: flex-end;
+        gap: 3px;
+        height: 18px;
+        opacity: 0.2;
+        transition: opacity 0.3s ease;
+    }
+
+    .equalizer.playing {
+        opacity: 1;
+    }
+
+    .equalizer .bar {
+        width: 2px;
+        height: 4px;
+        background-color: var(--accent);
+        border-radius: 1px;
+        transition: height 0.2s ease;
+    }
+
+    .equalizer.playing .bar {
+        animation: bounce 1s infinite ease-in-out alternate;
+    }
+
+    .equalizer.playing .bar:nth-child(1) { animation-delay: 0.1s; }
+    .equalizer.playing .bar:nth-child(2) { animation-delay: 0.3s; }
+    .equalizer.playing .bar:nth-child(3) { animation-delay: 0.2s; }
+    .equalizer.playing .bar:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+        0% { height: 3px; }
+        100% { height: 18px; }
+    }
+
+    /* Bouton unique Play / Stop */
     .btn-play-stop {
-        width: 52px;
-        height: 52px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
-        border: 1px solid var(--accent);
-        background-color: rgba(255, 140, 0, 0.1);
-        color: var(--accent);
+        border: 1px solid var(--card-border-hover);
+        background-color: #141414;
+        color: var(--text-color);
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -105,74 +169,42 @@
     }
 
     .btn-play-stop:hover {
-        background-color: var(--accent);
-        color: #000;
-        box-shadow: 0 0 12px rgba(255, 140, 0, 0.4);
+        border-color: var(--accent);
+        color: var(--accent);
+        transform: scale(1.04);
     }
 
     .btn-play-stop svg {
-        width: 22px;
-        height: 22px;
+        width: 18px;
+        height: 18px;
         fill: currentColor;
-    }
-
-    /* Égaliseur / Barres de son */
-    .equalizer {
-        display: flex;
-        align-items: flex-end;
-        gap: 3px;
-        height: 20px;
-    }
-
-    .equalizer .bar {
-        width: 4px;
-        height: 4px;
-        background-color: var(--text-dim);
-        border-radius: 2px;
-        transition: height 0.2s ease, background-color 0.2s ease;
-    }
-
-    .equalizer.playing .bar {
-        background-color: var(--accent);
-        animation: bounce 1.2s infinite ease-in-out alternate;
-    }
-
-    .equalizer.playing .bar:nth-child(1) { animation-delay: 0.1s; }
-    .equalizer.playing .bar:nth-child(2) { animation-delay: 0.4s; }
-    .equalizer.playing .bar:nth-child(3) { animation-delay: 0.2s; }
-    .equalizer.playing .bar:nth-child(4) { animation-delay: 0.5s; }
-    .equalizer.playing .bar:nth-child(5) { animation-delay: 0.3s; }
-
-    @keyframes bounce {
-        0% { height: 4px; }
-        100% { height: 22px; }
     }
 
     /* Grille des radios */
     .section-title {
-        font-size: 0.9rem;
-        font-weight: bold;
+        font-size: 0.75rem;
+        font-weight: 600;
         color: var(--text-dim);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 12px;
+        letter-spacing: 1.5px;
+        margin-bottom: 14px;
     }
 
     .radio-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 10px;
-        margin-bottom: 30px;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 12px;
+        margin-bottom: 40px;
     }
 
     .radio-bloc {
         background-color: var(--card-bg);
         border: 1px solid var(--card-border);
-        border-radius: 8px;
-        padding: 15px 10px;
+        border-radius: 10px;
+        padding: 16px 14px;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
         cursor: pointer;
         transition: all 0.2s ease;
@@ -180,108 +212,101 @@
     }
 
     .radio-bloc:hover {
-        border-color: var(--accent);
-        background-color: rgba(255, 140, 0, 0.05);
+        border-color: var(--card-border-hover);
+        background-color: #111111;
     }
 
     .radio-bloc.active {
-        background-color: rgba(255, 140, 0, 0.12);
         border-color: var(--accent);
+        background-color: rgba(255, 140, 0, 0.04);
     }
 
-    .radio-bloc .num {
-        font-size: 1rem;
-        font-weight: bold;
+    .radio-bloc .nom {
+        font-size: 0.95rem;
+        font-weight: 600;
         color: var(--text-color);
-        margin-bottom: 4px;
+        margin-bottom: 3px;
     }
 
-    .radio-bloc.active .num {
+    .radio-bloc.active .nom {
         color: var(--accent);
     }
 
-    .radio-bloc .lbl {
-        font-size: 0.65rem;
+    .radio-bloc .genre {
+        font-size: 0.7rem;
         color: var(--text-dim);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
     }
 
-    /* Égaliseur miniature sur la carte active */
-    .radio-bloc .mini-eq {
-        display: none;
+    /* Puce lumineuse sur carte active */
+    .radio-bloc .active-indicator {
         position: absolute;
-        top: 8px;
-        right: 8px;
-        gap: 2px;
-        align-items: flex-end;
-        height: 10px;
-    }
-
-    .radio-bloc.active.playing .mini-eq {
-        display: flex;
-    }
-
-    .radio-bloc .mini-eq .m-bar {
-        width: 2px;
-        height: 2px;
+        top: 14px;
+        right: 14px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
         background-color: var(--accent);
-        border-radius: 1px;
-        animation: miniBounce 0.8s infinite ease-in-out alternate;
+        display: none;
     }
 
-    .radio-bloc .mini-eq .m-bar:nth-child(1) { animation-delay: 0.1s; }
-    .radio-bloc .mini-eq .m-bar:nth-child(2) { animation-delay: 0.3s; }
-    .radio-bloc .mini-eq .m-bar:nth-child(3) { animation-delay: 0.2s; }
-
-    @keyframes miniBounce {
-        0% { height: 2px; }
-        100% { height: 10px; }
+    .radio-bloc.active .active-indicator {
+        display: block;
     }
 
     /* Légende footer */
     .legende {
-        margin-top: 40px;
         display: flex;
-        flex-wrap: wrap;
-        gap: 18px;
+        align-items: center;
+        gap: 20px;
         padding-top: 20px;
-        border-top: 1px solid #1e1e1e;
+        border-top: 1px solid var(--card-border);
     }
+
     .legende-item {
         display: flex;
         align-items: center;
         gap: 8px;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         color: var(--text-dim);
     }
-    .legende-puce {
-        width: 14px;
-        height: 14px;
-        border-radius: 4px;
-        flex-shrink: 0;
-        border: 1px solid #2a2a2a;
+
+    .legende-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        border: 1px solid var(--card-border);
     }
-    .legende-puce.active { background-color: rgba(255, 140, 0, 0.15); border-color: var(--accent); }
-    .legende-puce.inactif { background-color: var(--card-bg); }
+
+    .legende-dot.active {
+        background-color: var(--accent);
+        border-color: var(--accent);
+    }
+
+    .legende-dot.inactif {
+        background-color: var(--card-bg);
+    }
 </style>
 </head>
 <body>
 
 <div class="page-wrap">
-    <h1>Lecteur Radio en Direct</h1>
+    <header>
+        <h1>Web-Radios</h1>
+    </header>
 
     <!-- Carte du lecteur principal -->
-    <div class="player-card">
+    <div class="player-card" id="playerCard">
         <div class="player-info">
             <div class="current-station" id="stationTitle">Sélectionnez une station</div>
-            <div class="status-tag" id="statusTag">Hors ligne</div>
+            <div class="status-tag" id="statusTag">
+                <span class="status-dot"></span>
+                <span id="statusText">Hors ligne</span>
+            </div>
         </div>
 
         <div class="player-controls">
-            <!-- Animation des barres de son -->
+            <!-- Animation barres de son -->
             <div class="equalizer" id="mainEqualizer">
-                <div class="bar"></div>
                 <div class="bar"></div>
                 <div class="bar"></div>
                 <div class="bar"></div>
@@ -296,53 +321,50 @@
         </div>
     </div>
 
-    <!-- Élément audio masqué -->
+    <!-- Element audio masqué -->
     <audio id="audioPlayer"></audio>
 
-    <div class="section-title">Stations disponibles</div>
+    <div class="section-title">Stations</div>
     
     <!-- Grille des radios -->
     <div class="radio-grid" id="radioGrid"></div>
 
     <div class="legende">
-        <div class="legende-item"><div class="legende-puce active"></div>Station sélectionnée</div>
-        <div class="legende-item"><div class="legende-puce inactif"></div>Station disponible</div>
+        <div class="legende-item"><div class="legende-dot active"></div>Sélectionnée</div>
+        <div class="legende-item"><div class="legende-dot inactif"></div>Disponible</div>
     </div>
 </div>
 
 <script>
 let stations = [
-    { id: 'nostalgie', nom: 'Nostalgie', url: 'https://streaming.nrjaudio.fm/oug7girb92oc', genre: 'Variété / Oldies' },
-    { id: 'nrj', nom: 'NRJ', url: 'https://streaming.nrjaudio.fm/oumvmk8fnozc', genre: 'Hits / Pop' },
+    { id: 'nostalgie', nom: 'Nostalgie', url: 'https://streaming.nrjaudio.fm/oug7girb92oc', genre: 'Variété' },
+    { id: 'nrj', nom: 'NRJ', url: 'https://streaming.nrjaudio.fm/oumvmk8fnozc', genre: 'Hits' },
     { id: 'europe2', nom: 'Europe 2', url: 'https://europe2.lmn.fm/europe2.mp3', genre: 'Pop / Rock' },
-    { id: 'cheriefm', nom: 'Chérie FM', url: 'https://streaming.nrjaudio.fm/ouuku85n3nje', genre: 'Pop / Love' },
-    { id: 'skyrock', nom: 'Skyrock', url: 'https://icecast.skyrock.net/s/natio_mp3_128k', genre: 'Rap / R&B' }
+    { id: 'cheriefm', nom: 'Chérie FM', url: 'https://streaming.nrjaudio.fm/ouuku85n3nje', genre: 'Pop' },
+    { id: 'skyrock', nom: 'Skyrock', url: 'https://icecast.skyrock.net/s/natio_mp3_128k', genre: 'Urban' }
 ];
 
-// Tri par ordre alphabétique automatique basé sur le nom
+// Tri par ordre alphabétique
 stations.sort((a, b) => a.nom.localeCompare(b.nom));
 
 const audioPlayer = document.getElementById('audioPlayer');
 const stationTitle = document.getElementById('stationTitle');
 const statusTag = document.getElementById('statusTag');
+const statusText = document.getElementById('statusText');
 const radioGrid = document.getElementById('radioGrid');
-const btnToggle = document.getElementById('btnToggle');
 const iconPlay = document.getElementById('iconPlay');
 const iconStop = document.getElementById('iconStop');
 const mainEqualizer = document.getElementById('mainEqualizer');
+const playerCard = document.getElementById('playerCard');
 
 let currentStationId = null;
 
 function chargerRadios() {
     radioGrid.innerHTML = stations.map(s => `
         <div class="radio-bloc" id="card-${s.id}" onclick="selectAndPlay('${s.id}')">
-            <div class="mini-eq">
-                <div class="m-bar"></div>
-                <div class="m-bar"></div>
-                <div class="m-bar"></div>
-            </div>
-            <span class="num">${s.nom}</span>
-            <span class="lbl">${s.genre}</span>
+            <div class="active-indicator"></div>
+            <span class="nom">${s.nom}</span>
+            <span class="genre">${s.genre}</span>
         </div>
     `).join('');
 }
@@ -357,7 +379,7 @@ function selectAndPlay(id) {
     document.querySelectorAll('.radio-bloc').forEach(el => el.classList.remove('active'));
     document.getElementById(`card-${id}`).classList.add('active');
 
-    // Mise à jour de la station
+    // Mise à jour du lecteur
     stationTitle.innerText = station.nom;
     audioPlayer.src = station.url;
     audioPlayer.load();
@@ -374,7 +396,7 @@ function playAudio() {
             updateUI(true);
         }).catch(error => {
             console.error("Erreur de lecture :", error);
-            statusTag.innerText = 'Erreur / Bloqué';
+            statusText.innerText = 'Indisponible';
             updateUI(false);
         });
     }
@@ -383,13 +405,12 @@ function playAudio() {
 function stopAudio() {
     audioPlayer.pause();
     audioPlayer.currentTime = 0;
-    audioPlayer.src = ""; // Coupe complètement le flux pour économiser la bande passante
+    audioPlayer.src = ""; // Coupe le flux
     updateUI(false);
 }
 
 function togglePlayStop() {
     if (!currentStationId) {
-        // Si aucune station sélectionnée, lancer la première de la liste
         selectAndPlay(stations[0].id);
         return;
     }
@@ -408,30 +429,25 @@ function togglePlayStop() {
 
 function updateUI(isPlaying) {
     if (isPlaying) {
-        statusTag.innerText = 'En direct';
+        statusText.innerText = 'En direct';
         statusTag.classList.add('playing');
+        playerCard.classList.add('active');
         iconPlay.style.display = 'none';
         iconStop.style.display = 'block';
         mainEqualizer.classList.add('playing');
-        
-        const activeCard = document.querySelector('.radio-bloc.active');
-        if (activeCard) activeCard.classList.add('playing');
     } else {
-        statusTag.innerText = audioPlayer.src ? 'En pause' : 'Hors ligne';
+        statusText.innerText = audioPlayer.src ? 'En pause' : 'Hors ligne';
         statusTag.classList.remove('playing');
+        playerCard.classList.remove('active');
         iconPlay.style.display = 'block';
         iconStop.style.display = 'none';
         mainEqualizer.classList.remove('playing');
-        
-        document.querySelectorAll('.radio-bloc').forEach(el => el.classList.remove('playing'));
     }
 }
 
-// Événements natifs du lecteur
 audioPlayer.addEventListener('play', () => updateUI(true));
 audioPlayer.addEventListener('pause', () => updateUI(false));
 
-// Initialisation
 chargerRadios();
 </script>
 
