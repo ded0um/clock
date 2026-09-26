@@ -30,8 +30,15 @@
   </defs>
 
  
+ 
+   <!-- Fond plein derrière le cercle : même couleur que le fond intérieur.
+       Il couvre tout le carré pour qu'aucun lanceur ne puisse jamais afficher
+       de blanc, quel que soit le masque appliqué (cercle, carré arrondi, etc.). -->
+  <rect width="512" height="512" fill="#111215"/>
+ 
+ 
   <!-- 2. CONTENU AGRANDI POUR TOUCHER LE BORD DU MASQUE -->
-  <g transform="translate(256, 256) scale(1) translate(-256, -256)">
+  <g transform="translate(256, 256) scale(0.78) translate(-256, -256)">
     <!-- Anneau extérieur Orange (au bord exact) -->
     <circle cx="256" cy="256" r="256" fill="url(#orange-border)"/>
 
