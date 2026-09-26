@@ -2,7 +2,7 @@
   "id": "https://ded0um.github.io/clock/",
   "name": "Clock (by Dedoum)",
   "short_name": "Clock",
-  "description": "Horloge et Rapports",
+  "description": "Horloge",
   "start_url": "https://ded0um.github.io/clock/?app=clock",
   "scope": "https://ded0um.github.io/clock/",
   "display": "standalone",
