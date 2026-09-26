@@ -1,4 +1,4 @@
-const CACHE_NAME = 'clock-dedoum-v1';
+const CACHE_NAME = 'clock-dedoum-v2';
 const ASSETS = [
   '/clock/',
   '/clock/index.html',
