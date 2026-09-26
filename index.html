@@ -879,22 +879,16 @@ body.jour-sans-boutons .vacation-bar-wrap { opacity: 0 !important; visibility: h
     flex-shrink: 0;
     border: 1px solid var(--yellow-led);
     background-color: rgba(255, 140, 0, 0.1);
-    color: #fff;
 }
 .top-controls .radio-mini-stop:hover {
-    background-color: var(--yellow-led);
+    background-color: rgba(255, 140, 0, 0.25);
     border-color: var(--yellow-led);
-    color: #000;
 }
 .top-controls .radio-mini-stop svg {
     width: 12px;
     height: 12px;
     stroke: none;
-    fill: currentColor;
-}
-.top-controls .radio-mini-stop .radio-mini-stop-dot {
-    width: 7px;
-    height: 7px;
+    fill: var(--yellow-led);
 }
 
 .alarm-mobile-tabs { display: none; }
@@ -1200,7 +1194,6 @@ if ('serviceWorker' in navigator) {
         <div id="leds-sheet-container" class="leds-sheet-container"></div>
         <button class="radio-mini-stop hidden" id="radioMiniStopBtn" title="Arrêter la radio">
             <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"/></svg>
-            <span class="radio-mini-stop-dot"></span>
         </button>
     </div>
     <div class="date-display" id="date-label">Chargement...</div>
