@@ -899,17 +899,19 @@ body.jour-sans-boutons .vacation-bar-wrap { opacity: 0 !important; visibility: h
     stroke: none;
     fill: var(--yellow-led);
 }
-/* Groupe "radio en cours" : nom de la station + bouton stop dans une même pastille sombre,
-   même fond que le bouton burger. Les marges verticales négatives évitent de décaler les LEDs. */
+/* Groupe "radio en cours" : nom de la station + bouton stop dans un même encadré orange.
+   Les marges verticales négatives évitent de décaler les LEDs. */
 .radio-mini-group {
     display: flex;
     align-items: center;
     gap: 10px;
+    box-sizing: border-box;
     height: 40px;
     margin: -8px 0;
-    padding: 0 8px 0 14px;
+    padding: 0 7px 0 14px;
+    border: 1px solid rgba(255, 140, 0, 0.45);
     border-radius: 999px;
-    background-color: rgba(30, 30, 30, 0.8);
+    background-color: rgba(255, 140, 0, 0.06);
     min-width: 0;
 }
 .radio-mini-nom {
