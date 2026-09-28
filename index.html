@@ -216,6 +216,8 @@ body {
 }
 .menu-toggle-btn.active { color: var(--yellow-led); opacity: 1; }
 .menu-toggle-btn.masque-par-volet { opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+/* Le bouton burger s'efface dès qu'une modale (menu, alarmes, compte rendu, radios, admin...) est ouverte */
+body:has(.alarm-modal-overlay.open) .menu-toggle-btn { opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
 
 .alarm-modal-overlay.menu-panel-overlay,
 #menuPanelOverlay {
@@ -897,15 +899,20 @@ body.jour-sans-boutons .vacation-bar-wrap { opacity: 0 !important; visibility: h
     stroke: none;
     fill: var(--yellow-led);
 }
-/* Badge affichant le nom de la radio en cours, à côté du bouton stop */
-.radio-mini-badge {
+/* Groupe "radio en cours" : nom de la station + bouton stop dans une même pastille sombre,
+   même fond que le bouton burger. Les marges verticales négatives évitent de décaler les LEDs. */
+.radio-mini-group {
     display: flex;
     align-items: center;
-    height: 24px;
-    padding: 0 10px;
+    gap: 10px;
+    height: 40px;
+    margin: -8px 0;
+    padding: 0 8px 0 14px;
     border-radius: 999px;
-    border: 1px solid var(--yellow-led);
-    background-color: rgba(255, 140, 0, 0.1);
+    background-color: rgba(30, 30, 30, 0.8);
+    min-width: 0;
+}
+.radio-mini-nom {
     color: var(--yellow-led);
     font-size: 0.72rem;
     font-weight: bold;
@@ -915,11 +922,9 @@ body.jour-sans-boutons .vacation-bar-wrap { opacity: 0 !important; visibility: h
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 34vw;
-    flex-shrink: 1;
-    min-width: 0;
 }
 @media (max-width: 768px) {
-    .radio-mini-badge { max-width: 28vw; font-size: 0.68rem; }
+    .radio-mini-nom { max-width: 28vw; font-size: 0.68rem; }
 }
 
 .alarm-mobile-tabs { display: none; }
@@ -1223,10 +1228,12 @@ if ('serviceWorker' in navigator) {
 <div class="left-zone" id="mainClickZone">
     <div class="top-controls">
         <div id="leds-sheet-container" class="leds-sheet-container"></div>
-        <div class="radio-mini-badge hidden" id="radioMiniBadge"><span id="radioMiniBadgeNom"></span></div>
-        <button class="radio-mini-stop hidden" id="radioMiniStopBtn" title="Arrêter la radio">
-            <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"/></svg>
-        </button>
+        <div class="radio-mini-group hidden" id="radioMiniGroup">
+            <span class="radio-mini-nom" id="radioMiniNom"></span>
+            <button class="radio-mini-stop" id="radioMiniStopBtn" title="Arrêter la radio">
+                <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"/></svg>
+            </button>
+        </div>
     </div>
     <div class="date-display" id="date-label">Chargement...</div>
     <div id="clock">00:00</div>
@@ -2903,8 +2910,8 @@ const btnRadioToggle = document.getElementById('btnRadioToggle');
 const radioIconPlay = document.getElementById('radioIconPlay');
 const radioIconStop = document.getElementById('radioIconStop');
 const radioMiniStopBtn = document.getElementById('radioMiniStopBtn');
-const radioMiniBadge = document.getElementById('radioMiniBadge');
-const radioMiniBadgeNom = document.getElementById('radioMiniBadgeNom');
+const radioMiniGroup = document.getElementById('radioMiniGroup');
+const radioMiniNom = document.getElementById('radioMiniNom');
 
 const stationsRadio = [
     { id: 'chantefrance', nom: 'Chante France', url: 'https://chantefrance.ice.infomaniak.ch/chantefrance-128.mp3', genre: 'Chanson française' },
@@ -2996,13 +3003,9 @@ function majUiRadio(enLecture) {
         radioEqualizer.classList.add('playing');
         const carte = document.querySelector('#radioGrid .radio-bloc.active');
         if (carte) carte.classList.add('playing');
-        radioMiniStopBtn.classList.remove('hidden');
         const stationCourante = stationsRadio.find(s => s.id === radioStationCourante);
-        if (stationCourante && radioMiniBadge && radioMiniBadgeNom) {
-            radioMiniBadgeNom.textContent = stationCourante.nom;
-            radioMiniBadge.title = stationCourante.nom;
-            radioMiniBadge.classList.remove('hidden');
-        }
+        if (stationCourante) radioMiniNom.textContent = stationCourante.nom;
+        radioMiniGroup.classList.remove('hidden');
     } else {
         radioStatusTag.textContent = radioAudioPlayer.src ? 'En pause' : 'Hors ligne';
         radioStatusTag.classList.remove('playing');
@@ -3010,8 +3013,7 @@ function majUiRadio(enLecture) {
         radioIconStop.style.display = 'none';
         radioEqualizer.classList.remove('playing');
         document.querySelectorAll('#radioGrid .radio-bloc').forEach(el => el.classList.remove('playing'));
-        radioMiniStopBtn.classList.add('hidden');
-        if (radioMiniBadge) radioMiniBadge.classList.add('hidden');
+        radioMiniGroup.classList.add('hidden');
     }
 }
 radioAudioPlayer.addEventListener('play', () => majUiRadio(true));
