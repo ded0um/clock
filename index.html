@@ -259,6 +259,21 @@ body:has(.alarm-modal-overlay.open) .menu-toggle-btn { opacity: 0 !important; vi
     border-color: rgba(255, 140, 0, 0.4);
 }
 
+/* Lien du menu avec icône (même rendu que les boutons d'outils) */
+.menu-lien-item.menu-lien-icone {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+}
+.menu-lien-item.menu-lien-icone svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    stroke: currentColor;
+    fill: none;
+}
+
 .menu-section-titre {
     font-size: 0.72rem;
     color: #888;
@@ -804,6 +819,43 @@ body.jour-sans-boutons .vacation-bar-wrap { opacity: 0 !important; visibility: h
 .ssi-result-zone { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
 .ssi-result-designation { font-size: 1.3rem; font-weight: bold; color: var(--yellow-led); line-height: 1.4; }
 
+/* --- CONTRÔLES MENSUELS (1ère semaine complète du mois) --- */
+.ctrl-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-shrink: 0; }
+.ctrl-nav button {
+    background: none;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    color: #aaa;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, border-color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+.ctrl-nav button:hover { color: #fff; border-color: rgba(255, 140, 0, 0.4); }
+.ctrl-nav button svg { width: 18px; height: 18px; stroke: currentColor; fill: none; }
+.ctrl-mois { font-weight: bold; text-transform: capitalize; color: #eee; font-size: 1.05rem; }
+.ctrl-sous { font-size: 0.78rem; color: #777; text-align: center; margin-bottom: 14px; flex-shrink: 0; }
+.ctrl-liste { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; min-height: 0; }
+.ctrl-jour {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+.ctrl-date { flex: 0 0 58px; text-align: center; line-height: 1.2; }
+.ctrl-date b { display: block; font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+.ctrl-date span { font-size: 1.4rem; font-weight: bold; color: #fff; }
+.ctrl-txt { font-size: 0.98rem; color: #ddd; line-height: 1.35; }
+.ctrl-jour.aujourdhui { border-color: var(--yellow-led); background: rgba(255, 140, 0, 0.1); }
+.ctrl-jour.aujourdhui .ctrl-date span { color: var(--yellow-led); }
+
 /* --- RADIOS --- */
 .radio-player-card {
     background-color: #141414;
@@ -1255,6 +1307,8 @@ if ('serviceWorker' in navigator) {
             <button class="icon-btn" id="toggleAlarmSearchBtn" title="Support Alarme"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l9 15.5H3z"/><line x1="12" y1="9.5" x2="12" y2="13.5"/><line x1="12" y1="16.2" x2="12" y2="16.25"/></svg><span>Support Alarme</span></button>
             <button class="icon-btn" id="toggleCompteRenduBtn" title="Compte rendu"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13l3 3v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><path d="M8 4v6h7V4"/><line x1="7" y1="14" x2="17" y2="14"/><line x1="7" y1="17" x2="13" y2="17"/></svg><span>Compte rendu</span></button>
             <button class="icon-btn" id="toggleRadioBtn" title="Radios"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><circle cx="8" cy="15" r="1.3"/><line x1="12" y1="13" x2="16" y2="13"/><line x1="12" y1="17" x2="16" y2="17"/><path d="M8 10V6l8-3v7"/></svg><span>Radios</span></button>
+            <button class="icon-btn" id="openControlesBtn" type="button" title="Contrôles mensuels"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/></svg><span>Contrôles mensuels</span></button>
+            <a class="menu-lien-item menu-lien-icone" id="openNoirLink" href="noir.html" title="Écran noir"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M9 21h6M12 17v4"/></svg><span>Écran noir</span></a>
 
             <div class="menu-section-titre">Pages</div>
             <div id="menuPagesListe"><div class="alarm-multi-empty">Chargement...</div></div>
@@ -1551,6 +1605,23 @@ if ('serviceWorker' in navigator) {
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- FENÊTRE CONTRÔLES MENSUELS -->
+<div class="alarm-modal-overlay" id="controlesOverlay">
+    <div class="alarm-modal-box choice-modal-box" id="controlesBox">
+        <div class="alarm-modal-header">
+            <h2>Contrôles mensuels</h2>
+            <button id="closeControlesBtn" class="close-panel-btn" title="Fermer"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+        </div>
+        <div class="ctrl-nav">
+            <button id="ctrlPrev" type="button" title="Mois précédent"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg></button>
+            <div class="ctrl-mois" id="ctrlMois"></div>
+            <button id="ctrlNext" type="button" title="Mois suivant"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button>
+        </div>
+        <div class="ctrl-sous">1ère semaine complète du mois (à partir du 1er lundi)</div>
+        <div class="ctrl-liste" id="ctrlListe"></div>
     </div>
 </div>
 
@@ -2391,6 +2462,93 @@ crCopierBtn.addEventListener('click', () => {
     }
 });
 
+// --- CONTRÔLES MENSUELS (1ère semaine complète du mois : du 1er lundi au vendredi suivant) ---
+const CONTROLES_MENSUELS = [
+    { jour: 'lun.', texte: 'Contrôle portes issues de secours / DM' },
+    { jour: 'mar.', texte: 'Compteurs paratonnerres / Douche et rince œil' },
+    { jour: 'mer.', texte: 'Contrôle des cales et chandelles' },
+    { jour: 'jeu.', texte: 'Éclairages entrepôt' },
+    { jour: 'ven.', texte: 'BAES' }
+];
+
+const controlesOverlay = document.getElementById('controlesOverlay');
+const controlesBox = document.getElementById('controlesBox');
+const openControlesBtn = document.getElementById('openControlesBtn');
+const closeControlesBtn = document.getElementById('closeControlesBtn');
+const ctrlMois = document.getElementById('ctrlMois');
+const ctrlListe = document.getElementById('ctrlListe');
+let ctrlVue = null; // 1er jour du mois affiché
+
+function ctrlMoisCourant() {
+    const n = obtenirMaintenant();
+    return new Date(n.getFullYear(), n.getMonth(), 1);
+}
+
+function afficherControlesMensuels() {
+    ctrlMois.textContent = ctrlVue.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    const lundi = getPremierLundi(ctrlVue);
+
+    // Le "jour de service" bascule à 07h : avant 07h00, on est encore sur la vacation de la veille
+    const ref = obtenirMaintenant();
+    if (ref.getHours() < 7) ref.setDate(ref.getDate() - 1);
+
+    ctrlListe.innerHTML = '';
+    CONTROLES_MENSUELS.forEach((c, i) => {
+        const d = new Date(lundi.getFullYear(), lundi.getMonth(), lundi.getDate() + i);
+        const el = document.createElement('div');
+        el.className = 'ctrl-jour' + (estMemeJour(d, ref) ? ' aujourdhui' : '');
+
+        const date = document.createElement('div');
+        date.className = 'ctrl-date';
+        const b = document.createElement('b');
+        b.textContent = c.jour;
+        const s = document.createElement('span');
+        s.textContent = d.getDate();
+        date.appendChild(b);
+        date.appendChild(s);
+
+        const txt = document.createElement('div');
+        txt.className = 'ctrl-txt';
+        txt.textContent = c.texte;
+
+        el.appendChild(date);
+        el.appendChild(txt);
+        ctrlListe.appendChild(el);
+    });
+}
+
+function ouvrirControles() {
+    ctrlVue = ctrlMoisCourant();
+    afficherControlesMensuels();
+    controlesOverlay.classList.add('open');
+    openControlesBtn.classList.add('active');
+}
+function fermerControles() {
+    controlesOverlay.classList.remove('open');
+    openControlesBtn.classList.remove('active');
+}
+openControlesBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (controlesOverlay.classList.contains('open')) fermerControles();
+    else ouvrirControles();
+});
+closeControlesBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fermerControles();
+});
+controlesOverlay.addEventListener('click', (e) => {
+    if (e.target === controlesOverlay) fermerControles();
+});
+controlesBox.addEventListener('click', (e) => e.stopPropagation());
+document.getElementById('ctrlPrev').addEventListener('click', () => {
+    ctrlVue = new Date(ctrlVue.getFullYear(), ctrlVue.getMonth() - 1, 1);
+    afficherControlesMensuels();
+});
+document.getElementById('ctrlNext').addEventListener('click', () => {
+    ctrlVue = new Date(ctrlVue.getFullYear(), ctrlVue.getMonth() + 1, 1);
+    afficherControlesMensuels();
+});
+
 // --- MENU DE NAVIGATION ---
 // À remplacer par l'URL CSV publiée de l'onglet dédié aux pages du menu (Fichier > Partager > Publier sur le web > choisir l'onglet > CSV)
 // Colonnes attendues : NOM, URL (les en-têtes exacts peuvent varier, le code cherche "NOM"/"LABEL"/"TITRE" et "URL"/"LIEN")
@@ -2427,7 +2585,7 @@ menuPanelOverlay.addEventListener('click', (e) => {
     if (e.target === menuPanelOverlay) fermerMenu();
 });
 menuPanelBox.addEventListener('click', (e) => e.stopPropagation());
-['togglePanelBtn', 'toggleWeatherBtn', 'toggleAlarmSearchBtn', 'toggleCompteRenduBtn', 'toggleRadioBtn'].forEach(id => {
+['togglePanelBtn', 'toggleWeatherBtn', 'toggleAlarmSearchBtn', 'toggleCompteRenduBtn', 'toggleRadioBtn', 'openControlesBtn'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('click', fermerMenu);
 });
