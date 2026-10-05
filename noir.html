@@ -45,20 +45,13 @@ document.addEventListener('visibilitychange', () => {
 if ('wakeLock' in navigator) demanderWakeLock();
 window.addEventListener('beforeunload', libererWakeLock);
 
-// --- Double-clic : bascule plein écran (comme une vidéo) ---
-let dernierTap = 0;
-document.addEventListener('pointerup', (e) => {
-    const t = Date.now();
-    if (t - dernierTap < 350) {
-        dernierTap = 0; // évite les triple-clics en rafale
-        if (document.fullscreenElement) {
-            document.exitFullscreen().catch(() => {});
-        } else {
-            document.documentElement.requestFullscreen().catch(() => {});
-        }
-        return;
+// --- Clic simple : bascule plein écran (comme une vidéo) ---
+document.addEventListener('click', () => {
+    if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+    } else {
+        document.documentElement.requestFullscreen().catch(() => {});
     }
-    dernierTap = t;
 });
 
 // Échap quitte le plein écran (comportement natif), rien à faire de plus
