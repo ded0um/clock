@@ -23,13 +23,45 @@ html, body {
 </head>
 <body>
 <script>
-// Page volontairement vide. Double-tap (invisible) = retour à l'horloge.
+// --- Wake Lock : empêche la mise en veille tant que la page est ouverte ---
+let wakeLock = null;
+
+async function demanderWakeLock() {
+    try {
+        wakeLock = await navigator.wakeLock.request('screen');
+        wakeLock.addEventListener('release', () => { wakeLock = null; });
+    } catch (e) { /* non supporté ou refusé */ }
+}
+
+function libererWakeLock() {
+    if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+}
+
+// Redemande le verrou quand la page redevient visible (il est libéré automatiquement en arrière-plan)
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') demanderWakeLock();
+});
+
+if ('wakeLock' in navigator) demanderWakeLock();
+window.addEventListener('beforeunload', libererWakeLock);
+
+// --- Double-clic : bascule plein écran (comme une vidéo) ---
 let dernierTap = 0;
-document.addEventListener('pointerup', () => {
+document.addEventListener('pointerup', (e) => {
     const t = Date.now();
-    if (t - dernierTap < 350) location.href = './';
+    if (t - dernierTap < 350) {
+        dernierTap = 0; // évite les triple-clics en rafale
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+        } else {
+            document.documentElement.requestFullscreen().catch(() => {});
+        }
+        return;
+    }
     dernierTap = t;
 });
+
+// Échap quitte le plein écran (comportement natif), rien à faire de plus
 </script>
 </body>
 </html>
