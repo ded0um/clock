@@ -228,9 +228,9 @@ body:has(.alarm-modal-overlay.open) .menu-toggle-btn { opacity: 0 !important; vi
 .alarm-modal-box.menu-panel-box,
 #menuPanelBox {
     width: fit-content;
-    max-width: 320px;
-    min-width: 220px;
-    height: auto;
+    max-width: 340px;
+    min-width: 240px;
+    height: 100dvh;
     max-height: 100dvh;
     border-radius: 0 12px 12px 0;
     overflow: hidden;
@@ -240,12 +240,19 @@ body:has(.alarm-modal-overlay.open) .menu-toggle-btn { opacity: 0 !important; vi
 }
 #menuPanelBox .alarm-modal-header { flex-shrink: 0; }
 .menu-liens-liste {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 10px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;              /* défilement au doigt / à la molette */
     padding: 15px 20px;
+    scrollbar-width: none;         /* Firefox : pas de scrollbar */
+    -ms-overflow-style: none;      /* ancien Edge : pas de scrollbar */
 }
-.menu-liens-liste.colonnes-2 { grid-template-columns: 1fr 1fr; }
+.menu-liens-liste::-webkit-scrollbar {
+    display: none;                /* Chrome / Safari / Edge : pas de scrollbar */
+}
 .menu-lien-item {
     display: block;
     background: #161616;
@@ -287,8 +294,6 @@ body:has(.alarm-modal-overlay.open) .menu-toggle-btn { opacity: 0 !important; vi
     margin: 4px 0 2px;
 }
 .menu-section-titre:first-child { margin-top: 0; }
-/* Les titres de section s'étendent sur toute la largeur quand le menu passe en 2 colonnes */
-.menu-liens-liste.colonnes-2 .menu-section-titre { grid-column: 1 / -1; }
 
 .menu-liens-liste .icon-btn {
     position: static;
@@ -324,7 +329,7 @@ body:has(.alarm-modal-overlay.open) .menu-toggle-btn { opacity: 0 !important; vi
         width: 100%;
         max-width: none;
         min-width: 0;
-        height: auto;
+        height: 100dvh;
         max-height: 100dvh;
         border-radius: 0;
         border-left: none;
@@ -2576,7 +2581,6 @@ function ouvrirMenu() {
         chargerPagesMenu();
         pagesMenuDejaChargees = true;
     }
-    adapterColonnesMenu();
 }
 function fermerMenu() {
     menuPanelOverlay.classList.remove('open');
@@ -2600,23 +2604,8 @@ menuPanelBox.addEventListener('click', (e) => e.stopPropagation());
     if (el) el.addEventListener('click', fermerMenu);
 });
 
-// Le menu ne déborde jamais : s'il dépasse la hauteur de l'écran, il passe automatiquement en 2 colonnes.
-// Les pages chargées depuis le Sheet sont insérées dans la grille, donc elles comptent dans le calcul.
-function adapterColonnesMenu() {
-    const liste = document.getElementById('menuLiensListe');
-    const header = menuPanelBox.querySelector('.alarm-modal-header');
-    // Test en 1 colonne
-    liste.classList.remove('colonnes-2');
-    const hauteurHeader = header ? header.offsetHeight : 0;
-    const hauteurDispo = window.innerHeight - hauteurHeader;
-    if (liste.offsetHeight > hauteurDispo) {
-        // Ça déborde en 1 colonne → passage en 2 colonnes
-        liste.classList.add('colonnes-2');
-    }
-}
-window.addEventListener('resize', () => {
-    if (menuPanelOverlay.classList.contains('open')) adapterColonnesMenu();
-});
+// Note : le menu reste en 1 colonne ; s'il devient trop long, la liste défile
+// au doigt ou à la molette, sans scrollbar visible (géré en CSS).
 
 function chargerPagesMenu() {
     const liste = document.getElementById('menuPagesListe');
@@ -2641,8 +2630,6 @@ function chargerPagesMenu() {
             liste.innerHTML = pages.map(p =>
                 `<a href="${p.url.replace(/"/g, '&quot;')}" class="menu-lien-item">${p.nom.replace(/</g, '&lt;')}</a>`
             ).join('');
-            // Les pages viennent d'être ajoutées : on relance le test 1 / 2 colonnes
-            if (menuPanelOverlay.classList.contains('open')) adapterColonnesMenu();
         })
         .catch(() => {
             liste.innerHTML = '<div class="alarm-multi-empty">Impossible de charger les pages.</div>';
