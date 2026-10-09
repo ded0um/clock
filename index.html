@@ -19,6 +19,20 @@
     --yellow-led: #ff8c00;
 }
 
+/* --- AUCUNE BARRE DE DÉFILEMENT (le défilement au doigt / à la molette reste actif) --- */
+html, body, * {
+    scrollbar-width: none;         /* Firefox */
+    -ms-overflow-style: none;      /* ancien Edge / IE */
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+    display: none;                 /* Chrome / Safari / Edge / Android WebView */
+    width: 0;
+    height: 0;
+    background: transparent;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg-color);
@@ -247,11 +261,6 @@ body:has(.alarm-modal-overlay.open) .menu-toggle-btn { opacity: 0 !important; vi
     min-height: 0;
     overflow-y: auto;              /* défilement au doigt / à la molette */
     padding: 15px 20px;
-    scrollbar-width: none;         /* Firefox : pas de scrollbar */
-    -ms-overflow-style: none;      /* ancien Edge : pas de scrollbar */
-}
-.menu-liens-liste::-webkit-scrollbar {
-    display: none;                /* Chrome / Safari / Edge : pas de scrollbar */
 }
 .menu-lien-item {
     display: block;
