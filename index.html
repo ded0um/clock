@@ -150,7 +150,7 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
-.alarm-result-item, .ssi-zone-btn, .ssi-big-btn, .choice-btn, .radio-bloc, .btn-radio-toggle, .radio-mini-stop {
+.alarm-result-item, .ssi-zone-btn, .ssi-big-btn, .choice-btn, .radio-bloc, .btn-radio-toggle, .radio-mini-stop, .radio-mini-mute {
     user-select: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
@@ -975,6 +975,27 @@ body.jour-sans-boutons .vacation-bar-wrap { opacity: 0 !important; visibility: h
     stroke: none;
     fill: var(--yellow-led);
 }
+/* Bouton « couper le son » dans le groupe radio de l'écran principal : même taille et même style que le bouton stop */
+.radio-mini-mute {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--yellow-led);
+    background-color: rgba(255, 140, 0, 0.1);
+    color: var(--yellow-led);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, background-color 0.2s;
+}
+.radio-mini-mute:hover { background-color: var(--yellow-led); color: #000; }
+.radio-mini-mute svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.radio-mini-mute .ico-muted { display: none; }
+.radio-mini-mute.muted .ico-on { display: none; }
+.radio-mini-mute.muted .ico-muted { display: block; }
 /* Groupe "radio en cours" : nom de la station + bouton stop dans un même encadré orange.
    Les marges verticales négatives évitent de décaler les LEDs. */
 .radio-mini-group {
@@ -1345,6 +1366,10 @@ if ('serviceWorker' in navigator) {
         <div class="radio-mini-group hidden" id="radioMiniGroup">
             <button class="radio-mini-nom" id="radioMiniNom" title="Ouvrir les radios"></button>
             <div class="radio-mini-bars" aria-hidden="true"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+            <button class="radio-mini-mute" id="radioMiniMuteBtn" title="Couper le son" aria-pressed="false">
+                <svg class="ico-on" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+                <svg class="ico-muted" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="16" y1="9" x2="22" y2="15"/><line x1="22" y1="9" x2="16" y2="15"/></svg>
+            </button>
             <button class="radio-mini-stop" id="radioMiniStopBtn" title="Arrêter la radio">
                 <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"/></svg>
             </button>
@@ -3134,6 +3159,7 @@ const radioIconStop = document.getElementById('radioIconStop');
 const radioMiniStopBtn = document.getElementById('radioMiniStopBtn');
 const radioMiniGroup = document.getElementById('radioMiniGroup');
 const radioMiniNom = document.getElementById('radioMiniNom');
+const radioMiniMuteBtn = document.getElementById('radioMiniMuteBtn');
 
 const stationsRadio = [
     { id: 'chantefrance', nom: 'Chante France', url: 'https://chantefrance.ice.infomaniak.ch/chantefrance-128.mp3', genre: 'Chanson française' },
@@ -3195,10 +3221,17 @@ function lireRadio() {
     }
 }
 function arreterRadio() {
+    definirSonCoupe(false);
     radioAudioPlayer.pause();
     radioAudioPlayer.currentTime = 0;
     radioAudioPlayer.src = '';
     majUiRadio(false);
+}
+function definirSonCoupe(coupe) {
+    radioAudioPlayer.muted = coupe;
+    radioMiniMuteBtn.classList.toggle('muted', coupe);
+    radioMiniMuteBtn.setAttribute('aria-pressed', coupe ? 'true' : 'false');
+    radioMiniMuteBtn.title = coupe ? 'Remettre le son' : 'Couper le son';
 }
 function basculerLectureRadio() {
     if (!radioStationCourante) {
@@ -3242,6 +3275,7 @@ radioAudioPlayer.addEventListener('play', () => majUiRadio(true));
 radioAudioPlayer.addEventListener('pause', () => majUiRadio(false));
 btnRadioToggle.addEventListener('click', (e) => { e.stopPropagation(); basculerLectureRadio(); });
 radioMiniStopBtn.addEventListener('click', (e) => { e.stopPropagation(); arreterRadio(); });
+radioMiniMuteBtn.addEventListener('click', (e) => { e.stopPropagation(); definirSonCoupe(!radioAudioPlayer.muted); });
 radioMiniNom.addEventListener('click', (e) => { e.stopPropagation(); ouvrirRadioModal(); });
 
 function ouvrirRadioModal() {
@@ -3313,6 +3347,7 @@ function decoderJwt(jeton) {
 function traiterReponseGoogle(reponse) {
     const donnees = decoderJwt(reponse.credential);
     if (donnees && donnees.email && donnees.email.toLowerCase() === EMAIL_ADMIN_AUTORISE.toLowerCase() && donnees.email_verified) {
+        adminConnecte = true;
         adminLoginError.classList.add('hidden');
         fermerLoginAdmin();
         ouvrirPanelAdmin();
@@ -3321,6 +3356,8 @@ function traiterReponseGoogle(reponse) {
     }
 }
 
+// Une fois connecté, on n'a plus à se reconnecter tant que la page n'est pas rechargée
+let adminConnecte = false;
 let googleSignInInitialise = false;
 function initialiserGoogleSignIn() {
     if (googleSignInInitialise || !window.google || !window.google.accounts) return;
@@ -3336,6 +3373,7 @@ function initialiserGoogleSignIn() {
 }
 
 function ouvrirLoginAdmin() {
+    if (adminConnecte) { ouvrirPanelAdmin(); return; }
     adminLoginError.classList.add('hidden');
     adminLoginOverlay.classList.add('open');
     initialiserGoogleSignIn();
